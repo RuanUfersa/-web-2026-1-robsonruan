@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestão de Salas | Admin Biblioteca UFERSA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-error": "#ffffff",
+                "surface-dim": "#cadaff",
+                "on-secondary-fixed-variant": "#364e00",
+                "surface-container-lowest": "#ffffff",
+                "surface-variant": "#d7e2ff",
+                "on-tertiary-fixed-variant": "#005236",
+                "secondary-fixed-dim": "#a3d73e",
+                "inverse-surface": "#14305b",
+                "on-primary": "#ffffff",
+                "secondary-container": "#bef458",
+                "primary": "#082853",
+                "inverse-on-surface": "#ecf0ff",
+                "on-tertiary": "#ffffff",
+                "secondary": "#496800",
+                "on-tertiary-fixed": "#002113",
+                "primary-fixed-dim": "#aec7fb",
+                "surface-container-high": "#e0e8ff",
+                "outline-variant": "#c4c6d0",
+                "outline": "#747780",
+                "on-error-container": "#93000a",
+                "on-surface-variant": "#44474f",
+                "surface-tint": "#465e8c",
+                "on-tertiary-container": "#10c185",
+                "surface-bright": "#f9f9ff",
+                "background": "#f9f9ff",
+                "on-background": "#001a40",
+                "error": "#ba1a1a",
+                "tertiary-fixed": "#69fcbb",
+                "primary-container": "#243e6a",
+                "on-secondary": "#ffffff",
+                "on-primary-fixed": "#001a40",
+                "on-primary-fixed-variant": "#2d4673",
+                "surface-container": "#e8edff",
+                "on-surface": "#001a40",
+                "error-container": "#ffdad6",
+                "tertiary-fixed-dim": "#47dfa0",
+                "surface-container-low": "#f1f3ff",
+                "primary-fixed": "#d7e2ff",
+                "secondary-fixed": "#bef458",
+                "inverse-primary": "#aec7fb",
+                "tertiary-container": "#00482f",
+                "surface": "#f9f9ff",
+                "tertiary": "#002f1d",
+                "surface-container-highest": "#d7e2ff",
+                "on-secondary-container": "#4d6e00",
+                "on-primary-container": "#91aadd",
+                "on-secondary-fixed": "#131f00"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Public Sans"],
+                "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-ufersa-gradient {
+            background: linear-gradient(135deg, #243E6A 0%, #14C286 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-[#082853] dark:text-white">Admin Biblioteca UFERSA</span>
+<div class="hidden md:flex items-center bg-surface-container rounded-lg px-3 py-1.5 w-64 group focus-within:ring-1 ring-primary/20 transition-all duration-300">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input id="pesquisa-salas" class="bg-transparent border-none focus:ring-0 text-sm w-full font-body" placeholder="Pesquisar salas..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-[#F1F3FF] transition-all rounded-full hover:scale-110">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-[#F1F3FF] transition-all rounded-full hover:scale-110">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-px bg-[#E8EDFF] dark:bg-slate-800 mx-2"></div>
+<div class="flex items-center gap-3 group cursor-pointer">
+<span class="text-sm font-manrope font-semibold tracking-tight text-[#082853]">Sair</span>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden ring-0 group-hover:ring-2 ring-primary/20 transition-all">
+<img alt="Perfil do Bibliotecário" data-alt="close-up portrait of a professional librarian in a modern office setting, soft academic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPKIisCKXtcRqVehEKel_YA0-IV3x0VfNv_rr38_zy-lUHqJnJQfsaK74UoHATcg4UD3sh_mL1S9Ascxg6uIhUA_aXDhk60WRVQNrj2M1nW5Iu-fqZDR1eIySYxi1Tzu-Iw0QjY9bIfyHNraFxvNl-AEA1ToU0Z6cqbkdKixnSVYYGulZMG_UtiUstm3kmUTbxuGZ5OHvA-6P5LnVglWeYRRaNbvuu73LKQ8lN2_RIHKUseznByLvLwSJEvi7JqSoC4hU5NP7LZvI"/>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#E8EDFF] dark:bg-slate-800 h-[1px] w-full"></div>
+</nav>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-[#F9F9FF] dark:bg-slate-900 hidden md:block transition-all duration-300">
+<div class="flex flex-col h-full pt-20 pb-6">
+<div class="flex flex-col h-full">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<span class="text-[#082853] font-bold text-lg">Admin Biblioteca</span>
+</div>
+<span class="font-manrope text-sm font-medium text-slate-600 dark:text-slate-400 pl-11">Portal do Funcionário</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/painel_institucional/code.html">
+<span class="material-symbols-outlined text-xl transition-transform group-hover:scale-110">dashboard</span>
+<span class="font-manrope text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#082853] dark:text-[#99CC33] font-bold shadow-sm rounded-r-full transition-all" href="/gestao_salas/code.html">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">meeting_room</span>
+<span class="font-manrope text-sm font-medium">Gestão de Salas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/inventario/code.html">
+<span class="material-symbols-outlined text-xl transition-transform group-hover:scale-110">inventory_2</span>
+<span class="font-manrope text-sm font-medium">Inventário de Materiais</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/reservas_emprestimos/code.html">
+<span class="material-symbols-outlined text-xl transition-transform group-hover:scale-110">event_available</span>
+<span class="font-manrope text-sm font-medium">Reservas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/ocorrencias/code.html">
+<span class="material-symbols-outlined text-xl transition-transform group-hover:scale-110">report_problem</span>
+<span class="font-manrope text-sm font-medium">Ocorrências</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/ia_relatorios/code.html">
+<span class="material-symbols-outlined text-xl transition-transform group-hover:scale-110">analytics</span>
+<span class="font-manrope text-sm font-medium">Hub de IA e Relatórios</span>
+</a>
+</nav>
+
+<div class="px-4 pt-4 border-t border-[#E8EDFF] dark:border-slate-800 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="font-manrope text-sm font-medium">Configurações</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">contact_support</span>
+<span class="font-manrope text-sm font-medium">Suporte</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 px-8 pb-12 transition-all duration-300">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+<div class="max-w-2xl">
+<h1 class="text-4xl font-bold text-primary mb-2 tracking-tight">Gestão de Salas de Estudo</h1>
+<p class="text-on-surface-variant text-lg">Gerencie o inventário, disponibilidade e manutenção dos espaços colaborativos.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-ufersa-gradient text-white font-bold rounded-lg shadow-md hover:opacity-95 hover:scale-[1.03] active:scale-[0.97] transition-all" onclick="abrirModalNovaSala()"><span class="material-symbols-outlined">add</span> Adicionar Sala</button>
+</div>
+</header>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between transition-transform hover:scale-[1.02] border border-transparent hover:border-secondary/20">
+<div>
+<div class="flex items-center gap-2 text-secondary mb-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-bold text-sm">Disponíveis</span>
+</div>
+<h3 id="salas-disponiveis" class="text-3xl font-bold text-primary">0 <span class="text-sm font-normal text-on-surface-variant">/ 0 Salas</span></h3>
+</div>
+<div class="h-2 bg-surface-container-high rounded-full overflow-hidden mt-4">
+<div id="barra-disponiveis" class="h-full bg-secondary w-2/3 rounded-full transition-all duration-1000"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between border-l-4 border-error/20 transition-transform hover:scale-[1.02]">
+<div>
+<div class="flex items-center gap-2 text-error mb-2">
+<span class="material-symbols-outlined text-sm">construction</span>
+<span class="font-bold text-sm">Em Manutenção</span>
+</div>
+<h3 id="salas-manutencao" class="text-3xl font-bold text-primary">0 <span class="text-sm font-normal text-on-surface-variant">Salas</span></h3>
+</div>
+<p class="text-xs text-on-surface-variant mt-4">Atendimento técnico programado</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between transition-transform hover:scale-[1.02]">
+<div>
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="font-bold text-sm">Ocupação Média</span>
+</div>
+<h3 id="ocupacao-media" class="text-3xl font-bold text-primary">0%</h3>
+</div>
+<p class="text-xs text-on-surface-variant mt-4">Últimas 24 horas</p>
+</div>
+</div>
+<!-- Room Grid (API) -->
+<div id="salas-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+<!-- Room Card 1 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl hover:shadow-primary/10 border border-transparent hover:border-primary/5">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Interior da Sala de Estudo" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="modern glass-walled study room with wooden table, ergonomic blue chairs and a whiteboard in daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPF_8EQJBRwTemKkUT3sbisfvduXMjUikTpdFZSR2Necq9ek32vtsjQ76REeld26scbqrrv0yvpDq7GqpUgkWR1BD4qKy4mIQI-3PFKtlIG5mjMXV7A42ifnIraIAFtVFGpGNqR2LcPAsfOK0YDB55esVce3i_l5eK4DuG-k2fLdMgBmUW6EV9y24F4icsQTcIPagnMuDhchVmC5sYNHgTtibducOJdnAAir3CA-525kj4Au-YyTQsIyZqCMItrY7kA3VMDyjW_hs"/>
+<div class="absolute top-4 left-4 bg-secondary-container/90 backdrop-blur-sm text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> Disponível</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-bold text-xs shadow-sm">ID: UF-S101</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-secondary transition-colors duration-300">Laboratório de Colaboração A</h3>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> Capacidade: 08 pessoas</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 py-4 border-y border-surface-container/50 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">ac_unit</span>
+<span class="text-xs font-medium text-on-surface">Ar Condicionado</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">table_restaurant</span>
+<span class="text-xs font-medium text-on-surface">02 Mesas</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">chair</span>
+<span class="text-xs font-medium text-on-surface">08 Cadeiras</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">draw</span>
+<span class="text-xs font-medium text-on-surface">Quadro Branco</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-surface-container-low text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200">Gerenciar</button>
+<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 2 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl hover:shadow-primary/10 border border-transparent hover:border-primary/5">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Interior da Sala de Estudo" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="cozy small study room with high ceiling, warm ambient lighting, and individual laptop stations" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZwvJw8Z2SoMq8wwCHC-tiSeQhDSX7pOcMoaWGlak_bIsCGxrvTDMCXT7o2V25W_PxTGuOBJ6Ub5FxDXRpHlwdLtQNyhIbGwTzy56EeoToX2inPQEmUdU_t5xWhkMdIZnzCqv4l7Pw9BVvtbMhMXAsNKDK1f7KSF4xFDz2dbysQfqMK-9TKt0WMOQ34FViWDm8uV2UZUdQuVAPS88gW2YrI7H8htl3618rRTRXQcBMYIe96Fo33kPMAjxH3mie4KhgmPvDTVHCli4"/>
+<div class="absolute top-4 left-4 bg-surface-variant/90 backdrop-blur-sm text-on-surface-variant px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><span class="material-symbols-outlined text-[14px]">lock</span> Ocupado</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-bold text-xs shadow-sm">ID: UF-S204</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-secondary transition-colors duration-300">Cubo de Foco 204</h3>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">person</span> Capacidade: 02 pessoas</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 py-4 border-y border-surface-container/50 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">ac_unit</span>
+<span class="text-xs font-medium text-on-surface">AC Central</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">table_restaurant</span>
+<span class="text-xs font-medium text-on-surface">01 Escrivaninha</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">chair</span>
+<span class="text-xs font-medium text-on-surface">02 Cadeiras</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">monitor</span>
+<span class="text-xs font-medium text-on-surface">Monitor 24"</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-surface-container-low text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200">Gerenciar</button>
+<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 3 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl hover:shadow-primary/10 border border-transparent hover:border-primary/5">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Interior da Sala de Manutenção" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale-[30%] group-hover:grayscale-0" data-alt="institutional classroom with maintenance ladders and technician working on ceiling unit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPQ-mG6HJPcv37frA43NjdR2bOh0Q-O0eZG0lCCwixsOnQGHRH9Piib9OTVYefgnF2h_hMRrvxYOvpyxF8mKnoerhGU7vIPHn4qUpyb4OidprIdunoW2uFT6zT4klaLSOh6zk2YKV6btePqUnnyE3P6wfYtSsTvVJtELaivOrdQvqmB-nq8er66dxqhA4doGgQ2FBdcrQke2vbJCuiWHWrAdCfK4TvdKk_f8U2rvxWIJTVKCPndzb6pPBYWxPp7cak9fO-dS7uTsk"/>
+<div class="absolute top-4 left-4 bg-error-container/90 backdrop-blur-sm text-on-error-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><span class="material-symbols-outlined text-[14px]">warning</span> Manutenção</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-bold text-xs shadow-sm">ID: UF-B02</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-error transition-colors duration-300">Salão de Seminários B</h3>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups_3</span> Capacidade: 30 pessoas</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 py-4 border-y border-surface-container/50 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]">ac_unit</span>
+<span class="text-xs font-medium text-error">Em reparo</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">table_restaurant</span>
+<span class="text-xs font-medium text-on-surface">15 Mesas</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">chair</span>
+<span class="text-xs font-medium text-on-surface">30 Cadeiras</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">videocam</span>
+<span class="text-xs font-medium text-on-surface">Projetor</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-surface-container-low text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200">Gerenciar</button>
+<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 4 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl hover:shadow-primary/10 border border-transparent hover:border-primary/5">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Interior da Sala de Estudo Criativa" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="minimalist white study room with large windows, several black office chairs around a long white table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5FOwNmNwD8mgfCybx7wGEXEBTjITA_k1JAjHdFlii_X9P6KlPA1XKGXt-HxLyIQXZ1EkcQV9na27HAFGUFIIYUKZSCNAeMCqwRiC8bRy_8lSTkZFwkodLy53ALNr4StdLvfWBFYEG74yybz0nD4CZms9z9l8KXDXuq1O0OPnkpqFRcrtWGnte7GcBr0pTMzwRLoOcggYjD3o96wPH6XutTBP6f3oSIL0TYTKivcJU_MsW3JHkIfRFJ4zFcJO4IbvvmwRkPTKnE8A"/>
+<div class="absolute top-4 left-4 bg-secondary-container/90 backdrop-blur-sm text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> Disponível</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-bold text-xs shadow-sm">ID: UF-S105</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-xl font-bold text-primary mb-1 group-hover:text-secondary transition-colors duration-300">Suíte Criativa 1</h3>
+<p class="text-sm text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> Capacidade: 06 pessoas</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 py-4 border-y border-surface-container/50 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">ac_unit</span>
+<span class="text-xs font-medium text-on-surface">Ar Condicionado</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">table_restaurant</span>
+<span class="text-xs font-medium text-on-surface">Mesa Oval</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">chair</span>
+<span class="text-xs font-medium text-on-surface">06 Cadeiras</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">draw</span>
+<span class="text-xs font-medium text-on-surface">Kit Escrita</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-surface-container-low text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200">Gerenciar</button>
+<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Add Room Card -->
+<div class="group border-2 border-dashed border-outline-variant bg-transparent rounded-2xl overflow-hidden flex flex-col items-center justify-center p-12 transition-all duration-500 hover:bg-surface-container-low hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 cursor-pointer active:scale-[0.98]">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-3xl group-hover:text-white transition-colors">add</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-1 transition-colors group-hover:text-primary">Adicionar Nova Sala</h3>
+<p class="text-sm text-on-surface-variant text-center max-w-[200px]">Registre um novo espaço colaborativo no sistema</p>
+</div>
+</div>
+</main>
+
+<!-- Modal de Sala -->
+<div id="salaModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+<div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold text-[#082853]" id="modalTitle">Nova Sala</h3>
+<button onclick="fecharModal()" class="text-slate-400 hover:text-slate-600">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form id="salaForm" class="space-y-4">
+<input type="hidden" id="salaId">
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Nome da Sala</label>
+<input type="text" id="salaNome" required class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Ex: Laboratório de Colaboração A">
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Capacidade</label>
+<input type="number" id="salaCapacidade" required class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm" placeholder="Ex: 8">
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Tipo</label>
+<select id="salaTipo" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+<option value="colaborativo">Colaborativo</option>
+<option value="foco">Foco</option>
+<option value="seminario">Seminário</option>
+<option value="criativo">Criativo</option>
+<option value="reuniao">Reunião</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Recursos (selecione do inventário)</label>
+<select id="salaRecursos" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm" multiple size="4">
+<option value="">Selecione os materiais disponíveis...</option>
+</select>
+<p class="text-xs text-slate-500 mt-1">Segure Ctrl/Cmd para selecionar múltiplos</p>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Status</label>
+<select id="salaStatus" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+<option value="disponivel">Disponível</option>
+<option value="ocupado">Ocupado</option>
+<option value="manutencao">Manutenção</option>
+</select>
+</div>
+<div class="flex gap-3 mt-6">
+<button type="button" onclick="fecharModal()" class="flex-1 py-2.5 border border-slate-300 text-slate-600 font-bold rounded-lg hover:bg-slate-50">Cancelar</button>
+<button type="submit" class="flex-1 py-2.5 bg-[#082853] text-white font-bold rounded-lg hover:opacity-90">Salvar</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Toast de Feedback -->
+<div id="toast" class="fixed bottom-8 right-8 bg-green-600 text-white px-6 py-4 rounded-xl shadow-xl hidden z-50 flex items-center gap-3">
+<span class="material-symbols-outlined">check_circle</span>
+<span id="toastMessage">Operação realizada!</span>
+</div>
+
+<!-- Scripts da API -->
+<script src="/js/api.js"></script>
+<script src="/js/crud_salas.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        inicializarGestaoSalas();
+    });
+</script>
+</body></html>

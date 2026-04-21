@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Biblioteca UFERSA - Hub de IA e Análises</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "surface-dim": "#cadaff",
+            "on-secondary-fixed-variant": "#364e00",
+            "surface-container-lowest": "#ffffff",
+            "surface-variant": "#d7e2ff",
+            "on-tertiary-fixed-variant": "#005236",
+            "secondary-fixed-dim": "#a3d73e",
+            "inverse-surface": "#14305b",
+            "on-primary": "#ffffff",
+            "secondary-container": "#bef458",
+            "primary": "#082853",
+            "inverse-on-surface": "#ecf0ff",
+            "on-tertiary": "#ffffff",
+            "secondary": "#496800",
+            "on-tertiary-fixed": "#002113",
+            "primary-fixed-dim": "#aec7fb",
+            "surface-container-high": "#e0e8ff",
+            "outline-variant": "#c4c6d0",
+            "outline": "#747780",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#44474f",
+            "surface-tint": "#465e8c",
+            "on-tertiary-container": "#10c185",
+            "surface-bright": "#f9f9ff",
+            "background": "#f9f9ff",
+            "on-background": "#001a40",
+            "error": "#ba1a1a",
+            "tertiary-fixed": "#69fcbb",
+            "primary-container": "#243e6a",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#001a40",
+            "on-primary-fixed-variant": "#2d4673",
+            "surface-container": "#e8edff",
+            "on-surface": "#001a40",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#47dfa0",
+            "surface-container-low": "#f1f3ff",
+            "primary-fixed": "#d7e2ff",
+            "secondary-fixed": "#bef458",
+            "inverse-primary": "#aec7fb",
+            "tertiary-container": "#00482f",
+            "surface": "#f9f9ff",
+            "tertiary": "#002f1d",
+            "surface-container-highest": "#d7e2ff",
+            "on-secondary-container": "#4d6e00",
+            "on-primary-container": "#91aadd",
+            "on-secondary-fixed": "#131f00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Manrope"],
+            "body": ["Public Sans"],
+            "label": ["Public Sans"]
+          },
+          "animation": {
+            "fade-in-up": "fadeInUp 0.5s ease-out forwards",
+            "scale-in": "scaleIn 0.2s ease-out forwards"
+          },
+          "keyframes": {
+            "fadeInUp": {
+              "0%": { opacity: "0", transform: "translateY(10px)" },
+              "100%": { opacity: "1", transform: "translateY(0)" }
+            },
+            "scaleIn": {
+              "0%": { opacity: "0", transform: "scale(0.95)" },
+              "100%": { opacity: "1", transform: "scale(1)" }
+            }
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #c4c6d0; border-radius: 10px; }
+    
+    .btn-press:active { transform: scale(0.96); }
+    .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+    
+    .chat-bubble { animation: fade-in-up 0.4s ease-out both; }
+    .chat-bubble-delay-1 { animation-delay: 0.1s; }
+    .chat-bubble-delay-2 { animation-delay: 0.2s; }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-secondary-container">
+<!-- Side Navigation Bar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-[#F9F9FF] dark:bg-slate-900 flex flex-col pt-20 pb-6 hidden lg:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center overflow-hidden">
+<img alt="Brasão UFERSA" class="w-full h-full object-contain" data-alt="Official heraldic university crest for UFERSA in deep blue and gold on a white shield" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYs8mwj2cC-AjiSRlFuVAC1CzZFMbU_095c-hGYkuCSnfaWAih2UT5bIrTvFok5xLMORA_MSJxAm6nm6C_v1pmDuMm9U3271SJ0gNuYW_OFavsF7kJakQzFDb1iZMgl23Vq-Qjv359lZCzmMDWVZBS9k-FDCZwvEVU_lmR1BvXmek1gxxmRzfvMNilJWQNgLiCrY4nLmkTj0Expw1UFagKe8nsVlku52KguzpZ6A0FO_PMPAN3q3KSqnCbYrDLjY_AflozCR5kkWg"/>
+</div>
+<div>
+<p class="text-[#082853] font-bold text-lg font-headline leading-tight">Admin Biblioteca</p>
+<p class="text-slate-600 dark:text-slate-400 text-xs font-medium">Portal do Staff</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full font-manrope text-sm font-medium group btn-press" href="/painel_institucional/code.html"><span class="material-symbols-outlined text-xl">dashboard</span> Painel</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full font-manrope text-sm font-medium group btn-press" href="/gestao_salas/code.html"><span class="material-symbols-outlined text-xl">meeting_room</span> Gestão de Salas</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full font-manrope text-sm font-medium group btn-press" href="/inventario/code.html"><span class="material-symbols-outlined text-xl">inventory_2</span> Inventário de Materiais</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full font-manrope text-sm font-medium group btn-press" href="/reservas_emprestimos/code.html"><span class="material-symbols-outlined text-xl">event_available</span> Reservas</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full font-manrope text-sm font-medium group btn-press" href="/ocorrencias/code.html"><span class="material-symbols-outlined text-xl">report_problem</span> Ocorrências</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#E8EDFF] dark:bg-slate-800 text-[#082853] dark:text-[#99CC33] font-bold shadow-sm rounded-r-full font-manrope text-sm transition-all group" href="/ia_relatorios/code.html"><span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span> Hub de IA e Relatórios</a>
+</nav>
+<div class="px-4 mt-auto space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-[#082853] transition-all font-manrope text-sm font-medium btn-press" href="#"><span class="material-symbols-outlined text-xl">settings</span> Configurações</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-[#082853] transition-all font-manrope text-sm font-medium btn-press" href="#"><span class="material-symbols-outlined text-xl">contact_support</span> Suporte</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none flex justify-between items-center px-6 h-16 ml-64 max-w-[calc(100%-16rem)]">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-[#F1F3FF] dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400" placeholder="Pesquisar inteligência e relatórios..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:bg-[#F1F3FF] p-2 rounded-full transition-colors relative btn-press">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:bg-[#F1F3FF] p-2 rounded-full transition-colors btn-press">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-[#E8EDFF] dark:bg-slate-800"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-xs font-bold text-primary">Dr. Ricardo Silva</p>
+<p class="text-[10px] text-slate-500">Bibliotecário Sênior</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-[#E8EDFF] overflow-hidden">
+<img alt="Perfil do Bibliotecário" class="w-full h-full object-cover" data-alt="professional portrait of a university librarian in business casual attire with a modern office background soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlwbI9qsW1wVnX0z77iDxT51VJYAXSdDZxGoKDnQTXPVh8E9iE8oy_JxVv20gVxSqao0qWOqdqdsw0TGOjL2IBkNPf5niIReVvI-YgbIzRLrmI6ILIxyckDjMJaPl5UK7NF54q3po8DH_NGl9hQ7cvjqA-T1ridFLJwRqCcQBCFVk2I5QZTLHfReVlgyLgvLmcQYiU2EivVCZ_zj4XyjvjHkbm7gDM5oCZnG1ZgCc8aqs2Rs88vbYX5F_-E0lndNq0QgrrPT9cYKE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen bg-surface">
+<div class="p-8 max-w-[1600px] mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-[10px] font-bold text-primary/60 uppercase tracking-widest">Central de Inteligência SISBI</span>
+</div>
+<h1 class="text-4xl font-headline text-primary mb-2">Central Única de IA e Relatórios</h1>
+<p class="text-on-surface-variant max-w-2xl">O hub exclusivo para todas as ferramentas de análise inteligente, previsões fiscais e gestão preditiva da biblioteca UFERSA.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-surface-container-highest text-primary font-semibold text-sm hover:bg-surface-container-high transition-colors btn-press"><span class="material-symbols-outlined text-lg">history</span> Histórico de IA</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-md btn-press"><span class="material-symbols-outlined text-lg">download_for_offline</span> Gerar Sumário Executivo</button>
+</div>
+</div>
+<!-- Triple Column Unified Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column: Operational Intelligence -->
+<div class="col-span-12 xl:col-span-4 space-y-8">
+<!-- Occupancy Bento Section -->
+<section class="bg-surface-container rounded-3xl p-6 relative overflow-hidden h-fit card-hover">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-xl font-headline text-primary">Mapas de Ocupação</h2>
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider">Monitoramento em Tempo Real</span>
+</div>
+<div class="space-y-4">
+<!-- Visual Heatmap Representation -->
+<div class="bg-surface-container-lowest rounded-2xl h-64 relative overflow-hidden flex items-end border border-outline-variant/30">
+<div class="absolute inset-0 p-4 flex flex-wrap gap-2">
+<div class="w-[calc(50%-0.5rem)] h-[calc(50%-0.5rem)] rounded-xl bg-primary/5 flex flex-col justify-between p-3 border border-primary/10">
+<span class="text-[8px] font-bold text-primary opacity-40">ALA DE ESTUDO A</span>
+<div class="w-12 h-12 bg-gradient-to-br from-error/60 to-error/20 rounded-full blur-xl animate-pulse self-center"></div>
+<div class="flex justify-between text-[10px] font-bold text-primary"><span>92%</span><span class="text-error">CRÍTICO</span></div>
+</div>
+<div class="w-[calc(50%-0.5rem)] h-[calc(50%-0.5rem)] rounded-xl bg-primary/5 flex flex-col justify-between p-3 border border-primary/10">
+<span class="text-[8px] font-bold text-primary opacity-40">HUB CENTRAL</span>
+<div class="w-12 h-12 bg-gradient-to-br from-secondary/60 to-secondary/20 rounded-full blur-xl self-center"></div>
+<div class="flex justify-between text-[10px] font-bold text-primary"><span>45%</span><span class="text-secondary">ÓTIMO</span></div>
+</div>
+<div class="w-[calc(50%-0.5rem)] h-[calc(50%-0.5rem)] rounded-xl bg-primary/5 flex flex-col justify-between p-3 border border-primary/10">
+<span class="text-[8px] font-bold text-primary opacity-40">LAB DE MÍDIA</span>
+<div class="w-12 h-12 bg-gradient-to-br from-surface-dim to-slate-200 rounded-full blur-xl self-center"></div>
+<div class="flex justify-between text-[10px] font-bold text-primary"><span>12%</span><span class="text-slate-400">VAGO</span></div>
+</div>
+<div class="w-[calc(50%-0.5rem)] h-[calc(50%-0.5rem)] rounded-xl bg-primary/5 flex flex-col justify-between p-3 border border-primary/10">
+<span class="text-[8px] font-bold text-primary opacity-40">ZONA SILENCIOSA</span>
+<div class="w-12 h-12 bg-gradient-to-br from-secondary/40 to-secondary/10 rounded-full blur-xl self-center"></div>
+<div class="flex justify-between text-[10px] font-bold text-primary"><span>68%</span><span class="text-secondary">OCUPADO</span></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase mb-1">Pico Previsto</p>
+<p class="text-lg font-bold text-primary">14:00 - 16:30</p>
+<div class="mt-2 flex items-center gap-1 text-error text-[10px] font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span> +18% vs anterior
+</div>
+</div>
+<div class="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-error">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase mb-1">Prioridade IA</p>
+<p class="text-sm font-bold text-primary">Ala A - Ar Cond.</p>
+<div class="mt-2 flex items-center gap-1 text-secondary text-[10px] font-bold">
+<span class="material-symbols-outlined text-sm">engineering</span> Equipe Alocada
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Fiscal Intelligence Section -->
+<section class="bg-surface-container rounded-3xl p-6 card-hover">
+<div class="flex items-center gap-2 mb-6">
+<h2 class="text-xl font-headline text-primary">Projeção Fiscal</h2>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-4 rounded-xl bg-white/50 border border-white/80">
+<p class="text-[9px] font-bold text-primary/60 uppercase tracking-widest mb-1">Saldo Atual</p>
+<p class="text-xl font-bold text-primary">R$ 42.500</p>
+</div>
+<div class="p-4 rounded-xl bg-white/50 border border-white/80">
+<p class="text-[9px] font-bold text-primary/60 uppercase tracking-widest mb-1">Economia IA</p>
+<p class="text-xl font-bold text-secondary">R$ 8.240</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-white rounded-xl border border-transparent hover:border-primary/10 transition-all cursor-default">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">cleaning_services</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">Higiene</p>
+<p class="text-[10px] text-on-surface-variant">Otimizado por IA</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">R$ 11.420</p>
+<p class="text-[9px] text-secondary font-bold">-12.5%</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-white rounded-xl border border-transparent hover:border-primary/10 transition-all cursor-default">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">bolt</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">Energia</p>
+<p class="text-[10px] text-on-surface-variant">Previsto T3</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">R$ 5.800</p>
+<p class="text-[9px] text-on-surface-variant">Estável</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Middle & Right Column: Unified AI Assistant & Analysis Interface -->
+<div class="col-span-12 xl:col-span-8">
+<div class="bg-white rounded-3xl shadow-xl border border-outline-variant/10 flex flex-col h-[850px] overflow-hidden">
+<!-- Chat Header -->
+<div class="bg-gradient-to-r from-primary to-[#243e6a] p-6 text-white flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-xl font-bold font-headline leading-tight">Assistente SISBI Core</h3>
+<span class="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-bold border border-secondary/30">IA NATIVA</span>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+<span class="text-xs text-white/70">Analisando dados da biblioteca em tempo real...</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition-colors btn-press">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+<button class="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition-colors btn-press">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Unified Analysis Stream -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-slate-50/50">
+<!-- Context Banner -->
+<div class="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-start gap-4 animate-scale-in">
+<span class="material-symbols-outlined text-primary mt-1">info</span>
+<div class="text-sm text-on-surface-variant">
+<p class="font-bold text-primary mb-1">Contexto da Sessão</p>
+<p>Todos os relatórios, mapas de calor e dados fiscais visíveis à esquerda estão sincronizados com este assistente. Suas solicitações afetarão diretamente as projeções exibidas.</p>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex gap-4 max-w-[85%] chat-bubble chat-bubble-delay-1">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-lg">robot_2</span>
+</div>
+<div class="bg-white p-6 rounded-3xl rounded-tl-none shadow-sm border border-slate-100">
+<p class="text-sm text-on-surface leading-relaxed">Olá Dr. Ricardo. Identifiquei uma anomalia de custos no **Laboratório de Mídia** cruzada com a baixa ocupação (apenas 12%). </p>
+<p class="text-sm text-on-surface mt-3 leading-relaxed">Já recalculei a projeção fiscal de suprimentos de limpeza na lateral. Deseja que eu gere o relatório PDF detalhado com esta economia de 12.5% para aprovação?</p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-4 max-w-[85%] ml-auto justify-end chat-bubble chat-bubble-delay-2">
+<div class="bg-primary p-6 rounded-3xl rounded-tr-none shadow-md">
+<p class="text-sm text-white leading-relaxed">Sim, prossiga com o relatório. Além disso, verifique se a manutenção do ar condicionado na Ala de Estudo A pode ser antecipada para evitar o pico de ocupação das 14:00.</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary/20 overflow-hidden shrink-0">
+<img alt="Usuário" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlwbI9qsW1wVnX0z77iDxT51VJYAXSdDZxGoKDnQTXPVh8E9iE8oy_JxVv20gVxSqao0qWOqdqdsw0TGOjL2IBkNPf5niIReVvI-YgbIzRLrmI6ILIxyckDjMJaPl5UK7NF54q3po8DH_NGl9hQ7cvjqA-T1ridFLJwRqCcQBCFVk2I5QZTLHfReVlgyLgvLmcQYiU2EivVCZ_zj4XyjvjHkbm7gDM5oCZnG1ZgCc8aqs2Rs88vbYX5F_-E0lndNq0QgrrPT9cYKE"/>
+</div>
+</div>
+<!-- AI Response with Interactive Widget -->
+<div class="flex gap-4 max-w-[85%] chat-bubble" style="animation-delay: 0.3s;">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-lg">robot_2</span>
+</div>
+<div class="bg-white p-6 rounded-3xl rounded-tl-none shadow-sm border border-slate-100 space-y-4">
+<p class="text-sm text-on-surface leading-relaxed">Processado com sucesso. Relatório executivo gerado. Verifiquei com a equipe de manutenção e a antecipação é possível.</p>
+<!-- Integrated Tool Result -->
+<div class="bg-surface-container-low p-5 rounded-2xl border border-primary/5 card-hover">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-secondary">task_alt</span>
+<span class="text-xs font-bold text-primary">Relatório Gerado: SISBI_ECONOMIA_T3_OUT.pdf</span>
+</div>
+<div class="flex justify-between text-xs mb-1">
+<span class="text-on-surface-variant">Orçamento Original</span>
+<span class="text-primary font-bold">R$ 12.850,00</span>
+</div>
+<div class="flex justify-between text-xs mb-3">
+<span class="text-on-surface-variant">Orçamento Otimizado (IA)</span>
+<span class="text-secondary font-bold">R$ 11.420,00</span>
+</div>
+<div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden mb-4">
+<div class="h-full bg-secondary w-[85%]"></div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 text-[10px] font-bold rounded-xl border border-primary text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2 btn-press">
+<span class="material-symbols-outlined text-lg">download</span> Baixar CSV
+</button>
+<button class="flex-1 py-2.5 text-[10px] font-bold rounded-xl bg-primary text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm btn-press">
+<span class="material-symbols-outlined text-lg">picture_as_pdf</span> Abrir PDF Executivo
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggested Prompts -->
+<div class="pt-6 flex flex-wrap gap-2 animate-scale-in" style="animation-delay: 0.4s;">
+<p class="w-full text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-1 ml-1">Análises Sugeridas</p>
+<button class="text-[11px] font-semibold px-4 py-2.5 rounded-xl border border-outline-variant bg-white text-on-surface-variant hover:border-primary hover:text-primary transition-all shadow-sm btn-press">"Comparar consumo de energia entre alas A e B"</button>
+<button class="text-[11px] font-semibold px-4 py-2.5 rounded-xl border border-outline-variant bg-white text-on-surface-variant hover:border-primary hover:text-primary transition-all shadow-sm btn-press">"Gerar histórico de manutenção da Sala 5"</button>
+<button class="text-[11px] font-semibold px-4 py-2.5 rounded-xl border border-outline-variant bg-white text-on-surface-variant hover:border-primary hover:text-primary transition-all shadow-sm btn-press">"Projetar ocupação para a semana de exames"</button>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-8 bg-white border-t border-slate-100">
+<div class="relative">
+<textarea class="w-full bg-[#F1F3FF] border-none rounded-3xl py-5 pl-6 pr-24 text-sm focus:ring-2 focus:ring-primary/20 resize-none placeholder:text-slate-400 min-h-[64px]" placeholder="Solicite uma análise profunda ou gere um novo relatório..." rows="1"></textarea>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+<button class="w-12 h-12 rounded-2xl hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors btn-press">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 hover:opacity-90 transition-opacity btn-press">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Notification Toast (Fixed Bottom) -->
+<div class="fixed bottom-8 right-8 z-[60] bg-inverse-surface text-inverse-on-surface px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border-l-4 border-secondary animate-scale-in" style="animation-delay: 1s;">
+<div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="pr-8">
+<p class="text-xs font-bold leading-none mb-1">Central de Inteligência Sincronizada</p>
+<p class="text-[10px] opacity-70">Novos dados de ocupação processados pelo SISBI Assistente.</p>
+</div>
+<button class="absolute top-2 right-2 text-white/40 hover:text-white btn-press">
+<span class="material-symbols-outlined text-base">close</span>
+</button>
+</div>
+</body></html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Painel Institucional | Admin Biblioteca UFERSA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-dim": "#cadaff",
+                        "on-secondary-fixed-variant": "#364e00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#d7e2ff",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "secondary-fixed-dim": "#a3d73e",
+                        "inverse-surface": "#14305b",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#bef458",
+                        "primary": "#082853",
+                        "inverse-on-surface": "#ecf0ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#496800",
+                        "on-tertiary-fixed": "#002113",
+                        "primary-fixed-dim": "#aec7fb",
+                        "surface-container-high": "#e0e8ff",
+                        "outline-variant": "#c4c6d0",
+                        "outline": "#747780",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#44474f",
+                        "surface-tint": "#465e8c",
+                        "on-tertiary-container": "#10c185",
+                        "surface-bright": "#f9f9ff",
+                        "background": "#f9f9ff",
+                        "on-background": "#001a40",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#69fcbb",
+                        "primary-container": "#243e6a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001a40",
+                        "on-primary-fixed-variant": "#2d4673",
+                        "surface-container": "#e8edff",
+                        "on-surface": "#001a40",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#47dfa0",
+                        "surface-container-low": "#f1f3ff",
+                        "primary-fixed": "#d7e2ff",
+                        "secondary-fixed": "#bef458",
+                        "inverse-primary": "#aec7fb",
+                        "tertiary-container": "#00482f",
+                        "surface": "#f9f9ff",
+                        "tertiary": "#002f1d",
+                        "surface-container-highest": "#d7e2ff",
+                        "on-secondary-container": "#4d6e00",
+                        "on-primary-container": "#91aadd",
+                        "on-secondary-fixed": "#131f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Public Sans"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-ufersa-gradient {
+            background: linear-gradient(135deg, #243E6A 0%, #14C286 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none h-16 px-6 flex justify-between items-center">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-[#082853] dark:text-white font-headline tracking-tight">UFERSA Admin Biblioteca</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-[#082853] font-bold border-b-2 border-[#082853] py-5 font-headline text-sm" href="/painel_institucional/code.html">Painel</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-[#F1F3FF] dark:hover:bg-slate-800 transition-colors px-3 py-1 rounded-lg font-headline text-sm" href="/inventario/code.html">Inventário</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-[#F1F3FF] dark:hover:bg-slate-800 transition-colors px-3 py-1 rounded-lg font-headline text-sm" href="#">Usuários</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-outline p-2 hover:bg-[#F1F3FF] rounded-full cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</div>
+<span class="material-symbols-outlined text-outline p-2 hover:bg-[#F1F3FF] rounded-full cursor-pointer transition-colors" data-icon="help">help</span>
+<div class="h-8 w-[1px] bg-[#E8EDFF] mx-2"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-primary font-headline">Membro da Equipe</p>
+<p class="text-[10px] text-outline">Perfil de Bibliotecário</p>
+</div>
+<img alt="Librarian Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFSticIJIR4cOhUGSk8RRgJHblZOyWoV4jgeBq3fVEmUhn2am_EAiVjWDYj4unDJocAYYFAlIiqRzuYnF_y0XLli8aFozMi9m7iTRig7Hqrf__TJAD4OZYEhcYtWVjDIypRGzu_MGlZUNLtGQYT2UkmNJr6L2946zbMneCfug-MfTraPhP87bRmsOEj0wReEVVVv1226dZa7J_x5jvojS3hVVhdfAEUc3M-1Oj0awLQESApGCU3mJw7BFIoTdRdxVDTvlChkACYmY"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#F9F9FF] dark:bg-slate-900 flex flex-col pt-20 pb-6 hidden lg:flex border-r border-transparent">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="account_balance" data-weight="fill" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="text-[#082853] font-bold text-lg font-headline leading-tight">Admin Biblioteca</h2>
+<p class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Portal do Funcionário</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#082853] dark:text-[#99CC33] font-bold shadow-sm rounded-r-full transition-all scale-95 duration-200 ease-in-out" href="/painel_institucional/code.html">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-manrope text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full" href="/gestao_salas/code.html">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+<span class="font-manrope text-sm font-medium">Gestão de Salas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full" href="/inventario/code.html">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-manrope text-sm font-medium">Inventário de Materiais</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full" href="/reservas_emprestimos/code.html">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-manrope text-sm font-medium">Reservas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full" href="/ocorrencias/code.html">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+<span class="font-manrope text-sm font-medium">Ocorrências</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] dark:hover:bg-slate-800 transition-all rounded-r-full" href="/ia_relatorios/code.html">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-manrope text-sm font-medium">Hub de IA e Relatórios</span>
+</a>
+</nav>
+<div class="px-4 mt-auto pt-4 space-y-1">
+<div class="h-[1px] bg-[#E8EDFF] dark:bg-slate-800 mx-4 mb-4"></div>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="settings">settings</span>
+<span class="font-manrope text-sm font-medium">Configurações</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#E8EDFF] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="contact_support">contact_support</span>
+<span class="font-manrope text-sm font-medium">Suporte</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:pl-64 pt-20 px-6 pb-12 transition-all duration-300">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tight">Painel Institucional</h1>
+<p class="text-on-surface-variant font-medium mt-1">Controle centralizado para as operações da Biblioteca UFERSA.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg">
+<span class="material-symbols-outlined text-sm text-slate-500">calendar_today</span>
+<input type="date" id="filtro-data-inicio" class="border-none bg-transparent text-sm font-medium text-primary focus:ring-0" value="">
+</div>
+<span class="text-slate-400">até</span>
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg">
+<span class="material-symbols-outlined text-sm text-slate-500">calendar_today</span>
+<input type="date" id="filtro-data-fim" class="border-none bg-transparent text-sm font-medium text-primary focus:ring-0" value="">
+</div>
+<button onclick="aplicarFiltroDatas()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/90">Filtrar</button>
+<button onclick="limparFiltro()" class="text-slate-500 px-3 py-2 text-sm hover:text-primary">Limpar</button>
+</div>
+</header>
+<!-- Key Metrics Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Active Bookings -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary p-2 bg-surface-container-low rounded-lg" data-icon="book_online">book_online</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Reservas Ativas</p>
+<h3 id="reservas-ativas" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+</div>
+<!-- Rooms Available -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary p-2 bg-secondary-container/20 rounded-lg" data-icon="door_front">door_front</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Salas Disponíveis</p>
+<h3 id="salas-disponiveis" class="text-3xl font-extrabold text-secondary font-headline mt-1">0 / 0</h3>
+</div>
+<!-- Pending Issues -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-error shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-error p-2 bg-error-container/30 rounded-lg" data-icon="error_outline">error_outline</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Ocorrências Pendentes</p>
+<h3 id="ocorrencias-pendentes" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+</div>
+<!-- Total Materials -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary-container shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary-container p-2 bg-surface-container-low rounded-lg" data-icon="inventory">inventory</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Materiais Cadastrados</p>
+<h3 id="total-materiais" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Eventos e Atividades (Left side) -->
+<section class="lg:col-span-8 bg-surface-container rounded-2xl p-8 relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary bg-white p-3 rounded-2xl shadow-sm" data-icon="event">event</span>
+<h3 class="text-2xl font-extrabold font-headline text-primary">Visualização de Eventos</h3>
+</div>
+</div>
+<div class="space-y-4" id="lista-eventos">
+<p class="text-slate-500 text-center py-8">Carregando eventos...</p>
+</div>
+<div id="eventos-paginacao"></div>
+</div>
+<div class="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[200px]" data-icon="event_note">event_note</span>
+</div>
+</section>
+<!-- Quick View List (Right side) -->
+<section class="lg:col-span-4 bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col border border-surface-container">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-extrabold font-headline text-primary">Reservas de Hoje</h3>
+<span id="reservas-hoje-count" class="text-xs font-bold text-secondary uppercase bg-secondary-container/20 px-2 py-1 rounded">0</span>
+</div>
+<div id="reservas-hoje" class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
+<!-- Reservas de hoje serão carregadas aqui via JS -->
+</div>
+<a href="/reservas_emprestimos/code.html" class="w-full py-3 text-sm font-bold text-primary hover:bg-surface-container transition-colors rounded-xl mt-6 inline-block text-center">Ver Agenda Completa</a>
+</section>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<button aria-label="Quick Action" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform group z-40">
+<span class="material-symbols-outlined transition-transform group-hover:rotate-90" data-icon="add">add</span>
+</button>
+
+<script>
+let todasReservas = [];
+let todasSalas = [];
+let todasOcorrencias = [];
+let todosMateriais = [];
+let todosLogs = [];
+
+const eventosPorPagina = 8;
+let paginaEventos = 1;
+
+async function carregarDados() {
+    try {
+        // Carregar logs primeiro单独
+        const logsRes = await fetch('/api/logs');
+        todosLogs = await logsRes.json();
+        console.log('Logs do servidor:', todosLogs);
+        
+        // Carregar outros dados
+        const [reservasRes, salasRes, ocorrenciasRes, materiaisRes] = await Promise.all([
+            fetch('/api/reservas'),
+            fetch('/api/salas'),
+            fetch('/api/ocorrencias'),
+            fetch('/api/materiais')
+        ]);
+        
+        todasReservas = await reservasRes.json();
+        todasSalas = await salasRes.json();
+        todasOcorrencias = await ocorrenciasRes.json();
+        todosMateriais = await materiaisRes.json();
+        
+        // Renderizar reservas de hoje
+        renderizarReservasHoje();
+        
+        // Renderizar eventos com paginação
+        paginaEventos = 1;
+        renderizarEventos();
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+    }
+}
+
+function renderizarReservasHoje() {
+    const container = document.getElementById('reservas-hoje');
+    const countEl = document.getElementById('reservas-hoje-count');
+    
+    if (!container) return;
+    
+    const hoje = new Date().toISOString().split('T')[0];
+    const reservasHoje = todasReservas.filter(r => {
+        const dataReserva = r.data_reserva || r.data;
+        return dataReserva === hoje;
+    }).sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+    
+    countEl.textContent = reservasHoje.length;
+    
+    if (reservasHoje.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-center py-4 text-sm">Nenhuma reserva para hoje.</p>';
+        return;
+    }
+    
+    container.innerHTML = reservasHoje.map(r => {
+        const dataObj = new Date(r.data_reserva || r.data);
+        const dia = dataObj.getDate();
+        const mes = dataObj.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase();
+        const horaInicio = r.hora_inicio;
+        const horaFim = r.hora_fim || 'Pendente';
+        const nomeSala = r.sala_nome || 'Sala #' + r.sala_id;
+        const nomeUsuario = r.usuario_nome || r.nome || '-';
+        const borderColor = horaFim === 'Pendente' ? 'border-secondary' : 'border-primary';
+        
+        return `
+        <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low border-l-4 ${borderColor} hover:bg-surface-container-high transition-colors">
+            <div class="w-12 h-12 rounded-lg bg-white flex flex-col items-center justify-center shadow-sm">
+                <span class="text-[10px] font-bold text-on-surface-variant leading-none uppercase">${mes}</span>
+                <span class="text-lg font-black text-primary leading-tight">${dia}</span>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-primary truncate">${nomeSala}</h4>
+                <p class="text-xs text-on-surface-variant flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">person</span>
+                    ${nomeUsuario}
+                </p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-primary">${horaInicio}</p>
+                <p class="text-[10px] text-outline">${horaFim}</p>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderizarEventos(dataInicio = null, dataFim = null) {
+    const container = document.getElementById('lista-eventos');
+    
+    let logsFiltrados = todosLogs;
+    
+    if (dataInicio || dataFim) {
+        logsFiltrados = todosLogs.filter(l => {
+            const logData = l.data_hora ? l.data_hora.split('T')[0] : '';
+            if (dataInicio && logData < dataInicio) return false;
+            if (dataFim && logData > dataFim) return false;
+            return true;
+        });
+    }
+    
+    logsFiltrados.sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+    
+    const totalPaginas = Math.ceil(logsFiltrados.length / eventosPorPagina);
+    if (paginaEventos > totalPaginas) paginaEventos = totalPaginas || 1;
+    
+    const inicio = (paginaEventos - 1) * eventosPorPagina;
+    const fim = inicio + eventosPorPagina;
+    const logsPagina = logsFiltrados.slice(inicio, fim);
+    
+    if (logsFiltrados.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhum evento encontrado para o período selecionado.</p>';
+        return;
+    }
+    
+    const tipoCores = {
+        'Salas': 'bg-blue-100 text-blue-700',
+        'Reservas': 'bg-green-100 text-green-700',
+        'Materiais': 'bg-purple-100 text-purple-700',
+        'Ocorrências': 'bg-red-100 text-red-700'
+    };
+    
+    const acaoLabels = {
+        'CRIAR': 'Criou',
+        'ATUALIZAR': 'Atualizou',
+        'EXCLUIR': 'Excluiu'
+    };
+    
+    container.innerHTML = logsPagina.map(l => {
+        const dataObj = l.data_hora ? new Date(l.data_hora) : null;
+        const dataFormatada = dataObj ? dataObj.toLocaleDateString('pt-BR') : '-';
+        const horaFormatada = dataObj ? dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+        const corTipo = tipoCores[l.modulo] || 'bg-slate-100 text-slate-700';
+        const labelAcao = acaoLabels[l.acao] || l.acao;
+        
+        return `
+        <div class="flex items-center gap-4 p-4 bg-white/50 rounded-xl border-l-4 border-primary">
+            <div class="w-16 h-12 rounded-lg bg-surface-container flex flex-col items-center justify-center flex-shrink-0">
+                <span class="text-[10px] font-bold text-slate-500">${dataFormatada}</span>
+                <span class="text-xs font-bold text-primary">${horaFormatada}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[10px] font-bold ${corTipo} px-2 py-0.5 rounded">${l.modulo}</span>
+                    <span class="text-[10px] font-bold text-slate-500">${labelAcao}</span>
+                </div>
+                <h4 class="font-bold text-sm text-primary truncate">${l.detalhes}</h4>
+                <p class="text-xs text-on-surface-variant flex items-center gap-1 truncate">
+                    <span class="material-symbols-outlined text-[12px]">person</span>
+                    ${l.usuario_nome} - ${l.usuario_matricula}
+                </p>
+            </div>
+        </div>`;
+    }).join('');
+    
+    // Renderizar botões de paginação
+    renderizarPaginacaoEventos(totalPaginas, logsFiltrados.length);
+}
+
+function renderizarPaginacaoEventos(totalPaginas, totalEventos) {
+    const container = document.getElementById('eventos-paginacao');
+    if (!container) return;
+    
+    if (totalPaginas <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const inicio = (paginaEventos - 1) * eventosPorPagina + 1;
+    const fim = Math.min(paginaEventos * eventosPorPagina, totalEventos);
+    
+    container.innerHTML = `
+        <div class="flex items-center justify-between mt-4 pt-4 border-t border-surface-container">
+            <span class="text-xs text-slate-500">Mostrando ${inicio}-${fim} de ${totalEventos}</span>
+            <div class="flex gap-1">
+                <button onclick="mudarPaginaEventos(-1)" class="px-2 py-1 text-xs rounded ${paginaEventos === 1 ? 'opacity-50' : 'hover:bg-surface-container'}">« Anterior</button>
+                <span class="px-2 py-1 text-xs font-bold">${paginaEventos}/${totalPaginas}</span>
+                <button onclick="mudarPaginaEventos(1)" class="px-2 py-1 text-xs rounded ${paginaEventos === totalPaginas ? 'opacity-50' : 'hover:bg-surface-container'}">Próxima »</button>
+            </div>
+        </div>`;
+}
+
+function mudarPaginaEventos(delta) {
+    const totalPaginas = Math.ceil(todosLogs.length / eventosPorPagina);
+    const novaPagina = paginaEventos + delta;
+    if (novaPagina >= 1 && novaPagina <= totalPaginas) {
+        paginaEventos = novaPagina;
+        renderizarEventos();
+    }
+}
+
+function aplicarFiltroDatas() {
+    const dataInicio = document.getElementById('filtro-data-inicio').value;
+    const dataFim = document.getElementById('filtro-data-fim').value;
+    
+    let reservasFiltradas = todasReservas;
+    
+    if (dataInicio) {
+        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva >= dataInicio);
+    }
+    if (dataFim) {
+        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva <= dataFim);
+    }
+    
+    const reservasAtivas = reservasFiltradas.filter(r => r.status === 'ativo' || r.status === 'atencao').length;
+    
+    const salasDisponiveis = todasSalas.filter(s => s.status === 'disponivel').length;
+    const totalSalas = todasSalas.length;
+    
+    const ocorrenciasPendentes = todasOcorrencias.filter(o => o.status === 'em_analise').length;
+    
+    const totalMateriais = todosMateriais.length;
+    
+    document.getElementById('reservas-ativas').textContent = reservasAtivas;
+    document.getElementById('salas-disponiveis').textContent = `${salasDisponiveis} / ${totalSalas}`;
+    document.getElementById('ocorrencias-pendentes').textContent = ocorrenciasPendentes;
+    document.getElementById('total-materiais').textContent = totalMateriais;
+}
+
+function limparFiltro() {
+    document.getElementById('filtro-data-inicio').value = '';
+    document.getElementById('filtro-data-fim').value = '';
+    aplicarFiltroDatas();
+}
+
+// Inicializar ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    carregarDados();
+    aplicarFiltroDatas();
+});
+
+function aplicarFiltroDatas() {
+    const dataInicio = document.getElementById('filtro-data-inicio').value;
+    const dataFim = document.getElementById('filtro-data-fim').value;
+    
+    let reservasFiltradas = todasReservas;
+    
+    if (dataInicio) {
+        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva >= dataInicio);
+    }
+    if (dataFim) {
+        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva <= dataFim);
+    }
+    
+    const reservasAtivas = reservasFiltradas.filter(r => r.status === 'ativo' || r.status === 'atencao').length;
+    
+    const salasDisponiveis = todasSalas.filter(s => s.status === 'disponivel').length;
+    const totalSalas = todasSalas.length;
+    
+    const ocorrenciasPendentes = todasOcorrencias.filter(o => o.status === 'em_analise').length;
+    
+    const totalMateriais = todosMateriais.length;
+    
+    document.getElementById('reservas-ativas').textContent = reservasAtivas;
+    document.getElementById('salas-disponiveis').textContent = `${salasDisponiveis} / ${totalSalas}`;
+    document.getElementById('ocorrencias-pendentes').textContent = ocorrenciasPendentes;
+    document.getElementById('total-materiais').textContent = totalMateriais;
+    
+    // Renderizar eventos com filtro de datas
+    renderizarEventos(dataInicio, dataFim);
+}
+</script>
+</body></html>

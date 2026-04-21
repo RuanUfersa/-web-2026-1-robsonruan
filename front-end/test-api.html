@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste API - UFERSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Manrope', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-blue-900 mb-8">Teste API - UFERSA Biblioteca</h1>
+    
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold text-lg text-blue-900 mb-4">Salas</h2>
+        <button onclick="testarSalas()" class="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800">Carregar Salas</button>
+        <pre id="salas-result" class="mt-4 text-xs bg-slate-100 p-4 rounded overflow-x-auto max-h-60"></pre>
+      </div>
+      
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold text-lg text-blue-900 mb-4">Reservas</h2>
+        <button onclick="testarReservas()" class="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800">Carregar Reservas</button>
+        <pre id="reservas-result" class="mt-4 text-xs bg-slate-100 p-4 rounded overflow-x-auto max-h-60"></pre>
+      </div>
+      
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold text-lg text-blue-900 mb-4">Ocorrências</h2>
+        <button onclick="testarOcorrencias()" class="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800">Carregar Ocorrências</button>
+        <pre id="ocorrencias-result" class="mt-4 text-xs bg-slate-100 p-4 rounded overflow-x-auto max-h-60"></pre>
+      </div>
+      
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold text-lg text-blue-900 mb-4">Inventário</h2>
+        <button onclick="testarInventario()" class="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800">Carregar Inventário</button>
+        <pre id="inventario-result" class="mt-4 text-xs bg-slate-100 p-4 rounded overflow-x-auto max-h-60"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000/api';
+    
+    async function testarSalas() {
+      try {
+        const r = await fetch(API + '/salas');
+        const d = await r.json();
+        document.getElementById('salas-result').textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        document.getElementById('salas-result').textContent = 'Erro: ' + e.message;
+      }
+    }
+    
+    async function testarReservas() {
+      try {
+        const r = await fetch(API + '/reservas');
+        const d = await r.json();
+        document.getElementById('reservas-result').textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        document.getElementById('reservas-result').textContent = 'Erro: ' + e.message;
+      }
+    }
+    
+    async function testarOcorrencias() {
+      try {
+        const r = await fetch(API + '/ocorrencias');
+        const d = await r.json();
+        document.getElementById('ocorrencias-result').textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        document.getElementById('ocorrencias-result').textContent = 'Erro: ' + e.message;
+      }
+    }
+    
+    async function testarInventario() {
+      try {
+        const r = await fetch(API + '/materiais');
+        const d = await r.json();
+        document.getElementById('inventario-result').textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        document.getElementById('inventario-result').textContent = 'Erro: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>

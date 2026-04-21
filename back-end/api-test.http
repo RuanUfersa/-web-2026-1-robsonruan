@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:3000
+
+### Listar todas as salas
+GET {{baseUrl}}/api/salas
+
+### Criar nova sala
+POST {{baseUrl}}/api/salas
+Content-Type: application/json
+
+{
+  "nome": "Laboratório A",
+  "capacidade": 10,
+  "tipo": "colaborativo",
+  "recursos": ["ar condicionado", "quadro branco", "projetor"],
+  "status": "disponivel"
+}
+
+### Criar outra sala
+POST {{baseUrl}}/api/salas
+Content-Type: application/json
+
+{
+  "nome": "Sala de Foco 204",
+  "capacidade": 2,
+  "tipo": "foco"
+}
+
+### Listar reservas
+GET {{baseUrl}}/api/reservas
+
+### Criar reserva
+POST {{baseUrl}}/api/reservas
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "matricula": "2023001",
+  "cargo": "Estudante",
+  "data": "2026-04-20",
+  "hora_inicio": "09:00",
+  "hora_fim": "11:00"
+}
+
+### Listar ocorrências
+GET {{baseUrl}}/api/ocorrencias
+
+### Criar ocorrência
+POST {{baseUrl}}/api/ocorrencias
+Content-Type: application/json
+
+{
+  "aluno_nome": "Maria Santos",
+  "aluno_matricula": "2022001",
+  "descricao": "Cadeira quebrada",
+  "sala_id": "sala-1"
+}
+
+### Listar materiais
+GET {{baseUrl}}/api/materiais
+
+### Criar material
+POST {{baseUrl}}/api/materiais
+Content-Type: application/json
+
+{
+  "codigo": "PROJ-001",
+  "nome": "Projetor Samsung",
+  "tipo": "Eletrônico",
+  "sala_id": "1"
+}

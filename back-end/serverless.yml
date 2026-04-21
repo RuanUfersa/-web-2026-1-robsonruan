@@ -1,0 +1,206 @@
+service: ufersa-biblioteca
+
+frameworkVersion: 3
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: dev
+
+functions:
+  criarSala:
+    handler: src/crud.salasHandler
+    events:
+      - httpApi:
+          path: /api/salas
+          method: post
+    environment:
+      SALAS_TABLE: UFERSA_Salas
+
+  listarSalas:
+    handler: src/crud.salasHandler
+    events:
+      - httpApi:
+          path: /api/salas
+          method: get
+
+  pagIndex:
+    handler: src/crud.indexHandler
+    events:
+      - httpApi:
+          path: /
+          method: get
+    environment:
+      SALAS_TABLE: UFERSA_Salas
+
+  atualizarSala:
+    handler: src/crud.salasHandler
+    events:
+      - httpApi:
+          path: /api/salas/{id}
+          method: put
+    environment:
+      SALAS_TABLE: UFERSA_Salas
+
+  excluirSala:
+    handler: src/crud.salasHandler
+    events:
+      - httpApi:
+          path: /api/salas/{id}
+          method: delete
+    environment:
+      SALAS_TABLE: UFERSA_Salas
+
+  criarReserva:
+    handler: src/crud.reservasHandler
+    events:
+      - httpApi:
+          path: /api/reservas
+          method: post
+    environment:
+      RESERVAS_TABLE: UFERSA_Reservas
+
+  listarReservas:
+    handler: src/crud.reservasHandler
+    events:
+      - httpApi:
+          path: /api/reservas
+          method: get
+    environment:
+      RESERVAS_TABLE: UFERSA_Reservas
+
+  atualizarReserva:
+    handler: src/crud.reservasHandler
+    events:
+      - httpApi:
+          path: /api/reservas/{id}
+          method: put
+    environment:
+      RESERVAS_TABLE: UFERSA_Reservas
+
+  excluirReserva:
+    handler: src/crud.reservasHandler
+    events:
+      - httpApi:
+          path: /api/reservas/{id}
+          method: delete
+    environment:
+      RESERVAS_TABLE: UFERSA_Reservas
+
+  criarOcorrencia:
+    handler: src/crud.ocorrenciasHandler
+    events:
+      - httpApi:
+          path: /api/ocorrencias
+          method: post
+    environment:
+      OCORRENCIAS_TABLE: UFERSA_Ocorrencias
+
+  listarOcorrencias:
+    handler: src/crud.ocorrenciasHandler
+    events:
+      - httpApi:
+          path: /api/ocorrencias
+          method: get
+    environment:
+      OCORRENCIAS_TABLE: UFERSA_Ocorrencias
+
+  excluirOcorrencia:
+    handler: src/crud.ocorrenciasHandler
+    events:
+      - httpApi:
+          path: /api/ocorrencias/{id}
+          method: delete
+    environment:
+      OCORRENCIAS_TABLE: UFERSA_Ocorrencias
+
+  criarMaterial:
+    handler: src/crud.inventarioHandler
+    events:
+      - httpApi:
+          path: /api/materiais
+          method: post
+    environment:
+      INVENTARIO_TABLE: UFERSA_Inventario
+
+  listarMateriais:
+    handler: src/crud.inventarioHandler
+    events:
+      - httpApi:
+          path: /api/materiais
+          method: get
+    environment:
+      INVENTARIO_TABLE: UFERSA_Inventario
+
+  excluirMaterial:
+    handler: src/crud.inventarioHandler
+    events:
+      - httpApi:
+          path: /api/materiais/{id}
+          method: delete
+
+  gestaoSalas:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /gestao_salas/{proxy+}
+          method: get
+
+  reservasEmprestimos:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /reservas_emprestimos/{proxy+}
+          method: get
+
+  iaRelatorios:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /ia_relatorios/{proxy+}
+          method: get
+
+  painelInstitucional:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /painel_institucional/{proxy+}
+          method: get
+
+  inventario:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /inventario/{proxy+}
+          method: get
+
+  ocorrencias:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /ocorrencias/{proxy+}
+          method: get
+
+  staticAssets:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /js/{file}
+          method: get
+
+  staticAssetsData:
+    handler: src/crud.staticHandler
+    events:
+      - httpApi:
+          path: /data/{file}
+          method: get
+
+package:
+  individually: false
+  patterns:
+    - '!**'
+    - src/**/*
+
+plugins:
+  - serverless-offline

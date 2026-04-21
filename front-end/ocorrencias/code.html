@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-error": "#ffffff",
+                "surface-dim": "#cadaff",
+                "on-secondary-fixed-variant": "#364e00",
+                "surface-container-lowest": "#ffffff",
+                "surface-variant": "#d7e2ff",
+                "on-tertiary-fixed-variant": "#005236",
+                "secondary-fixed-dim": "#a3d73e",
+                "inverse-surface": "#14305b",
+                "on-primary": "#ffffff",
+                "secondary-container": "#bef458",
+                "primary": "#082853",
+                "inverse-on-surface": "#ecf0ff",
+                "on-tertiary": "#ffffff",
+                "secondary": "#496800",
+                "on-tertiary-fixed": "#002113",
+                "primary-fixed-dim": "#aec7fb",
+                "surface-container-high": "#e0e8ff",
+                "outline-variant": "#c4c6d0",
+                "outline": "#747780",
+                "on-error-container": "#93000a",
+                "on-surface-variant": "#44474f",
+                "surface-tint": "#465e8c",
+                "on-tertiary-container": "#10c185",
+                "surface-bright": "#f9f9ff",
+                "background": "#f9f9ff",
+                "on-background": "#001a40",
+                "error": "#ba1a1a",
+                "tertiary-fixed": "#69fcbb",
+                "primary-container": "#243e6a",
+                "on-secondary": "#ffffff",
+                "on-primary-fixed": "#001a40",
+                "on-primary-fixed-variant": "#2d4673",
+                "surface-container": "#e8edff",
+                "on-surface": "#001a40",
+                "error-container": "#ffdad6",
+                "tertiary-fixed-dim": "#47dfa0",
+                "surface-container-low": "#f1f3ff",
+                "primary-fixed": "#d7e2ff",
+                "secondary-fixed": "#bef458",
+                "inverse-primary": "#aec7fb",
+                "tertiary-container": "#00482f",
+                "surface": "#f9f9ff",
+                "tertiary": "#002f1d",
+                "surface-container-highest": "#d7e2ff",
+                "on-secondary-container": "#4d6e00",
+                "on-primary-container": "#91aadd",
+                "on-secondary-fixed": "#131f00"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Public Sans"],
+                "label": ["Public Sans"]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-animation { animation: slideInUp 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Toast Feedback System -->
+<div class="fixed bottom-8 right-8 z-[100] hidden" id="toast">
+<div class="bg-primary text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 toast-animation border border-white/10">
+<span class="material-symbols-outlined text-secondary-container" data-icon="check_circle">check_circle</span>
+<span class="font-manrope font-bold text-sm" id="toast-message">Ação realizada com sucesso!</span>
+</div>
+</div>
+<!-- Side Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-[#F9F9FF] dark:bg-slate-900 flex flex-col pt-20 pb-6 hidden lg:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+</div>
+<div>
+<h1 class="text-[#082853] font-bold text-lg font-manrope">Admin Biblioteca</h1>
+<p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Portal do Staff</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/gestao_salas/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="font-manrope text-sm font-medium">Painel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/gestao_salas/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="meeting_room">meeting_room</span>
+<span class="font-manrope text-sm font-medium">Gestão de Salas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/inventario/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+<span class="font-manrope text-sm font-medium">Inventário de Materiais</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/reservas_emprestimos/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="event_available">event_available</span>
+<span class="font-manrope text-sm font-medium">Reservas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#082853] dark:text-[#99CC33] font-bold shadow-sm rounded-r-full group" href="/ocorrencias/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="report_problem">report_problem</span>
+<span class="font-manrope text-sm font-medium">Ocorrências</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-[#082853] hover:bg-[#E8EDFF] transition-all rounded-lg group" href="/ia_relatorios/code.html">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+<span class="font-manrope text-sm font-medium">Hub de IA e Relatórios</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="pt-4 border-t border-[#E8EDFF]">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-[#082853] text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+                    Configurações
+                </a>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none h-16 flex justify-between items-center px-6 pl-72">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-2 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-400" placeholder="Buscar por código ou nome..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full text-slate-500 hover:bg-[#F1F3FF] transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 rounded-full text-slate-500 hover:bg-[#F1F3FF] transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="h-8 w-[1px] bg-[#E8EDFF] mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-manrope font-bold text-[#082853]">Dra. Mariana Luz</p>
+<p class="text-xs text-slate-500">Bibliotecária-Chefe</p>
+</div>
+<img alt="Perfil" class="w-10 h-10 rounded-full border-2 border-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4kjO4XyIKQxlsQ4aZ4h4MpBR9PQkmNhWxjoynNcE3sd4iKKdeYIu_BePZNSE_n-HRGsPLa_o2LR-S8wyqTb6MZWNNjcWsKhFW1s8kIvLMIzW7M_-NQ8orsUW6rikxAvhrWy_8a2VXBxyw-XemSrNRDjB5YwBmZGqr8uSIpWwvXhgSOi9MkfG_x_s91Drz695J9nECyYJG2a9c2fvU_MXlbM22D_0YrCKSZ2w7Rx6pmKAZ6jWDL7zecW_WA_ivTb4MqKfdcO8i2NA"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pl-64 pt-16 pb-12 min-h-screen">
+<div class="p-8 max-w-[1400px] mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex items-center gap-2 text-xs text-slate-400 mb-2">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[12px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-medium">Ocorrências</span>
+</nav>
+<h2 class="text-3xl font-manrope font-bold text-primary tracking-tight">Ocorrências e Pendências</h2>
+<p class="text-on-surface-variant mt-1">Gerencie registros de danos e pendências dos usuários.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/10" onclick="abrirModalNovaOcorrencia()">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                        Nova Ocorrência
+                    </button>
+</div>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high flex items-center gap-6 hover:border-primary/20 transition-all">
+<div class="p-4 bg-primary-fixed text-primary rounded-2xl">
+<span class="material-symbols-outlined text-3xl" data-icon="report">report</span>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-medium">Total Ocorrências</p>
+<h3 id="total-ocorrencias" class="text-3xl font-bold text-primary">0</h3>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high flex items-center gap-6 hover:border-yellow-500/20 transition-all">
+<div class="p-4 bg-yellow-100 text-yellow-600 rounded-2xl">
+<span class="material-symbols-outlined text-3xl" data-icon="pending">pending</span>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-medium">Em Análise</p>
+<h3 id="em-analise" class="text-3xl font-bold text-yellow-600">0</h3>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high flex items-center gap-6 hover:border-green-500/20 transition-all">
+<div class="p-4 bg-green-100 text-green-600 rounded-2xl">
+<span class="material-symbols-outlined text-3xl" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-medium">Resolvidas</p>
+<h3 id="resolvidas" class="text-3xl font-bold text-green-600">0</h3>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high flex items-center gap-6 hover:border-red-500/20 transition-all">
+<div class="p-4 bg-red-100 text-red-600 rounded-2xl">
+<span class="material-symbols-outlined text-3xl" data-icon="person_off">person_off</span>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-medium">Usuários Bloqueados</p>
+<h3 id="bloqueados" class="text-3xl font-bold text-red-600">0</h3>
+</div>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-[#E8EDFF]">
+<!-- Table Filters -->
+<div class="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-surface-container">
+<div class="flex items-center gap-6 flex-wrap">
+<div class="flex items-center gap-2">
+<label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Buscar:</label>
+<input type="text" id="filtroBusca" class="bg-surface-container-low border-none rounded-lg text-sm font-semibold text-primary px-3 py-1 cursor-pointer min-w-[180px]" placeholder="Aluno ou descrição...">
+</div>
+<div class="flex items-center gap-2">
+<label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Status:</label>
+<select id="filtroStatus" class="bg-surface-container-low border-none rounded-lg text-sm font-semibold text-primary focus:ring-1 focus:ring-primary min-w-[140px] cursor-pointer hover:bg-surface-container transition-colors">
+<option value="">Todos</option>
+<option value="em_analise">Em Análise</option>
+<option value="resolvido">Resolvido</option>
+<option value="cancelado">Cancelado</option>
+</select>
+</div>
+</div>
+</div>
+<!-- The Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Aluno</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Sala</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Ações</th>
+</tr>
+</thead>
+<tbody id="ocorrencias-tbody" class="divide-y divide-surface-container">
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div id="pagination" class="px-6 py-4 flex items-center justify-between border-t border-surface-container">
+<p id="pagination-info" class="text-xs text-slate-500 font-medium">Carregando...</p>
+<div id="pagination-buttons" class="flex gap-2">
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<!-- Modal de Ocorrência -->
+<div id="ocorrenciaModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+<div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold text-[#082853]" id="ocorrenciaModalTitle">Nova Ocorrência</h3>
+<button onclick="fecharModalOcorrencia()" class="text-slate-400 hover:text-slate-600">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form id="ocorrenciaForm" class="space-y-4">
+<input type="hidden" id="ocorrenciaId">
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Nome do Aluno *</label>
+<input type="text" id="alunoNome" required class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Matrícula do Aluno *</label>
+<input type="text" id="alunoMatricula" required class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Sala</label>
+<select id="ocorrenciaSalaId" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+</select>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Descrição do Dano *</label>
+<textarea id="ocorrenciaDescricao" required rows="3" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm"></textarea>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">Funcionário Responsável</label>
+<input type="text" id="funcionarioResponsavel" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-600 mb-1">URL da Foto (evidência)</label>
+<input type="url" id="ocorrenciaFotoUrl" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm" placeholder="https://...">
+</div>
+<div id="statusField" class="hidden">
+<label class="block text-sm font-bold text-slate-600 mb-1">Status</label>
+<select id="ocorrenciaStatus" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm">
+<option value="em_analise">Em Análise</option>
+<option value="resolvido">Resolvido</option>
+<option value="cancelado">Cancelado</option>
+</select>
+</div>
+<div class="flex gap-3 mt-6">
+<button type="button" onclick="fecharModalOcorrencia()" class="flex-1 py-2.5 border border-slate-300 text-slate-600 font-bold rounded-lg hover:bg-slate-50">Cancelar</button>
+<button type="submit" class="flex-1 py-2.5 bg-[#082853] text-white font-bold rounded-lg hover:opacity-90">Salvar</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Scripts -->
+<script>
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-message');
+    toastMsg.innerText = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+const API_URL = 'http://localhost:3000/api';
+let ocorrencias = [];
+let salas = [];
+
+async function carregarSalas() {
+    try {
+        const response = await fetch(`${API_URL}/salas`);
+        salas = await response.json();
+        const select = document.getElementById('ocorrenciaSalaId');
+        select.innerHTML = '<option value="">Selecione uma sala</option>' + 
+            salas.map(s => `<option value="${s.id}">${s.nome || 'Sala ' + s.id}</option>`).join('');
+    } catch (e) {
+        console.error('Erro ao carregar salas:', e);
+    }
+}
+
+async function carregarOcorrencias() {
+    try {
+        const response = await fetch(`${API_URL}/ocorrencias`);
+        ocorrencias = await response.json();
+        renderizarTabela();
+        atualizarEstatisticas();
+    } catch (e) {
+        console.error('Erro ao carregar ocorrências:', e);
+        showToast('Erro ao carregar ocorrências');
+    }
+}
+
+function renderizarTabela() {
+    const tbody = document.getElementById('ocorrencias-tbody');
+    const filtroBusca = document.getElementById('filtroBusca').value.toLowerCase();
+    const filtroStatus = document.getElementById('filtroStatus').value;
+    
+    let filtradas = ocorrencias.filter(o => {
+        const matchBusca = !filtroBusca || 
+            o.aluno_nome?.toLowerCase().includes(filtroBusca) ||
+            o.descricao?.toLowerCase().includes(filtroBusca) ||
+            o.aluno_matricula?.toLowerCase().includes(filtroBusca);
+        const matchStatus = !filtroStatus || o.status === filtroStatus;
+        return matchBusca && matchStatus;
+    });
+    
+    if (filtradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Nenhuma ocorrência encontrada</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = filtradas.map(o => {
+        const statusClass = o.status === 'em_analise' ? 'bg-yellow-100 text-yellow-700' : 
+                          o.status === 'resolvido' ? 'bg-green-100 text-green-700' : 
+                          'bg-slate-100 text-slate-700';
+        const statusLabel = o.status === 'em_analise' ? 'Em Análise' : 
+                          o.status === 'resolvido' ? 'Resolvido' : 'Cancelado';
+        const data = o.data_criacao ? new Date(o.data_criacao).toLocaleDateString('pt-BR') : '-';
+        
+        return `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-primary">#${o.id}</td>
+            <td class="px-6 py-4 text-sm text-slate-600">${data}</td>
+            <td class="px-6 py-4">
+                <div>
+                    <p class="text-sm font-medium text-slate-800">${o.aluno_nome || '-'}</p>
+                    <p class="text-xs text-slate-500">${o.aluno_matricula || ''}</p>
+                </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-slate-600">${o.sala_nome || '-'}</td>
+            <td class="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">${o.descricao || '-'}</td>
+            <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${statusLabel}</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <button onclick="editarOcorrencia(${o.id})" class="p-2 text-slate-400 hover:text-primary transition-colors" title="Editar">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button onclick="excluirOcorrencia(${o.id})" class="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Excluir">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function atualizarEstatisticas() {
+    document.getElementById('total-ocorrencias').textContent = ocorrencias.length;
+    document.getElementById('em-analise').textContent = ocorrencias.filter(o => o.status === 'em_analise').length;
+    document.getElementById('resolvidas').textContent = ocorrencias.filter(o => o.status === 'resolvido').length;
+    
+    const bloqueados = new Set(ocorrencias.filter(o => o.status === 'em_analise').map(o => o.aluno_matricula));
+    document.getElementById('bloqueados').textContent = bloqueados.size;
+}
+
+function abrirModalNovaOcorrencia() {
+    document.getElementById('ocorrenciaModalTitle').textContent = 'Nova Ocorrência';
+    document.getElementById('ocorrenciaForm').reset();
+    document.getElementById('ocorrenciaId').value = '';
+    document.getElementById('statusField').classList.add('hidden');
+    document.getElementById('ocorrenciaModal').classList.remove('hidden');
+}
+
+function editarOcorrencia(id) {
+    const occ = ocorrencias.find(o => o.id === id);
+    if (!occ) return;
+    
+    document.getElementById('ocorrenciaModalTitle').textContent = 'Editar Ocorrência';
+    document.getElementById('ocorrenciaId').value = occ.id;
+    document.getElementById('alunoNome').value = occ.aluno_nome || '';
+    document.getElementById('alunoMatricula').value = occ.aluno_matricula || '';
+    document.getElementById('ocorrenciaSalaId').value = occ.sala_id || '';
+    document.getElementById('ocorrenciaDescricao').value = occ.descricao || '';
+    document.getElementById('funcionarioResponsavel').value = occ.funcionario_responsavel || '';
+    document.getElementById('ocorrenciaFotoUrl').value = occ.foto_url || '';
+    document.getElementById('ocorrenciaStatus').value = occ.status || 'em_analise';
+    document.getElementById('statusField').classList.remove('hidden');
+    document.getElementById('ocorrenciaModal').classList.remove('hidden');
+}
+
+function fecharModalOcorrencia() {
+    document.getElementById('ocorrenciaModal').classList.add('hidden');
+}
+
+async function excluirOcorrencia(id) {
+    if (!confirm('Tem certeza que deseja excluir esta ocorrência?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/ocorrencias/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            showToast('Ocorrência excluída com sucesso');
+            carregarOcorrencias();
+        } else {
+            showToast('Erro ao excluir ocorrência');
+        }
+    } catch (e) {
+        showToast('Erro ao excluir ocorrência');
+    }
+}
+
+document.getElementById('ocorrenciaForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const id = document.getElementById('ocorrenciaId').value;
+    const data = {
+        aluno_nome: document.getElementById('alunoNome').value,
+        aluno_matricula: document.getElementById('alunoMatricula').value,
+        sala_id: document.getElementById('ocorrenciaSalaId').value || null,
+        descricao: document.getElementById('ocorrenciaDescricao').value,
+        funcionario_responsavel: document.getElementById('funcionarioResponsavel').value,
+        foto_url: document.getElementById('ocorrenciaFotoUrl').value,
+        status: document.getElementById('ocorrenciaStatus').value || 'em_analise'
+    };
+    
+    try {
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/ocorrencias/${id}` : `${API_URL}/ocorrencias`;
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            showToast(id ? 'Ocorrência atualizada com sucesso' : 'Ocorrência registrada com sucesso');
+            fecharModalOcorrencia();
+            carregarOcorrencias();
+        } else {
+            const err = await response.json();
+            showToast(err.erro || 'Erro ao salvar ocorrência');
+        }
+    } catch (e) {
+        showToast('Erro ao salvar ocorrência');
+    }
+});
+
+document.getElementById('filtroBusca').addEventListener('input', renderizarTabela);
+document.getElementById('filtroStatus').addEventListener('change', renderizarTabela);
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarSalas();
+    carregarOcorrencias();
+});
+</script>
+</body></html>
