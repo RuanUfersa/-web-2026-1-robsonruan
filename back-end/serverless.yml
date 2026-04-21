@@ -7,6 +7,9 @@ provider:
   runtime: nodejs20.x
   region: us-east-1
   stage: dev
+  environment:
+    IS_LOCAL: true
+    STAGE: dev
 
 functions:
   criarSala:
@@ -200,7 +203,21 @@ package:
   individually: false
   patterns:
     - '!**'
-    - src/**/*
+    - src/**
 
 plugins:
   - serverless-offline
+  - serverless-dynamodb-local
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      noStart: false
+      inMemory: true
+    migration:
+      tableName: UFERSA_Salas
+      partitionKey: id
+      sortKey: data_criacao

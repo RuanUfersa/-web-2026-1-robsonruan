@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "dynamodb:start": "serverless dynamodb start",
+    "offline": "serverless offline",
+    "dev:offline": "serverless offline --dynamodb"
   },
   "keywords": [
     "biblioteca",
