@@ -567,12 +567,27 @@ const server = http.createServer((req, res) => {
         return apiStatus(req, res);
     }
     
-    // Static files from front-end directory
-    const staticDirs = ['gestao_salas', 'ia_relatorios', 'painel_institucional', 'reservas_emprestimos', 'inventario', 'ocorrencias', 'js'];
+    // Static files from front-end directory - must be after API routes
+    // Serve JS files
+    if (url.startsWith('js/') || url.startsWith('/js/')) {
+        const filePath = path.join(__dirname, '..', 'front-end', url.startsWith('/') ? url.substring(1) : url);
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            return serveStatic(req, res, filePath);
+        }
+    }
+    
+    // Serve page directories
+    const staticDirs = ['gestao_salas', 'ia_relatorios', 'painel_institucional', 'reservas_emprestimos', 'inventario', 'ocorrencias'];
     for (const dir of staticDirs) {
-        if (url.startsWith('/' + dir + '/') || url === '/' + dir) {
-            let file = url === '/' + dir ? '/' + dir + '/code.html' : url;
-            const filePath = path.join(__dirname, 'front-end', dir, path.basename(file));
+        const match = url.startsWith(dir + '/') || url === dir || url === '/' + dir + '/code.html' || url === dir + '/code.html' || url === '/' + dir;
+        if (match) {
+            let file = url;
+            if (url === dir || url === '/' + dir) {
+                file = dir + '/code.html';
+            } else if (url === '/' + dir + '/code.html') {
+                file = dir + '/code.html';
+            }
+            const filePath = path.join(__dirname, '..', 'front-end', file);
             if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
                 return serveStatic(req, res, filePath);
             }

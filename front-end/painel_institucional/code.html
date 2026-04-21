@@ -488,9 +488,15 @@ function limparFiltro() {
 }
 
 // Inicializar ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-    carregarDados();
+document.addEventListener('DOMContentLoaded', async () => {
+    await carregarDados();
     aplicarFiltroDatas();
+    
+    // Auto-refresh a cada 5 segundos
+    setInterval(async () => {
+        await carregarDados();
+        aplicarFiltroDatas();
+    }, 5000);
 });
 
 function aplicarFiltroDatas() {
