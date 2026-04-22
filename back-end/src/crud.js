@@ -4,7 +4,7 @@ const path = require('path');
 
 console.log('SIFU Backend - Serverless Offline');
 
-const DATA_FILE = path.join(__dirname, '..', 'data', 'database.json');
+const DATA_FILE = path.join(__dirname, '..', '..', 'back-end', 'data', 'database.json');
 
 function loadDB() {
   try {
@@ -127,7 +127,7 @@ exports.inventarioHandler = async (event) => {
 exports.staticHandler = async () => createResponse(200, { mensagem: 'SIFU API' });
 exports.indexHandler = async () => createResponse(200, { mensagem: 'SIFU Biblioteca UFERSA - API Serverless Offline' });
 
-const FRONTEND_PATH = path.join(__dirname, '..', 'front-end');
+const FRONTEND_PATH = path.join(__dirname, '..', '..', 'front-end');
 exports.frontEndHandler = async (event) => {
   let reqPath = event.rawPath || event.path || '/';
   console.log('frontEndHandler chamado, path:', reqPath);
