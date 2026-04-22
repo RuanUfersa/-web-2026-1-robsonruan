@@ -42,13 +42,11 @@ functions:
           method: get
 
   pagIndex:
-    handler: src/crud.indexHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /
           method: get
-    environment:
-      SALAS_TABLE: UFERSA_Salas
 
   atualizarSala:
     handler: src/crud.salasHandler
@@ -157,45 +155,59 @@ functions:
           method: delete
 
   gestaoSalas:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /gestao_salas/{proxy+}
           method: get
 
   reservasEmprestimos:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /reservas_emprestimos/{proxy+}
           method: get
 
   iaRelatorios:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /ia_relatorios/{proxy+}
           method: get
 
   painelInstitucional:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /painel_institucional/{proxy+}
           method: get
 
   inventario:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /inventario/{proxy+}
           method: get
 
   ocorrencias:
-    handler: src/crud.staticHandler
+    handler: src/crud.frontEndHandler
     events:
       - httpApi:
           path: /ocorrencias/{proxy+}
+          method: get
+
+  frontEnd:
+    handler: src/crud.frontEndHandler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: get
+
+  staticJs:
+    handler: src/crud.frontEndHandler
+    events:
+      - httpApi:
+          path: /js/{file+}
           method: get
 
   staticAssets:
@@ -220,3 +232,7 @@ package:
 
 plugins:
   - serverless-offline
+
+custom:
+  serverlessOffline:
+    httpPort: 3003

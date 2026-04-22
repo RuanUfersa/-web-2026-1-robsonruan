@@ -1,19 +1,40 @@
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
 
 console.log('SIFU Backend - Serverless Offline');
 
-let dbMemoria = {
-  UFERSA_Salas: [],
-  UFERSA_Reservas: [],
-  UFERSA_Ocorrencias: [],
-  UFERSA_Inventario: []
-};
+const DATA_FILE = path.join(__dirname, '..', 'data', 'database.json');
 
-const getAll = async (t) => dbMemoria[t] || [];
-const getById = async (t, id) => (dbMemoria[t] || []).find(i => i.id === id);
-const create = async (t, item) => { if (!dbMemoria[t]) dbMemoria[t] = []; dbMemoria[t].push(item); return item; };
-const update = async (t, id, data) => { const items = dbMemoria[t] || []; const idx = items.findIndex(i => i.id === id); if (idx === -1) return null; items[idx] = { ...items[idx], ...data, data_atualizacao: new Date().toISOString() }; return items[idx]; };
-const remove = async (t, id) => { const items = dbMemoria[t] || []; const idx = items.findIndex(i => i.id === id); if (idx !== -1) items.splice(idx, 1); return { mensagem: 'Excluído' }; };
+function loadDB() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.log('Erro ao carregar banco:', e.message);
+  }
+  return { UFERSA_Salas: [], UFERSA_Reservas: [], UFERSA_Ocorrencias: [], UFERSA_Inventario: [] };
+}
+
+function saveDB(data) {
+  try {
+    const dir = path.dirname(DATA_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.log('Erro ao salvar banco:', e.message);
+  }
+}
+
+let db = loadDB();
+console.log('Banco carregado:', Object.keys(db));
+
+const getAll = async (t) => db[t] || [];
+const getById = async (t, id) => (db[t] || []).find(i => i.id === id);
+const create = async (t, item) => { if (!db[t]) db[t] = []; db[t].push(item); saveDB(db); return item; };
+const update = async (t, id, data) => { const items = db[t] || []; const idx = items.findIndex(i => i.id === id); if (idx === -1) return null; items[idx] = { ...items[idx], ...data, data_atualizacao: new Date().toISOString() }; saveDB(db); return items[idx]; };
+const remove = async (t, id) => { const items = db[t] || []; const idx = items.findIndex(i => i.id === id); if (idx !== -1) { items.splice(idx, 1); saveDB(db); } return { mensagem: 'Excluído' }; };
 
 function createResponse(statusCode, body) {
   return { statusCode, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body), isBase64Encoded: false };
@@ -105,3 +126,56 @@ exports.inventarioHandler = async (event) => {
 
 exports.staticHandler = async () => createResponse(200, { mensagem: 'SIFU API' });
 exports.indexHandler = async () => createResponse(200, { mensagem: 'SIFU Biblioteca UFERSA - API Serverless Offline' });
+
+const FRONTEND_PATH = path.join(__dirname, '..', 'front-end');
+exports.frontEndHandler = async (event) => {
+  let reqPath = event.rawPath || event.path || '/';
+  
+  // Se for raiz, redirecionar para painel
+  if (reqPath === '/' || reqPath === '') {
+    reqPath = '/painel_institucional/code.html';
+  }
+  
+  // Adicionar code.html se for diretório
+  if (!reqPath.includes('.')) {
+    reqPath = reqPath + '/code.html';
+  }
+  
+  // Remover slash inicial
+  let filePath = reqPath.startsWith('/') ? reqPath.substring(1) : reqPath;
+  
+  // Limitar caminhos para evitar segurança
+  if (filePath.includes('..')) {
+    return createResponse(403, { erro: 'Acesso negado' });
+  }
+  
+  const fullPath = path.join(FRONTEND_PATH, filePath);
+  
+  try {
+    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+      const ext = path.extname(fullPath).toLowerCase();
+      const contentType = {
+        '.html': 'text/html',
+        '.js': 'application/javascript',
+        '.css': 'text/css',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml'
+      }[ext] || 'text/plain';
+      
+      const content = fs.readFileSync(fullPath);
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': contentType, 'Access-Control-Allow-Origin': '*' },
+        body: content.toString('base64'),
+        isBase64Encoded: true
+      };
+    }
+  } catch (e) {
+    console.log('Erro ao servir arquivo:', e.message);
+  }
+  
+  return createResponse(404, { erro: 'Página não encontrada' });
+};
