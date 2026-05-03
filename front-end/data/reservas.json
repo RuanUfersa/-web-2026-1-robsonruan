@@ -1,0 +1,46 @@
+[
+  {
+    "sala_id": 1,
+    "usuario_nome": "Naur",
+    "usuario_matricula": "001",
+    "usuario_cargo": "Estudante",
+    "data_reserva": "2026-04-19",
+    "hora_inicio": "12:27",
+    "hora_fim": "12:28",
+    "status": "concluido",
+    "id": 1
+  },
+  {
+    "sala_id": 2,
+    "usuario_nome": "Ceci",
+    "usuario_matricula": "004",
+    "usuario_cargo": "Estudante",
+    "data_reserva": "2026-04-19",
+    "hora_inicio": "13:36",
+    "hora_fim": "13:38",
+    "status": "ativo",
+    "id": 2
+  },
+  {
+    "sala_id": 2,
+    "usuario_nome": "Claudenio",
+    "usuario_matricula": "010102",
+    "usuario_cargo": "Estudante",
+    "data_reserva": "2026-04-22",
+    "hora_inicio": "12:15",
+    "hora_fim": "12:16",
+    "status": "ativo",
+    "id": 3
+  },
+  {
+    "sala_id": 2,
+    "usuario_nome": "Danião",
+    "usuario_matricula": "01020304",
+    "usuario_cargo": "Estudante",
+    "data_reserva": "2026-04-23",
+    "hora_inicio": "12:37",
+    "hora_fim": "13:38",
+    "status": "ativo",
+    "id": 4
+  }
+]

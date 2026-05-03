@@ -1,0 +1,26 @@
+[
+  {
+    "nome": "Sala de teste api",
+    "capacidade": 1,
+    "tipo": "foco",
+    "recursos": "Cadeira de Plástico, lousa digital",
+    "status": "manutencao",
+    "id": 1
+  },
+  {
+    "nome": "Sala do Lado do Banheiro",
+    "capacidade": 4,
+    "tipo": "criativo",
+    "recursos": "Cadeira para pessoas obesas",
+    "status": "disponivel",
+    "id": 2
+  },
+  {
+    "nome": "Sala de Estudos ",
+    "capacidade": 3,
+    "tipo": "colaborativo",
+    "recursos": "",
+    "status": "disponivel",
+    "id": 3
+  }
+]

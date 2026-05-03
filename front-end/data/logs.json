@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "modulo": "Materiais",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Material \"Cadeira de Plástico\" (Cadeira01) criado",
+    "data_hora": "2026-04-19T15:26:18.948Z"
+  },
+  {
+    "id": 2,
+    "modulo": "Salas",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala \"Sala de teste api\" criada (Capacidade: 1)",
+    "data_hora": "2026-04-19T15:26:51.048Z"
+  },
+  {
+    "id": 3,
+    "modulo": "Reservas",
+    "acao": "CRIAR",
+    "usuario_nome": "Naur",
+    "usuario_matricula": "001",
+    "detalhes": "Reserva para Sala ID null em 2026-04-19",
+    "data_hora": "2026-04-19T15:28:00.879Z"
+  },
+  {
+    "id": 4,
+    "modulo": "Salas",
+    "acao": "ATUALIZAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala ID 1 atualizada",
+    "data_hora": "2026-04-19T15:29:09.602Z"
+  },
+  {
+    "id": 5,
+    "modulo": "Ocorrências",
+    "acao": "CRIAR",
+    "usuario_nome": "Matheu",
+    "usuario_matricula": "0002",
+    "detalhes": "Ocorrência registrada: Jogou agua na tomada",
+    "data_hora": "2026-04-19T15:30:24.635Z"
+  },
+  {
+    "id": 6,
+    "modulo": "Materiais",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Material \"lousa digital\" (003) criado",
+    "data_hora": "2026-04-19T15:32:19.590Z"
+  },
+  {
+    "id": 7,
+    "modulo": "Salas",
+    "acao": "ATUALIZAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala ID 1 atualizada",
+    "data_hora": "2026-04-19T15:33:01.545Z"
+  },
+  {
+    "id": 8,
+    "modulo": "Salas",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala \"Sala do Lado do Banheiro\" criada (Capacidade: 4)",
+    "data_hora": "2026-04-19T15:34:32.388Z"
+  },
+  {
+    "id": 9,
+    "modulo": "Reservas",
+    "acao": "CRIAR",
+    "usuario_nome": "Ceci",
+    "usuario_matricula": "004",
+    "detalhes": "Reserva para Sala ID 2 em 2026-04-19",
+    "data_hora": "2026-04-19T15:35:55.021Z"
+  },
+  {
+    "id": 10,
+    "modulo": "Reservas",
+    "acao": "CRIAR",
+    "usuario_nome": "Claudenio",
+    "usuario_matricula": "010102",
+    "detalhes": "Reserva para Sala ID 2 em 2026-04-22",
+    "data_hora": "2026-04-22T14:16:12.854Z"
+  },
+  {
+    "id": 11,
+    "modulo": "Materiais",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Material \"Cadeira para pessoas obesas\" (01010203) criado",
+    "data_hora": "2026-04-22T15:36:34.093Z"
+  },
+  {
+    "id": 12,
+    "modulo": "Salas",
+    "acao": "ATUALIZAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala ID 2 atualizada",
+    "data_hora": "2026-04-22T15:36:49.660Z"
+  },
+  {
+    "id": 13,
+    "modulo": "Reservas",
+    "acao": "CRIAR",
+    "usuario_nome": "Danião",
+    "usuario_matricula": "01020304",
+    "detalhes": "Reserva para Sala ID 2 em 2026-04-23",
+    "data_hora": "2026-04-22T15:37:48.467Z"
+  },
+  {
+    "id": 14,
+    "modulo": "Salas",
+    "acao": "CRIAR",
+    "usuario_nome": "Admin",
+    "usuario_matricula": "-admin",
+    "detalhes": "Sala \"Sala de Estudos \" criada (Capacidade: 3)",
+    "data_hora": "2026-04-22T19:00:05.324Z"
+  }
+]

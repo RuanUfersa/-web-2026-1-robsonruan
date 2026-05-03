@@ -1,0 +1,14 @@
+[
+  {
+    "aluno_nome": "Matheu",
+    "aluno_matricula": "0002",
+    "sala_id": "1",
+    "descricao": "Jogou agua na tomada",
+    "funcionario_responsavel": "Adriana",
+    "foto_url": "",
+    "status": "em_analise",
+    "id": 1,
+    "data_criacao": "2026-04-19T15:30:24.633Z",
+    "data_atualizacao": "2026-04-19T15:30:24.633Z"
+  }
+]

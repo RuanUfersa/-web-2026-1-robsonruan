@@ -1,0 +1,29 @@
+[
+  {
+    "codigo": "Cadeira01",
+    "nome": "Cadeira de Plástico",
+    "sala_id": null,
+    "tipo": "Mobília",
+    "descricao": "",
+    "status": "em_uso",
+    "id": 1
+  },
+  {
+    "codigo": "003",
+    "nome": "lousa digital",
+    "sala_id": 1,
+    "tipo": "Eletrônico",
+    "descricao": "Lousa digital para estudos em arq",
+    "status": "em_uso",
+    "id": 2
+  },
+  {
+    "codigo": "01010203",
+    "nome": "Cadeira para pessoas obesas",
+    "sala_id": null,
+    "tipo": "Mobília",
+    "descricao": "Cadeira para obesos",
+    "status": "em_uso",
+    "id": 3
+  }
+]

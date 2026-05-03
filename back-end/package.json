@@ -1,0 +1,29 @@
+{
+  "name": "sifu-biblioteca-backend",
+  "version": "1.0.0",
+  "description": "Sistema Integrado Funcional e Unificado - Biblioteca UFERSA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "biblioteca",
+    "ufersa",
+    "sifu"
+  ],
+  "author": "Robson Ruan",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1032.0",
+    "@aws-sdk/lib-dynamodb": "^3.1032.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-offline": "^14.5.0"
+  }
+}

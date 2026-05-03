@@ -1,0 +1,105 @@
+{
+  "UFERSA_Salas": [
+    {
+      "id": "a1b09175-d766-46ce-8228-c8a7f83ff544",
+      "nome": "Laboratório A",
+      "capacidade": 10,
+      "tipo": "colaborativo",
+      "recursos": [
+        "ar condicionado",
+        "quadro branco",
+        "projetor"
+      ],
+      "status": "disponivel",
+      "data_criacao": "2026-04-18T22:52:37.338Z"
+    },
+    {
+      "id": "13492ad3-ed25-4618-a61d-3b0cc75480c8",
+      "nome": "Sala de Foco 204",
+      "capacidade": 2,
+      "tipo": "foco",
+      "recursos": [],
+      "status": "disponivel",
+      "data_criacao": "2026-04-18T22:52:42.113Z"
+    },
+    {
+      "id": "f6b4258e-5409-4240-a388-ffffe4557e7f",
+      "nome": "Laboratório A",
+      "capacidade": 10,
+      "tipo": "colaborativo",
+      "recursos": [
+        "ar condicionado",
+        "quadro branco",
+        "projetor"
+      ],
+      "status": "disponivel",
+      "data_criacao": "2026-04-18T22:57:19.445Z"
+    },
+    {
+      "id": "369e9af9-b290-431b-999b-86977ad024d5",
+      "nome": "Sala de Foco 204",
+      "capacidade": 2,
+      "tipo": "foco",
+      "recursos": [],
+      "status": "disponivel",
+      "data_criacao": "2026-04-18T22:57:21.348Z"
+    }
+  ],
+  "UFERSA_Reservas": [
+    {
+      "id": "b3ed5796-81c8-47fc-b387-dc265e2f0515",
+      "nome": "João Silva",
+      "matricula": "2023001",
+      "cargo": "Estudante",
+      "sala_id": null,
+      "data": "2026-04-20",
+      "hora_inicio": "09:00",
+      "hora_fim": "11:00",
+      "status": "ativo",
+      "data_criacao": "2026-04-18T22:52:49.760Z"
+    },
+    {
+      "id": "98b363c9-0966-4dea-bd66-080bb6858720",
+      "nome": "João Silva",
+      "matricula": "2023001",
+      "cargo": "Estudante",
+      "sala_id": null,
+      "data": "2026-04-20",
+      "hora_inicio": "09:00",
+      "hora_fim": "11:00",
+      "status": "ativo",
+      "data_criacao": "2026-04-18T22:57:32.105Z"
+    }
+  ],
+  "UFERSA_Ocorrencias": [
+    {
+      "id": "bc7d4e45-d645-42b0-8bbc-f325095b4709",
+      "aluno_nome": "Maria Santos",
+      "aluno_matricula": "2022001",
+      "descricao": "Cadeira quebrada",
+      "sala_id": "sala-1",
+      "status": "em_analise",
+      "data_criacao": "2026-04-18T22:52:56.870Z"
+    },
+    {
+      "id": "24974679-a63e-4478-ae08-5c0d941efe7b",
+      "aluno_nome": "Maria Santos",
+      "aluno_matricula": "2022001",
+      "descricao": "Cadeira quebrada",
+      "sala_id": "sala-1",
+      "status": "em_analise",
+      "data_criacao": "2026-04-18T22:57:41.101Z"
+    }
+  ],
+  "UFERSA_Inventario": [
+    {
+      "id": "8e830aae-ea95-4aa0-a062-cfbb88ed40ac",
+      "codigo": "PROJ-001",
+      "nome": "Projetor Samsung",
+      "tipo": "Eletrônico",
+      "sala_id": "sala-1",
+      "status": "disponivel",
+      "data_criacao": "2026-04-18T22:57:52.404Z"
+    }
+  ]
+}

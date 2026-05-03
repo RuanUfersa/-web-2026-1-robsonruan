@@ -1,60 +1,44 @@
-# SIFU Biblioteca UFERSA - Backend Beta
+# SIFU - Sistema Integrado Funcional e Unificado
 
-Sistema Integrado Funcional e Unificado para gestão de salas e reservas da Biblioteca UFERSA.
+Sistema para gestão da Biblioteca UFERSA com front-end e back-end separados.
 
-## 🚀 Instalação
+## Estrutura do Repositório
 
-### Pré-requisitos
-- Node.js (v18 ou superior)
-- npm
+```
+projeto/
+├── front-end/    # Interface do usuário (HTML, CSS, JS)
+└── back-end/     # API e lógica do servidor (Node.js)
+```
 
-### Passos para executar
+## Como Rodar
 
-1. **Instalar dependências:**
+### Branch main
+
 ```bash
+cd back-end
 npm install
+npm run dev
 ```
+Servidor disponível em http://localhost:3000
 
-2. **Iniciar o servidor:**
-```bash
-npm start
-```
-
-3. **Acessar a aplicação:**
-Abra o navegador em: `http://localhost:3000`
-
-## 📁 Estrutura do Projeto
-
-```
-stitch_web_avalia_o_5_css_sifu/
-├── server.js              # Servidor principal
-├── database/
-│   └── bd_biblioteca.db  # Banco de dados SQLite
-├── routes/             # Rotas da API
-├── gestao_salas/       # Frontend: Gestão de Salas
-├── ia_relatorios/     # Frontend: IA e Relatórios
-├── painel_institucional/  # Frontend: Painel
-└── reservas_emprestimos/   # Frontend: Reservas
-```
-
-## 📋 Fases de Implementação
-
-- [x] Fase 1: Setup do Ambiente
-- [ ] Fase 2: Banco de Dados
-- [ ] Fase 3: API Backend
-- [ ] Fase 4: Integração Frontend
-- [ ] Fase 5: Funcionalidades Extras
-
-## 🔧 Comandos Úteis
+### Branch Rodar_Serverless_local
 
 ```bash
-# Reiniciar servidor após alterações
-npm start
+cd back-end
+npm install
 
-# Ver logs do servidor
-# Os logs aparecem no terminal onde o servidor está rodando
+# Opção 1: Apenas servidor Node.js
+npm run dev
+
+# Opção 2: Serverless Offline (sem DynamoDB local)
+npm run offline
+
+# Opção 3: Serverless Offline com DynamoDB Local
+npm run dev:offline
 ```
 
-## 📝 Licença
+## Tecnologias
 
-MIT - Robson Ruan
+- **Front-end:** HTML5, Tailwind CSS, JavaScript Vanilla
+- **Back-end:** Node.js, Express, SQLite/DynamoDB
+- **Infraestrutura:** AWS Lambda, Serverless Framework
