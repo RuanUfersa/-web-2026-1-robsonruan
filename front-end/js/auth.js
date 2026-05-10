@@ -6,7 +6,7 @@ const config = {
     userPoolClientId: '6kgkftt1cbk54jveeljh1h1tcs',
     loginWith: {
       oauth: {
-        domain: 'gerenciador-salas.auth.us-east-1.amazoncognito.com',
+        domain: 'auth-salas.auth.us-east-1.amazoncognito.com',
         scopes: ['openid', 'email', 'profile'],
         redirectSignIn: 'https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/',
         redirectSignOut: 'https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/',
