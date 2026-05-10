@@ -5,11 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIFU Biblioteca UFERSA</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-[#082853] to-[#14C286] min-h-screen">
-    <div class="container mx-auto px-4 py-12 max-w-2xl">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
-            <h1 class="text-4xl font-bold text-[#082853] mb-4">📚 SIFU Biblioteca UFERSA</h1>
+    <div id="auth-section" class="hidden container mx-auto px-4 py-12 max-w-2xl">
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-[#082853]">📚 SIFU Biblioteca UFERSA</h1>
+                <div class="flex items-center gap-4">
+                    <span id="user-email" class="text-sm text-gray-600"></span>
+                    <button onclick="handleSignOut()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm">
+                        Sair
+                    </button>
+                </div>
+            </div>
+            
             <p class="text-gray-600 mb-8">Sistema Integrado Funcional e Unificado</p>
             
             <div class="grid gap-4">
@@ -34,9 +46,126 @@
             </div>
             
             <div class="mt-8 p-4 bg-[#d7e2ff] rounded-xl text-[#082853] text-sm">
-                ✅ Sistema online - Front-end estático v2
+                ✅ Sistema online - Front-end estático v3 (Autenticado)
             </div>
         </div>
     </div>
+
+    <div id="loading-section" class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <div class="animate-spin text-4xl mb-4">⏳</div>
+            <p class="text-gray-600">Verificando autenticação...</p>
+        </div>
+    </div>
+
+    <div id="login-section" class="hidden flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+            <h1 class="text-3xl font-bold text-[#082853] mb-4">📚 SIFU Biblioteca UFERSA</h1>
+            <p class="text-gray-600 mb-8">Faça login para acessar o sistema</p>
+            
+            <button onclick="handleGoogleLogin()" class="w-full flex items-center justify-center gap-3 p-4 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold">
+                <svg class="w-6 h-6" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Entrar com Google
+            </button>
+            
+            <div class="mt-6 text-sm text-gray-500">
+                Ao fazer login, você concorda com os termos de uso do sistema.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const config = {
+            domain: 'gerenciador-salas.auth.us-east-1.amazoncognito.com',
+            clientId: '6kgkftt1cbk54jveeljh1h1tcs',
+            redirectUri: encodeURIComponent('https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/'),
+            scopes: encodeURIComponent('openid email profile')
+        };
+
+        function handleGoogleLogin() {
+            const url = `https://${config.domain}/oauth2/authorize?response_type=code&client_id=${config.clientId}&redirect_uri=${config.redirectUri}&scope=${config.scopes}&identity_provider=Google`;
+            window.location.href = url;
+        }
+
+        function handleSignOut() {
+            const url = `https://${config.domain}/logout?client_id=${config.clientId}&logout_uri=${encodeURIComponent('https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/')}`;
+            window.location.href = url;
+        }
+
+        async function exchangeCodeForTokens(code) {
+            const tokenEndpoint = `https://${config.domain}/oauth2/token`;
+            const params = new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: config.clientId,
+                code: code,
+                redirect_uri: 'https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/'
+            });
+
+            try {
+                const response = await fetch(tokenEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                
+                if (response.ok) {
+                    const tokens = await response.json();
+                    sessionStorage.setItem('access_token', tokens.access_token);
+                    sessionStorage.setItem('id_token', tokens.id_token);
+                    sessionStorage.setItem('refresh_token', tokens.refresh_token);
+                    sessionStorage.removeItem('auth_code');
+                    return tokens;
+                }
+            } catch (error) {
+                console.error('Erro ao trocar código:', error);
+            }
+            return null;
+        }
+
+        function parseJWT(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function checkAuth() {
+            const code = new URLSearchParams(window.location.search).get('code');
+            
+            if (code && !sessionStorage.getItem('access_token')) {
+                await exchangeCodeForTokens(code);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            const idToken = sessionStorage.getItem('id_token');
+            
+            if (idToken) {
+                const payload = parseJWT(idToken);
+                if (payload && payload.exp * 1000 > Date.now()) {
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('auth-section').classList.remove('hidden');
+                    document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || 'Usuário';
+                    return;
+                }
+            }
+
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('id_token');
+            sessionStorage.removeItem('refresh_token');
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+
+        checkAuth();
+    </script>
 </body>
 </html>
