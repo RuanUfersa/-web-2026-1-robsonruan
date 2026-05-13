@@ -10,6 +10,31 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#082853] to-[#14C286] min-h-screen">
+    <div id="chat-widget" class="hidden fixed bottom-4 right-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-80 overflow-hidden">
+            <div class="bg-[#082853] text-white p-4 flex justify-between items-center">
+                <span class="font-semibold">🤖 Assistente Virtual</span>
+                <button onclick="toggleChat()" class="text-white hover:text-gray-200">✕</button>
+            </div>
+            <div id="chat-messages" class="h-64 p-4 overflow-y-auto bg-gray-50">
+                <div class="text-sm text-gray-600 mb-2">🤖 Olá! Como posso ajudá-lo hoje?</div>
+            </div>
+            <div class="p-4 border-t">
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="Digite sua mensagem..." 
+                        class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-[#082853]">
+                    <button onclick="sendMessage()" class="px-4 py-2 bg-[#082853] text-white rounded-lg text-sm hover:bg-[#1a3a6e]">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button id="chat-toggle-btn" onclick="toggleChat()" class="hidden fixed bottom-4 right-4 z-40 bg-[#14C286] text-white p-4 rounded-full shadow-lg hover:bg-[#10a36d]">
+        💬
+    </button>
+
     <div id="auth-section" class="hidden container mx-auto px-4 py-12 max-w-2xl">
         <div class="bg-white rounded-2xl shadow-2xl p-8">
             <div class="flex justify-between items-center mb-6">
@@ -154,6 +179,7 @@
                     document.getElementById('loading-section').classList.add('hidden');
                     document.getElementById('auth-section').classList.remove('hidden');
                     document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || 'Usuário';
+                    showChatWidget();
                     return;
                 }
             }
@@ -166,6 +192,72 @@
         }
 
         checkAuth();
+
+        const CHAT_API_URL = 'https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/chatbot';
+
+        function toggleChat() {
+            const widget = document.getElementById('chat-widget');
+            const btn = document.getElementById('chat-toggle-btn');
+            if (widget.classList.contains('hidden')) {
+                widget.classList.remove('hidden');
+                btn.classList.add('hidden');
+            } else {
+                widget.classList.add('hidden');
+                btn.classList.remove('hidden');
+            }
+        }
+
+        function addMessage(text, isUser = false) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `text-sm mb-2 ${isUser ? 'text-right' : 'text-left'}`;
+            div.innerHTML = isUser 
+                ? `<span class="inline-block bg-[#082853] text-white px-3 py-1 rounded-lg">${text}</span>`
+                : `<span class="inline-block bg-gray-200 text-gray-800 px-3 py-1 rounded-lg">🤖 ${text}</span>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            input.value = '';
+
+            const idToken = sessionStorage.getItem('id_token');
+            
+            try {
+                const response = await fetch(CHAT_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken ? `Bearer ${idToken}` : ''
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addMessage(data.message || data.response || 'Resposta recebida!');
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    addMessage('Erro: ' + (errorData.message || 'Acesso negado. Faça login novamente.'));
+                }
+            } catch (error) {
+                addMessage('Erro de conexão com a API.');
+            }
+        }
+
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function showChatWidget() {
+            document.getElementById('chat-widget').classList.remove('hidden');
+            document.getElementById('chat-toggle-btn').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

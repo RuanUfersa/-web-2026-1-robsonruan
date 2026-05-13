@@ -196,6 +196,20 @@ functions:
           path: /data/{file}
           method: get
 
+  chatbot:
+    handler: src/chatbot.chatbotHandler
+    events:
+      - httpApi:
+          path: /chatbot
+          method: post
+          authorizer:
+            name: cognitoAuthorizer
+            type: cognito_user_pools
+            cognitoUserPoolArn: arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/us-east-1_rbEMILSBU
+            scopes:
+              - openid
+              - email
+
 package:
   individually: false
   patterns:
@@ -204,3 +218,24 @@ package:
 
 plugins:
   - serverless-offline
+  - serverless-domain-manager
+
+custom:
+  domain:
+    domainName: api.robsonruan.sifu1.web.ufersa.dev.br
+    certificateArn: arn:aws:acm:us-east-1:${aws:accountId}:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    basePath: ''
+    stage: dev
+
+resources:
+  Resources:
+    cognitoAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: cognito-chatbot-authorizer
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        IdentitySource: method.request.header.Authorization
+        Type: cognito_user_pools
+        ProviderARNs:
+          - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/us-east-1_rbEMILSBU
