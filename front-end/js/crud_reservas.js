@@ -79,10 +79,10 @@ async function abrirModalNovaReserva() {
 async function abrirModalEditarReserva(reserva) {
     document.getElementById('reservaModalTitle').textContent = 'Editar Reserva';
     document.getElementById('reservaId').value = reserva.id;
-    document.getElementById('reservaNome').value = reserva.usuario_nome || '';
-    document.getElementById('reservaMatricula').value = reserva.usuario_matricula || '';
-    document.getElementById('reservaCargo').value = reserva.usuario_cargo || '';
-    document.getElementById('reservaData').value = reserva.data_reserva || '';
+    document.getElementById('reservaNome').value = reserva.nome || '';
+    document.getElementById('reservaMatricula').value = reserva.matricula || '';
+    document.getElementById('reservaCargo').value = reserva.cargo || '';
+    document.getElementById('reservaData').value = reserva.data || '';
     document.getElementById('reservaInicio').value = reserva.hora_inicio || '';
     document.getElementById('reservaFim').value = reserva.hora_fim || '';
     document.getElementById('reservaStatus').value = reserva.status || 'ativo';
@@ -114,10 +114,10 @@ async function salvarReserva(event) {
     
     const reserva = {
         sala_id: document.getElementById('reservaSalaId').value,
-        usuario_nome: document.getElementById('reservaNome').value,
-        usuario_matricula: document.getElementById('reservaMatricula').value,
-        usuario_cargo: document.getElementById('reservaCargo').value,
-        data_reserva: document.getElementById('reservaData').value,
+        nome: document.getElementById('reservaNome').value,
+        matricula: document.getElementById('reservaMatricula').value,
+        cargo: document.getElementById('reservaCargo').value,
+        data: document.getElementById('reservaData').value,
         hora_inicio: document.getElementById('reservaInicio').value,
         hora_fim: document.getElementById('reservaFim').value,
         status: document.getElementById('reservaStatus').value
@@ -265,26 +265,26 @@ function renderizarTabelaReservas(reservas) {
         tr.innerHTML = `
 <td class="px-6 py-5">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs">${(r.usuario_nome || 'AN')[0]}</div>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs">${(r.nome || 'AN')[0]}</div>
 <div>
-<p class="font-manrope font-bold text-primary text-sm">${r.usuario_nome}</p>
-<p class="text-xs text-slate-500">ID: ${r.usuario_matricula}</p>
+<p class="font-manrope font-bold text-primary text-sm">${r.nome}</p>
+<p class="text-xs text-slate-500">ID: ${r.matricula}</p>
 </div>
 </div>
 </td>
 <td class="px-6 py-5">
-<span class="bg-surface-container-high text-primary px-3 py-1 rounded-full text-[11px] font-bold uppercase">${r.usuario_cargo}</span>
+<span class="bg-surface-container-high text-primary px-3 py-1 rounded-full text-[11px] font-bold uppercase">${r.cargo}</span>
 </td>
 <td class="px-6 py-5">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-[18px] text-slate-400">meeting_room</span>
-<span class="text-sm font-semibold text-primary">${r.sala_nome}</span>
+<span class="text-sm font-semibold text-primary">${r.sala_nome || 'Sala ID: ' + r.sala_id}</span>
 </div>
 </td>
 <td class="px-6 py-5">
 <div class="text-xs">
 <p class="font-bold text-primary">${r.hora_inicio} - ${r.hora_fim}</p>
-<p class="text-slate-400">${r.data_reserva}</p>
+<p class="text-slate-400">${r.data}</p>
 </div>
 </td>
 <td class="px-6 py-5">
