@@ -39,8 +39,13 @@
         <div class="bg-white rounded-2xl shadow-2xl p-8">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-[#082853]">📚 SIFU Biblioteca UFERSA</h1>
-                <div class="flex items-center gap-4">
-                    <span id="user-email" class="text-sm text-gray-600"></span>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <img id="user-picture" src="" alt="foto" class="w-8 h-8 rounded-full object-cover hidden">
+                        <div id="user-avatar-fallback" class="w-8 h-8 rounded-full bg-[#082853] text-white flex items-center justify-center text-sm font-bold hidden"></div>
+                        <span id="user-name" class="text-sm font-medium text-gray-800 hidden"></span>
+                        <span id="user-email" class="text-sm text-gray-500"></span>
+                    </div>
                     <button onclick="handleSignOut()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm">
                         Sair
                     </button>
@@ -178,7 +183,20 @@
                 if (payload && payload.exp * 1000 > Date.now()) {
                     document.getElementById('loading-section').classList.add('hidden');
                     document.getElementById('auth-section').classList.remove('hidden');
-                    document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || 'Usuário';
+                    document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || '';
+                    const nome = payload.name || payload.given_name || payload.email || 'Usuário';
+                    document.getElementById('user-name').textContent = nome;
+                    document.getElementById('user-name').classList.remove('hidden');
+                    const picture = payload.picture;
+                    if (picture) {
+                        const img = document.getElementById('user-picture');
+                        img.src = picture;
+                        img.classList.remove('hidden');
+                    } else {
+                        const fallback = document.getElementById('user-avatar-fallback');
+                        fallback.textContent = nome.charAt(0).toUpperCase();
+                        fallback.classList.remove('hidden');
+                    }
                     showChatWidget();
                     return;
                 }
