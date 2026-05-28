@@ -68,7 +68,7 @@ async function abrirModalEditarSala(sala) {
     
     // Selecionar os recursos existentes
     if (sala.recursos) {
-        const recursosArray = sala.recursos.split(',').map(r => r.trim());
+        const recursosArray = Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim());
         const select = document.getElementById('salaRecursos');
         Array.from(select.options).forEach(option => {
             option.selected = recursosArray.includes(option.value);
@@ -130,7 +130,7 @@ async function salvarSala(event) {
             const salasAntigas = await listarSalas();
             const salaAntiga = salasAntigas.find(s => s.id === idNum);
             if (salaAntiga && salaAntiga.recursos) {
-                await atualizarStatusMateriais(salaAntiga.recursos.split(',').map(r => r.trim()), 'disponivel');
+                await atualizarStatusMateriais(Array.isArray(salaAntiga.recursos) ? salaAntiga.recursos : salaAntiga.recursos.split(',').map(r => r.trim()), 'disponivel');
             }
             
             response = await fetch(BASE_URL + '/api/salas/' + idNum, {
@@ -157,7 +157,7 @@ async function salvarSala(event) {
         
         mostrarToast(idNum ? 'Sala atualizada!' : 'Sala criada!');
         fecharModal();
-        carregarSalas();
+        await carregarSalas();
     } catch (error) {
         console.error('Erro:', error);
         mostrarToast('Erro ao salvar sala: ' + error.message, 'error');
@@ -220,7 +220,7 @@ async function sincronizarMateriaisComSalas() {
         // Depois, marcar como em_uso os que est??o em salas
         for (const sala of salas) {
             if (sala.recursos) {
-                const recursosArray = sala.recursos.split(',').map(r => r.trim());
+                const recursosArray = Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim());
                 
                 for (const nomeMaterial of recursosArray) {
                     const nomeNormalizado = nomeMaterial.replace(/["\\]/g, '').trim();
@@ -258,7 +258,7 @@ async function excluirSala(id) {
         const salas = await listarSalas();
         const sala = salas.find(s => s.id === id);
         if (sala && sala.recursos) {
-            await atualizarStatusMateriais(sala.recursos.split(',').map(r => r.trim()), 'disponivel');
+            await atualizarStatusMateriais(Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim()), 'disponivel');
         }
         
         const response = await fetch(`${API_URL}/${id}`, {
@@ -327,7 +327,7 @@ function renderizarSalas(salas) {
     
     salas.forEach(sala => {
         const status = statusLabels[sala.status] || statusLabels['disponivel'];
-        const recursos = sala.recursos ? sala.recursos.split(',').map(r => r.trim()) : [];
+        const recursos = sala.recursos ? (Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim())) : [];
         const imagemUrl = imagensSalas[sala.tipo] || defaultImage;
         
         const card = document.createElement('div');

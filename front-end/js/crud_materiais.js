@@ -164,7 +164,7 @@ async function removerMaterialDasSalas(nomeMaterial) {
         
         for (const sala of salas) {
             if (sala.recursos && sala.recursos.includes(nomeMaterial)) {
-                const recursosArray = sala.recursos.split(',').map(r => r.trim()).filter(r => r !== nomeMaterial);
+                const recursosArray = (Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim())).filter(r => r !== nomeMaterial);
                 await fetch(BASE_URL + '/api/salas/' + sala.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -415,7 +415,7 @@ async function sincronizarMateriaisComSalas() {
             
             for (const sala of salas) {
                 if (sala.recursos) {
-                    const recursosArray = sala.recursos.split(',').map(r => r.replace(/["\\]/g, '').trim());
+                    const recursosArray = (Array.isArray(sala.recursos) ? sala.recursos.map(r => r.replace(/["\\]/g, '').trim()) : sala.recursos.split(',').map(r => r.replace(/["\\]/g, '').trim()));
                     const nomeNormalizado = material.nome.replace(/["\\]/g, '').trim();
                     
                     if (recursosArray.some(r => r === nomeNormalizado || r.includes(nomeNormalizado) || nomeNormalizado.includes(r))) {
