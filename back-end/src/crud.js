@@ -1,226 +1,204 @@
-const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-const path = require('path');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const crypto = require('crypto');
 
-const DB_FILE = path.join(__dirname, 'database.json');
+const client = new DynamoDBClient({ region: 'us-east-1' });
+const doc = DynamoDBDocumentClient.from(client);
 
-const loadDB = () => {
-  try {
-    if (fs.existsSync(DB_FILE)) {
-      return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-    }
-  } catch (e) {
-    console.log('Erro ao carregar DB:', e.message);
-  }
-  return {
-    UFERSA_Salas: [],
-    UFERSA_Reservas: [],
-    UFERSA_Ocorrencias: [],
-    UFERSA_Inventario: []
-  };
+const uuid = () => crypto.randomUUID();
+const ok = (data, status = 200) => ({
+  statusCode: status,
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS' },
+  body: JSON.stringify(data)
+});
+const err = (msg, status = 400) => ({
+  statusCode: status,
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  body: JSON.stringify({ erro: msg })
+});
+
+const getMethod = (event) => event.httpMethod || event.requestContext?.http?.method || 'GET';
+const getBody = (event) => { try { return JSON.parse(event.body || '{}'); } catch { return {}; } };
+const getId = (event) => event.pathParameters?.id || '';
+
+const scanTable = async (table) => {
+  const data = await doc.send(new ScanCommand({ TableName: table }));
+  return data.Items || [];
 };
-
-const saveDB = (data) => {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-  } catch (e) {
-    console.log('Erro ao salvar DB:', e.message);
-  }
-};
-
-const getTabela = (nome) => loadDB()[nome] || [];
-const setTabela = (nome, dados) => {
-  const db = loadDB();
-  db[nome] = dados;
-  saveDB(db);
-};
-
-const tabelaSalas = 'UFERSA_Salas';
-const tabelaReservas = 'UFERSA_Reservas';
-const tabelaOcorrencias = 'UFERSA_Ocorrencias';
-const tabelaInventario = 'UFERSA_Inventario';
 
 exports.salasHandler = async (event) => {
-  const method = event.httpMethod || event.requestContext?.http?.method;
-  const { id } = event.pathParameters || {};
-  const body = event.body ? JSON.parse(event.body) : {};
-  
+  const method = getMethod(event);
+  const body = getBody(event);
+  const id = getId(event);
+  const table = 'UFERSA_Salas';
+
   try {
+    if (method === 'OPTIONS') return ok({});
+
     if (method === 'POST') {
-      const { nome, capacidade, tipo, recursos, status } = body;
-      if (!nome || !capacidade || !tipo) {
-        return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ erro: 'Campos obrigatórios' }) };
-      }
-      const salle = {
-        id: uuidv4(), nome, capacidade: parseInt(capacidade), tipo,
-        recursos: typeof recursos === 'string' ? recursos.split(',').map(r => r.trim()) : (recursos || []),
-        status: status || 'disponivel', data_criacao: new Date().toISOString()
+      if (!body.nome || !body.capacidade || !body.tipo) return err('Campos obrigatorios: nome, capacidade, tipo');
+      const item = {
+        id: uuid(), nome: body.nome, capacidade: parseInt(body.capacidade), tipo: body.tipo,
+        recursos: Array.isArray(body.recursos) ? body.recursos : (body.recursos ? body.recursos.split(',').map(r => r.trim()) : []),
+        status: body.status || 'disponivel', data_criacao: new Date().toISOString()
       };
-      const salas = getTabela(tabelaSalas);
-      salas.push(salle);
-      setTabela(tabelaSalas, salas);
-      return { statusCode: 201, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(salle) };
+      await doc.send(new PutCommand({ TableName: table, Item: item }));
+      return ok(item, 201);
     }
-    
+
+    if (method === 'GET' && id) {
+      const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
+      if (!data.Item) return err('Nao encontrado', 404);
+      return ok(data.Item);
+    }
+
     if (method === 'GET') {
-      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(getTabela(tabelaSalas)) };
+      return ok(await scanTable(table));
     }
-    
-    if (method === 'PUT' || method === 'PATCH') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const salas = getTabela(tabelaSalas);
-      const idx = salas.findIndex(s => s.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      if (body.nome) salas[idx].nome = body.nome;
-      if (body.capacidade) salas[idx].capacidade = parseInt(body.capacidade);
-      if (body.tipo) salas[idx].tipo = body.tipo;
-      if (body.recursos) salas[idx].recursos = typeof body.recursos === 'string' ? body.recursos.split(',').map(r => r.trim()) : body.recursos;
-      if (body.status) salas[idx].status = body.status;
-      salas[idx].data_atualizacao = new Date().toISOString();
-      setTabela(tabelaSalas, salas);
-      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(salas[idx]) };
+
+    if (method === 'PUT') {
+      if (!id) return err('ID obrigatorio');
+      const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
+      if (!data.Item) return err('Nao encontrado', 404);
+      const update = { ...data.Item, ...body, id, data_atualizacao: new Date().toISOString() };
+      if (body.capacidade) update.capacidade = parseInt(body.capacidade);
+      if (body.recursos) update.recursos = Array.isArray(body.recursos) ? body.recursos : body.recursos.split(',').map(r => r.trim());
+      await doc.send(new PutCommand({ TableName: table, Item: update }));
+      return ok(update);
     }
-    
+
     if (method === 'DELETE') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const salas = getTabela(tabelaSalas);
-      const idx = salas.findIndex(s => s.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      salas.splice(idx, 1);
-      setTabela(tabelaSalas, salas);
-      return { statusCode: 200, body: JSON.stringify({ mensagem: 'Excluído' }) };
+      if (!id) return err('ID obrigatorio');
+      await doc.send(new DeleteCommand({ TableName: table, Key: { id } }));
+      return ok({ mensagem: 'Excluido' });
     }
-    
-    return { statusCode: 405, body: JSON.stringify({ erro: 'Método não permitido' }) };
+
+    return err('Metodo nao permitido', 405);
   } catch (error) {
-    console.error('Erro:', error);
-    return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ erro: 'Erro' }) };
+    console.error(error);
+    return err('Erro interno: ' + error.message, 500);
   }
 };
 
 exports.reservasHandler = async (event) => {
-  const method = event.httpMethod || event.requestContext?.http?.method;
-  const { id } = event.pathParameters || {};
-  const body = event.body ? JSON.parse(event.body) : {};
-  
+  const method = getMethod(event);
+  const body = getBody(event);
+  const id = getId(event);
+  const table = 'UFERSA_Reservas';
+
   try {
+    if (method === 'OPTIONS') return ok({});
+
     if (method === 'POST') {
-      const { nome, matricula, cargo, sala_id, data, hora_inicio, hora_fim, status } = body;
-      if (!nome || !matricula || !data || !hora_inicio || !hora_fim) {
-        return { statusCode: 400, body: JSON.stringify({ erro: 'Campos obrigatórios' }) };
-      }
-      const reserva = {
-        id: uuidv4(), nome, matricula, cargo: cargo || 'Estudante', sala_id: sala_id || null,
-        data, hora_inicio, hora_fim, status: status || 'ativo', data_criacao: new Date().toISOString()
+      if (!body.nome || !body.matricula || !body.data || !body.hora_inicio || !body.hora_fim) return err('Campos obrigatorios: nome, matricula, data, hora_inicio, hora_fim');
+      const item = {
+        id: uuid(), nome: body.nome, matricula: body.matricula, cargo: body.cargo || 'Estudante',
+        sala_id: body.sala_id || null, data: body.data, hora_inicio: body.hora_inicio,
+        hora_fim: body.hora_fim, status: body.status || 'ativo', data_criacao: new Date().toISOString()
       };
-      const reservas = getTabela(tabelaReservas);
-      reservas.push(reserva);
-      setTabela(tabelaReservas, reservas);
-      return { statusCode: 201, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reserva) };
+      await doc.send(new PutCommand({ TableName: table, Item: item }));
+      return ok(item, 201);
     }
-    
+
+    if (method === 'GET' && id) {
+      const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
+      if (!data.Item) return err('Nao encontrado', 404);
+      return ok(data.Item);
+    }
+
     if (method === 'GET') {
-      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(getTabela(tabelaReservas)) };
+      return ok(await scanTable(table));
     }
-    
-    if (method === 'PUT' || method === 'PATCH') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const reservas = getTabela(tabelaReservas);
-      const idx = reservas.findIndex(r => r.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      Object.assign(reservas[idx], body, { data_atualizacao: new Date().toISOString() });
-      setTabela(tabelaReservas, reservas);
-      return { statusCode: 200, body: JSON.stringify(reservas[idx]) };
+
+    if (method === 'PUT') {
+      if (!id) return err('ID obrigatorio');
+      const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
+      if (!data.Item) return err('Nao encontrado', 404);
+      const update = { ...data.Item, ...body, id, data_atualizacao: new Date().toISOString() };
+      await doc.send(new PutCommand({ TableName: table, Item: update }));
+      return ok(update);
     }
-    
+
     if (method === 'DELETE') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const reservas = getTabela(tabelaReservas);
-      const idx = reservas.findIndex(r => r.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      reservas.splice(idx, 1);
-      setTabela(tabelaReservas, reservas);
-      return { statusCode: 200, body: JSON.stringify({ mensagem: 'Excluído' }) };
+      if (!id) return err('ID obrigatorio');
+      await doc.send(new DeleteCommand({ TableName: table, Key: { id } }));
+      return ok({ mensagem: 'Excluido' });
     }
-    
-    return { statusCode: 405, body: JSON.stringify({ erro: 'Método não permitido' }) };
+
+    return err('Metodo nao permitido', 405);
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ erro: 'Erro' }) };
+    console.error(error);
+    return err('Erro interno', 500);
   }
 };
 
 exports.ocorrenciasHandler = async (event) => {
-  const method = event.httpMethod || event.requestContext?.http?.method;
-  const { id } = event.pathParameters || {};
-  const body = event.body ? JSON.parse(event.body) : {};
-  
+  const method = getMethod(event);
+  const body = getBody(event);
+  const id = getId(event);
+  const table = 'UFERSA_Ocorrencias';
+
   try {
+    if (method === 'OPTIONS') return ok({});
+
     if (method === 'POST') {
-      const { aluno_nome, aluno_matricula, descricao } = body;
-      if (!aluno_nome || !aluno_matricula || !descricao) {
-        return { statusCode: 400, body: JSON.stringify({ erro: 'Campos obrigatórios' }) };
-      }
-      const occ = { id: uuidv4(), ...body, status: 'em_analise', data_criacao: new Date().toISOString() };
-      const occs = getTabela(tabelaOcorrencias);
-      occs.push(occ);
-      setTabela(tabelaOcorrencias, occs);
-      return { statusCode: 201, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(occ) };
+      if (!body.aluno_nome || !body.aluno_matricula || !body.descricao) return err('Campos obrigatorios: aluno_nome, aluno_matricula, descricao');
+      const item = { id: uuid(), ...body, status: 'em_analise', data_criacao: new Date().toISOString() };
+      await doc.send(new PutCommand({ TableName: table, Item: item }));
+      return ok(item, 201);
     }
-    
+
     if (method === 'GET') {
-      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(getTabela(tabelaOcorrencias)) };
+      return ok(await scanTable(table));
     }
-    
+
     if (method === 'DELETE') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const occs = getTabela(tabelaOcorrencias);
-      const idx = occs.findIndex(o => o.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      occs.splice(idx, 1);
-      setTabela(tabelaOcorrencias, occs);
-      return { statusCode: 200, body: JSON.stringify({ mensagem: 'Excluído' }) };
+      if (!id) return err('ID obrigatorio');
+      await doc.send(new DeleteCommand({ TableName: table, Key: { id } }));
+      return ok({ mensagem: 'Excluido' });
     }
-    
-    return { statusCode: 405, body: JSON.stringify({ erro: 'Método não permitido' }) };
+
+    return err('Metodo nao permitido', 405);
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ erro: 'Erro' }) };
+    return err('Erro interno', 500);
   }
 };
 
 exports.inventarioHandler = async (event) => {
-  const method = event.httpMethod || event.requestContext?.http?.method;
-  const { id } = event.pathParameters || {};
-  const body = event.body ? JSON.parse(event.body) : {};
-  
+  const method = getMethod(event);
+  const body = getBody(event);
+  const id = getId(event);
+  const table = 'UFERSA_Inventario';
+
   try {
+    if (method === 'OPTIONS') return ok({});
+
     if (method === 'POST') {
-      const { codigo, nome, tipo } = body;
-      if (!codigo || !nome || !tipo) {
-        return { statusCode: 400, body: JSON.stringify({ erro: 'Campos obrigatórios' }) };
-      }
-      const mat = { id: uuidv4(), ...body, status: 'disponivel', data_criacao: new Date().toISOString() };
-      const mats = getTabela(tabelaInventario);
-      mats.push(mat);
-      setTabela(tabelaInventario, mats);
-      return { statusCode: 201, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mat) };
+      if (!body.codigo || !body.nome || !body.tipo) return err('Campos obrigatorios: codigo, nome, tipo');
+      const item = { id: uuid(), ...body, status: 'disponivel', data_criacao: new Date().toISOString() };
+      await doc.send(new PutCommand({ TableName: table, Item: item }));
+      return ok(item, 201);
     }
-    
+
     if (method === 'GET') {
-      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(getTabela(tabelaInventario)) };
+      return ok(await scanTable(table));
     }
-    
+
     if (method === 'DELETE') {
-      if (!id) return { statusCode: 400, body: JSON.stringify({ erro: 'ID obrigatório' }) };
-      const mats = getTabela(tabelaInventario);
-      const idx = mats.findIndex(m => m.id === id);
-      if (idx === -1) return { statusCode: 404, body: JSON.stringify({ erro: 'Não encontrado' }) };
-      mats.splice(idx, 1);
-      setTabela(tabelaInventario, mats);
-      return { statusCode: 200, body: JSON.stringify({ mensagem: 'Excluído' }) };
+      if (!id) return err('ID obrigatorio');
+      await doc.send(new DeleteCommand({ TableName: table, Key: { id } }));
+      return ok({ mensagem: 'Excluido' });
     }
-    
-    return { statusCode: 405, body: JSON.stringify({ erro: 'Método não permitido' }) };
+
+    return err('Metodo nao permitido', 405);
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ erro: 'Erro' }) };
+    return err('Erro interno', 500);
   }
+};
+
+exports.indexHandler = async () => ok({ message: 'API SIFU UFERSA - OK', versao: '1.0', endpoints: ['/api/salas', '/api/reservas', '/api/ocorrencias', '/api/materiais', '/chatbot', '/profile'] });
+
+exports.staticHandler = async (event) => {
+  const path = event.requestContext?.http?.path || event.path || '/';
+  return ok({ message: 'Servico nao disponivel para: ' + path, sugestao: 'O front-end esta hospedado no Amplify' });
 };

@@ -193,7 +193,7 @@
 
         checkAuth();
 
-        const CHAT_API_URL = 'https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/chatbot';
+        const CHAT_API_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com/chatbot';
 
         function toggleChat() {
             const widget = document.getElementById('chat-widget');
@@ -235,7 +235,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': idToken ? `Bearer ${idToken}` : ''
                     },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({ chat: message })
                 });
 
                 if (response.ok) {

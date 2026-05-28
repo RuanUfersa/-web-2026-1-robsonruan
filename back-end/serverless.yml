@@ -1,12 +1,13 @@
 service: ufersa-biblioteca
 
-frameworkVersion: 3
+frameworkVersion: "4"
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
   stage: dev
+  role: arn:aws:iam::226278200543:role/LabRole
 
 functions:
   criarSala:
@@ -202,40 +203,87 @@ functions:
       - httpApi:
           path: /chatbot
           method: post
-          authorizer:
-            name: cognitoAuthorizer
-            type: cognito_user_pools
-            cognitoUserPoolArn: arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/us-east-1_rbEMILSBU
-            scopes:
-              - openid
-              - email
+
+  profile:
+    handler: src/profile.profileHandler
+    events:
+      - httpApi:
+          path: /profile
+          method: put
 
 package:
   individually: false
-  patterns:
-    - '!**'
-    - src/**/*
 
 plugins:
   - serverless-offline
-  - serverless-domain-manager
-
-custom:
-  domain:
-    domainName: api.robsonruan.sifu1.web.ufersa.dev.br
-    certificateArn: arn:aws:acm:us-east-1:${aws:accountId}:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    basePath: ''
-    stage: dev
 
 resources:
   Resources:
-    cognitoAuthorizer:
-      Type: AWS::ApiGateway::Authorizer
+    ProfileTable:
+      Type: AWS::DynamoDB::Table
       Properties:
-        Name: cognito-chatbot-authorizer
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        IdentitySource: method.request.header.Authorization
-        Type: cognito_user_pools
-        ProviderARNs:
-          - arn:aws:cognito-idp:us-east-1:${aws:accountId}:userpool/us-east-1_rbEMILSBU
+        TableName: sifu-robsonruan
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    SalasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UFERSA_Salas
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    ReservasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UFERSA_Reservas
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    OcorrenciasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UFERSA_Ocorrencias
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    InventarioTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UFERSA_Inventario
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+outputs:
+  ChatbotApiUrl:
+    value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/chatbot"
+  ProfileApiUrl:
+    value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/profile"
+  BaseApiUrl:
+    description: "URL Base da API"
+    value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

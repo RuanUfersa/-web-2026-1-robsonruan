@@ -10,7 +10,7 @@
 
 const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000/api' 
-    : '/api';
+    : 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com/api';
 
 /**
  * Função genérica para fazer requisições FETCH
@@ -78,9 +78,29 @@ export const inventarioAPI = {
     excluir: (id) => fetchAPI('/materiais/' + id, { method: 'DELETE' })
 };
 
+const CHAT_API = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
+
+export const chatbotAPI = {
+    enviar: (mensagem) => fetch(CHAT_API + '/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat: mensagem })
+    }).then(r => r.json())
+};
+
+export const profileAPI = {
+    atualizar: (dados) => fetch(CHAT_API + '/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+    }).then(r => r.json())
+};
+
 export default {
     salasAPI,
     reservasAPI,
     ocorrenciasAPI,
-    inventarioAPI
+    inventarioAPI,
+    chatbotAPI,
+    profileAPI
 };
