@@ -307,7 +307,8 @@ function carregarPerfil() {
     const nome = payload.name || payload.given_name || payload['cognito:username'] || 'Usuário';
     const email = payload.email || '';
     const userId = payload['cognito:username'] || payload.sub || email;
-    const picture = payload.picture || '';
+    const savedFoto = localStorage.getItem('profile_foto_url');
+    const picture = savedFoto || payload.picture || '';
 
     document.getElementById('profile-name').textContent = nome;
     document.getElementById('profile-email').textContent = email;
@@ -424,6 +425,7 @@ async function salvarTudo() {
         if (res.ok) {
             document.getElementById('profile-name').textContent = nome;
             if (data.fotoUrl) {
+                localStorage.setItem('profile_foto_url', data.fotoUrl);
                 document.getElementById('profile-picture').src = data.fotoUrl;
                 document.getElementById('profile-picture').classList.remove('hidden');
                 document.getElementById('profile-picture-fallback').classList.add('hidden');
