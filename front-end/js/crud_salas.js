@@ -108,7 +108,7 @@ async function salvarSala(event) {
     
     const idField = document.getElementById('salaId');
     const id = idField.value;
-    const idNum = id ? parseInt(id) : null;
+    const idNum = id || null;
     
     // Obter recursos selecionados
     const selectRecursos = document.getElementById('salaRecursos');
@@ -372,7 +372,7 @@ ${recursosHTML}
 </div>
 <div class="flex gap-2">
 <button class="flex-1 py-2.5 bg-surface-container-low text-primary text-sm font-bold rounded-lg hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200" onclick='abrirModalEditarSala(${JSON.stringify(sala)})'>Gerenciar</button>
-<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90" onclick="excluirSala(${sala.id})">
+<button class="px-3 py-2.5 bg-surface-container-low text-primary rounded-lg hover:bg-surface-container transition-colors active:scale-90" onclick='excluirSala("${sala.id}")'>
 <span class="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </div>

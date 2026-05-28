@@ -110,10 +110,10 @@ async function salvarReserva(event) {
     
     const idField = document.getElementById('reservaId');
     const id = idField.value;
-    const idNum = id ? parseInt(id) : null;
+    const idNum = id || null;
     
     const reserva = {
-        sala_id: parseInt(document.getElementById('reservaSalaId').value),
+        sala_id: document.getElementById('reservaSalaId').value,
         usuario_nome: document.getElementById('reservaNome').value,
         usuario_matricula: document.getElementById('reservaMatricula').value,
         usuario_cargo: document.getElementById('reservaCargo').value,
@@ -296,7 +296,7 @@ ${status.label}
 <td class="px-6 py-5 text-right">
 <div class="flex items-center justify-end gap-2">
 <button class="text-primary text-xs font-bold px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary hover:text-white" onclick='abrirModalEditarReserva(${JSON.stringify(r)})'>Detalhes</button>
-<button class="text-error text-xs font-bold px-3 py-1.5 rounded-lg border border-error/20 hover:bg-error hover:text-white" onclick="excluirReserva(${r.id})">Excluir</button>
+<button class="text-error text-xs font-bold px-3 py-1.5 rounded-lg border border-error/20 hover:bg-error hover:text-white" onclick='excluirReserva("${r.id}")'>Excluir</button>
 </div>
 </td>`;
         

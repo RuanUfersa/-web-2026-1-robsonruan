@@ -102,12 +102,12 @@ async function salvarMaterial(event) {
     
     const idField = document.getElementById('materialId');
     const id = idField.value;
-    const idNum = id ? parseInt(id) : null;
+    const idNum = id || null;
     
     const material = {
         codigo: document.getElementById('materialCodigo').value,
         nome: document.getElementById('materialNome').value,
-        sala_id: parseInt(document.getElementById('materialSalaId').value),
+        sala_id: document.getElementById('materialSalaId').value,
         tipo: document.getElementById('materialTipo').value,
         descricao: document.getElementById('materialDescricao').value,
         status: document.getElementById('materialStatus').value
@@ -301,7 +301,7 @@ function renderizarPaginaMaterial() {
 <td class="px-6 py-4 text-right">
 <div class="flex items-center justify-end gap-2">
 <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick='abrirModalEditarMaterial(${JSON.stringify(m)})'>Editar</button>
-<button class="text-red-600 hover:text-red-800 text-sm font-medium" onclick="excluirMaterial(${m.id})">Excluir</button>
+<button class="text-red-600 hover:text-red-800 text-sm font-medium" onclick='excluirMaterial("${m.id}")'>Excluir</button>
 </div>
 </td>`;
         

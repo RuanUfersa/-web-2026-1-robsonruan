@@ -5,7 +5,7 @@ const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const s3 = new S3Client({ region: 'us-east-1' });
 const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-1' }));
 
-const BUCKET_NAME = 'sifu-robsonruan-2026.1';
+const BUCKET_NAME = 'sifu-robsonruan-2026';
 const TABLE_NAME = 'sifu-robsonruan';
 
 exports.profileHandler = async (event) => {
