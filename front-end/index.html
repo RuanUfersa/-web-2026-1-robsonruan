@@ -168,6 +168,48 @@
             }
         }
 
+        async function refreshTokens() {
+            const refreshToken = sessionStorage.getItem('refresh_token');
+            if (!refreshToken) return null;
+            const tokenEndpoint = `https://${config.domain}/oauth2/token`;
+            const params = new URLSearchParams({
+                grant_type: 'refresh_token',
+                client_id: config.clientId,
+                refresh_token: refreshToken
+            });
+            try {
+                const response = await fetch(tokenEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                if (response.ok) {
+                    const tokens = await response.json();
+                    if (tokens.id_token) sessionStorage.setItem('id_token', tokens.id_token);
+                    if (tokens.access_token) sessionStorage.setItem('access_token', tokens.access_token);
+                    return tokens;
+                }
+            } catch (e) { /* ignore */ }
+            return null;
+        }
+
+        function setUserInfo(payload) {
+            document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || '';
+            const nome = payload.name || payload.given_name || payload.email || 'Usuário';
+            document.getElementById('user-name').textContent = nome;
+            document.getElementById('user-name').classList.remove('hidden');
+            const picture = payload.picture;
+            if (picture) {
+                const img = document.getElementById('user-picture');
+                img.src = picture;
+                img.classList.remove('hidden');
+            } else {
+                const fallback = document.getElementById('user-avatar-fallback');
+                fallback.textContent = nome.charAt(0).toUpperCase();
+                fallback.classList.remove('hidden');
+            }
+        }
+
         async function checkAuth() {
             const code = new URLSearchParams(window.location.search).get('code');
             
@@ -176,29 +218,34 @@
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            const idToken = sessionStorage.getItem('id_token');
+            let idToken = sessionStorage.getItem('id_token');
+            let payload = idToken ? parseJWT(idToken) : null;
             
-            if (idToken) {
-                const payload = parseJWT(idToken);
-                if (payload && payload.exp * 1000 > Date.now()) {
-                    document.getElementById('loading-section').classList.add('hidden');
-                    document.getElementById('auth-section').classList.remove('hidden');
-                    document.getElementById('user-email').textContent = payload.email || payload['cognito:username'] || '';
-                    const nome = payload.name || payload.given_name || payload.email || 'Usuário';
-                    document.getElementById('user-name').textContent = nome;
-                    document.getElementById('user-name').classList.remove('hidden');
-                    const picture = payload.picture;
-                    if (picture) {
-                        const img = document.getElementById('user-picture');
-                        img.src = picture;
-                        img.classList.remove('hidden');
-                    } else {
-                        const fallback = document.getElementById('user-avatar-fallback');
-                        fallback.textContent = nome.charAt(0).toUpperCase();
-                        fallback.classList.remove('hidden');
+            if (payload && payload.exp * 1000 > Date.now()) {
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('auth-section').classList.remove('hidden');
+                if (!payload.picture) {
+                    const refreshed = await refreshTokens();
+                    if (refreshed && refreshed.id_token) {
+                        payload = parseJWT(refreshed.id_token);
                     }
-                    showChatWidget();
-                    return;
+                }
+                setUserInfo(payload);
+                showChatWidget();
+                return;
+            }
+
+            if (payload && payload.exp * 1000 <= Date.now()) {
+                const refreshed = await refreshTokens();
+                if (refreshed && refreshed.id_token) {
+                    payload = parseJWT(refreshed.id_token);
+                    if (payload && payload.exp * 1000 > Date.now()) {
+                        document.getElementById('loading-section').classList.add('hidden');
+                        document.getElementById('auth-section').classList.remove('hidden');
+                        setUserInfo(payload);
+                        showChatWidget();
+                        return;
+                    }
                 }
             }
 
