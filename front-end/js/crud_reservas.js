@@ -1,9 +1,10 @@
 /**
- * Funções CRUD para Reservas
+ * Fun????es CRUD para Reservas
  */
 
-const API_URL = '/api/reservas';
-const API_SALAS = '/api/salas';
+const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
+const API_URL = BASE_URL + '/api/reservas';
+const API_SALAS = BASE_URL + '/api/salas';
 
 /**
  * Exibe toast de feedback
@@ -61,11 +62,11 @@ async function abrirModalNovaReserva() {
     const salas = await listarSalas();
     const salasDisponiveis = salas.filter(s => s.status === 'disponivel');
     const select = document.getElementById('reservaSalaId');
-    select.innerHTML = '<option value="">Selecione uma sala disponível</option>' + 
+    select.innerHTML = '<option value="">Selecione uma sala dispon??vel</option>' + 
         salasDisponiveis.map(s => `<option value="${s.id}">${s.nome} (Cap: ${s.capacidade})</option>`).join('');
     
     if (salasDisponiveis.length === 0) {
-        mostrarToastReserva('Nenhuma sala disponível para reserva!', 'error');
+        mostrarToastReserva('Nenhuma sala dispon??vel para reserva!', 'error');
         return;
     }
     
@@ -125,13 +126,13 @@ async function salvarReserva(event) {
     try {
         let response;
         if (idNum) {
-            response = await fetch('/api/reservas/' + idNum, {
+            response = await fetch(BASE_URL + '/api/reservas/' + idNum, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reserva)
             });
         } else {
-            response = await fetch('/api/reservas', {
+            response = await fetch(BASE_URL + '/api/reservas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reserva)
@@ -158,13 +159,13 @@ async function excluirReserva(id) {
     if (!confirm('Tem certeza que deseja excluir esta reserva?')) return;
     
     try {
-        const response = await fetch('/api/reservas/' + id, {
+        const response = await fetch(BASE_URL + '/api/reservas/' + id, {
             method: 'DELETE'
         });
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToastReserva('Reserva excluída!');
+        mostrarToastReserva('Reserva exclu??da!');
         carregarReservas();
     } catch (error) {
         console.error('Erro:', error);
@@ -177,7 +178,7 @@ async function excluirReserva(id) {
  */
 async function atualizarStatusReserva(id, status) {
     try {
-        const response = await fetch('/api/reservas/' + id, {
+        const response = await fetch(BASE_URL + '/api/reservas/' + id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status })
@@ -234,7 +235,7 @@ function renderizarTabelaReservas(reservas) {
     tbody.innerHTML = '';
     todasReservas = reservas;
     
-    // Atualizar estatísticas dos painéis
+    // Atualizar estat??sticas dos pain??is
     const ativas = reservas.filter(r => r.status === 'ativo').length;
     const atencao = reservas.filter(r => r.status === 'atencao').length;
     
@@ -251,8 +252,8 @@ function renderizarTabelaReservas(reservas) {
     
     const statusLabels = {
         'ativo': { label: 'ATIVO', class: 'bg-secondary-container text-on-secondary-container' },
-        'atencao': { label: 'ATENÇÃO', class: 'bg-error-container text-on-error-container' },
-        'concluido': { label: 'CONCLUÍDO', class: 'bg-surface-container text-on-surface' },
+        'atencao': { label: 'ATEN????O', class: 'bg-error-container text-on-error-container' },
+        'concluido': { label: 'CONCLU??DO', class: 'bg-surface-container text-on-surface' },
         'cancelado': { label: 'CANCELADO', class: 'bg-slate-200 text-slate-600' }
     };
     
@@ -302,7 +303,7 @@ ${status.label}
         tbody.appendChild(tr);
     });
     
-    // Atualizar info da paginação
+    // Atualizar info da pagina????o
     const infoEl = document.getElementById('pagination-info');
     if (infoEl) {
         if (reservas.length === 0) {
@@ -313,14 +314,14 @@ ${status.label}
         }
     }
     
-    // Renderizar botões de paginação
+    // Renderizar bot??es de pagina????o
     renderizarBotoesPagina(totalPaginas);
 }
 
 function renderizarBotoesPagina(totalPaginas) {
     const container = document.getElementById('pagination-buttons');
     if (!container) {
-        console.error('[DEBUG] container pagination-buttons não encontrado!');
+        console.error('[DEBUG] container pagination-buttons n??o encontrado!');
         return;
     }
     
@@ -328,7 +329,7 @@ function renderizarBotoesPagina(totalPaginas) {
     
     if (totalPaginas <= 1) return;
     
-    // Botão anterior
+    // Bot??o anterior
     const btnPrev = document.createElement('button');
     btnPrev.className = 'w-8 h-8 flex items-center justify-center rounded-lg border border-surface-container text-slate-400 hover:bg-surface-container transition-colors' + (paginaAtual === 1 ? ' opacity-50 cursor-not-allowed' : '');
     btnPrev.innerHTML = '<span class="material-symbols-outlined text-[18px]">chevron_left</span>';
@@ -338,7 +339,7 @@ function renderizarBotoesPagina(totalPaginas) {
     if (paginaAtual === 1) btnPrev.disabled = true;
     container.appendChild(btnPrev);
     
-    // Botões de páginas
+    // Bot??es de p??ginas
     for (let i = 1; i <= totalPaginas; i++) {
         const btn = document.createElement('button');
         btn.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold ' + (i === paginaAtual ? 'bg-primary text-white' : 'hover:bg-surface-container text-primary');
@@ -347,7 +348,7 @@ function renderizarBotoesPagina(totalPaginas) {
         container.appendChild(btn);
     }
     
-    // Botão próximo
+    // Bot??o pr??ximo
     const btnNext = document.createElement('button');
     btnNext.className = 'w-8 h-8 flex items-center justify-center rounded-lg border border-surface-container text-slate-400 hover:bg-surface-container transition-colors' + (paginaAtual === totalPaginas ? ' opacity-50 cursor-not-allowed' : '');
     btnNext.innerHTML = '<span class="material-symbols-outlined text-[18px]">chevron_right</span>';

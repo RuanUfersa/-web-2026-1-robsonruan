@@ -1,8 +1,9 @@
 /**
- * Funções CRUD para Gestão de Salas
+ * Fun????es CRUD para Gest??o de Salas
  */
 
-const API_URL = '/api/salas';
+const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
+const API_URL = BASE_URL + '/api/salas';
 
 /**
  * Exibe toast de feedback
@@ -26,24 +27,24 @@ async function abrirModalNovaSala() {
     document.getElementById('salaForm').reset();
     document.getElementById('salaId').value = '';
     
-    // Carregar materiais disponíveis
+    // Carregar materiais dispon??veis
     await carregarMateriaisDisponiveis();
     
     document.getElementById('salaModal').classList.remove('hidden');
 }
 
 /**
- * Carregar materiais disponíveis no select
+ * Carregar materiais dispon??veis no select
  */
 async function carregarMateriaisDisponiveis() {
     try {
-        const response = await fetch('/api/materiais');
+        const response = await fetch(BASE_URL + '/api/materiais');
         const materiais = await response.json();
         
         const disponiveis = materiais.filter(m => m.status === 'disponivel');
         const select = document.getElementById('salaRecursos');
         
-        select.innerHTML = '<option value="">Selecione os materiais disponíveis...</option>' + 
+        select.innerHTML = '<option value="">Selecione os materiais dispon??veis...</option>' + 
             disponiveis.map(m => `<option value="${m.nome}">${m.codigo} - ${m.nome}</option>`).join('');
         
     } catch (error) {
@@ -62,7 +63,7 @@ async function abrirModalEditarSala(sala) {
     document.getElementById('salaTipo').value = sala.tipo || 'colaborativo';
     document.getElementById('salaStatus').value = sala.status || 'disponivel';
     
-    // Carregar materiais disponíveis
+    // Carregar materiais dispon??veis
     await carregarMateriaisDisponiveis();
     
     // Selecionar os recursos existentes
@@ -132,13 +133,13 @@ async function salvarSala(event) {
                 await atualizarStatusMateriais(salaAntiga.recursos.split(',').map(r => r.trim()), 'disponivel');
             }
             
-            response = await fetch('/api/salas/' + idNum, {
+            response = await fetch(BASE_URL + '/api/salas/' + idNum, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(sala)
             });
         } else {
-            response = await fetch('/api/salas', {
+            response = await fetch(BASE_URL + '/api/salas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(sala)
@@ -168,7 +169,7 @@ async function salvarSala(event) {
  */
 async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
     try {
-        const response = await fetch('/api/materiais');
+        const response = await fetch(BASE_URL + '/api/materiais');
         const materiais = await response.json();
         
         for (const nomeMaterial of nomesMateriais) {
@@ -182,7 +183,7 @@ async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
             });
             
             if (material) {
-                await fetch('/api/materiais/' + material.id, {
+                await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: novoStatus })
@@ -199,16 +200,16 @@ async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
  */
 async function sincronizarMateriaisComSalas() {
     try {
-        const responseMateriais = await fetch('/api/materiais');
+        const responseMateriais = await fetch(BASE_URL + '/api/materiais');
         const materiais = await responseMateriais.json();
         
-        const responseSalas = await fetch('/api/salas');
+        const responseSalas = await fetch(BASE_URL + '/api/salas');
         const salas = await responseSalas.json();
         
         // Primeiro, liberar todos os materiais
         for (const material of materiais) {
             if (material.status === 'em_uso') {
-                await fetch('/api/materiais/' + material.id, {
+                await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'disponivel' })
@@ -216,7 +217,7 @@ async function sincronizarMateriaisComSalas() {
             }
         }
         
-        // Depois, marcar como em_uso os que estão em salas
+        // Depois, marcar como em_uso os que est??o em salas
         for (const sala of salas) {
             if (sala.recursos) {
                 const recursosArray = sala.recursos.split(',').map(r => r.trim());
@@ -232,7 +233,7 @@ async function sincronizarMateriaisComSalas() {
                     });
                     
                     if (material) {
-                        await fetch('/api/materiais/' + material.id, {
+                        await fetch(BASE_URL + '/api/materiais/' + material.id, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: 'em_uso' })
@@ -266,7 +267,7 @@ async function excluirSala(id) {
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToast('Sala excluída!');
+        mostrarToast('Sala exclu??da!');
         carregarSalas();
     } catch (error) {
         console.error('Erro:', error);
@@ -294,14 +295,14 @@ function renderizarSalas(salas) {
     const container = document.getElementById('salas-grid');
     if (!container) return;
     
-    // Calcular estatísticas
+    // Calcular estat??sticas
     const total = salas.length;
     const disponiveis = salas.filter(s => s.status === 'disponivel').length;
     const ocupados = salas.filter(s => s.status === 'ocupado').length;
     const manutencao = salas.filter(s => s.status === 'manutencao').length;
     const ocupacao = total > 0 ? Math.round((ocupados / total * 100)) : 0;
     
-    // Atualizar cards de estatísticas
+    // Atualizar cards de estat??sticas
     document.getElementById('salas-disponiveis').innerHTML = disponiveis + ' <span class="text-sm font-normal text-on-surface-variant">/ ' + total + ' Salas</span>';
     document.getElementById('salas-manutencao').innerHTML = manutencao + ' <span class="text-sm font-normal text-on-surface-variant">Salas</span>';
     document.getElementById('ocupacao-media').textContent = ocupacao + '%';
@@ -313,15 +314,15 @@ function renderizarSalas(salas) {
 <span class="material-symbols-outlined text-primary text-3xl group-hover:text-white transition-colors">add</span>
 </div>
 <h3 class="text-lg font-bold text-primary mb-1 transition-colors group-hover:text-primary">Adicionar Nova Sala</h3>
-<p class="text-sm text-on-surface-variant text-center max-w-[200px]">Registre um novo espaço colaborativo no sistema</p>
+<p class="text-sm text-on-surface-variant text-center max-w-[200px]">Registre um novo espa??o colaborativo no sistema</p>
 </div>`;
     
     container.innerHTML = '';
     
     const statusLabels = {
-        'disponivel': { label: 'Disponível', class: 'bg-secondary-container/90 text-on-secondary-container' },
+        'disponivel': { label: 'Dispon??vel', class: 'bg-secondary-container/90 text-on-secondary-container' },
         'ocupado': { label: 'Ocupado', class: 'bg-surface-variant/90 text-on-surface-variant' },
-        'manutencao': { label: 'Manutenção', class: 'bg-error-container/90 text-on-error-container' }
+        'manutencao': { label: 'Manuten????o', class: 'bg-error-container/90 text-on-error-container' }
     };
     
     salas.forEach(sala => {
@@ -398,13 +399,13 @@ async function carregarSalas() {
 }
 
 /**
- * Inicializar gestão de salas
+ * Inicializar gest??o de salas
  */
 async function inicializarGestaoSalas() {
     await sincronizarMateriaisComSalas();
     await carregarSalas();
     
-    // Configurar formulário
+    // Configurar formul??rio
     document.getElementById('salaForm').addEventListener('submit', salvarSala);
     
     // Fechar modal ao clicar fora
@@ -433,7 +434,7 @@ async function inicializarGestaoSalas() {
     }
 }
 
-// Disponibilizar funções globalmente
+// Disponibilizar fun????es globalmente
 window.abrirModalNovaSala = abrirModalNovaSala;
 window.abrirModalEditarSala = abrirModalEditarSala;
 window.fecharModal = fecharModal;

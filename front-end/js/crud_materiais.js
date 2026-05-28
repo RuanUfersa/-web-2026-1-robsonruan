@@ -1,9 +1,10 @@
 /**
- * Funções CRUD para Materiais
+ * Fun????es CRUD para Materiais
  */
 
-const API_URL = '/api/materiais';
-const API_SALAS = '/api/salas';
+const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
+const API_URL = BASE_URL + '/api/materiais';
+const API_SALAS = BASE_URL + '/api/salas';
 
 /**
  * Exibe toast de feedback
@@ -116,19 +117,19 @@ async function salvarMaterial(event) {
         // Buscar material antigo para comparar status
         let materialAntigo = null;
         if (idNum) {
-            const responseAntigo = await fetch('/api/materiais/' + idNum);
+            const responseAntigo = await fetch(BASE_URL + '/api/materiais/' + idNum);
             materialAntigo = await responseAntigo.json();
         }
         
         let response;
         if (idNum) {
-            response = await fetch('/api/materiais/' + idNum, {
+            response = await fetch(BASE_URL + '/api/materiais/' + idNum, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(material)
             });
         } else {
-            response = await fetch('/api/materiais', {
+            response = await fetch(BASE_URL + '/api/materiais', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(material)
@@ -139,7 +140,7 @@ async function salvarMaterial(event) {
         
         if (!response.ok) throw new Error(result.erro || 'Erro ao salvar');
         
-        // Se status mudou para disponível, mas está em uma sala, remover da sala
+        // Se status mudou para dispon??vel, mas est?? em uma sala, remover da sala
         if (materialAntigo && material.status !== 'disponivel' && material.status !== materialAntigo.status) {
             await removerMaterialDasSalas(material.nome);
         }
@@ -154,17 +155,17 @@ async function salvarMaterial(event) {
 }
 
 /**
- * Remover material das salas ao mudar status para não disponível
+ * Remover material das salas ao mudar status para n??o dispon??vel
  */
 async function removerMaterialDasSalas(nomeMaterial) {
     try {
-        const responseSalas = await fetch('/api/salas');
+        const responseSalas = await fetch(BASE_URL + '/api/salas');
         const salas = await responseSalas.json();
         
         for (const sala of salas) {
             if (sala.recursos && sala.recursos.includes(nomeMaterial)) {
                 const recursosArray = sala.recursos.split(',').map(r => r.trim()).filter(r => r !== nomeMaterial);
-                await fetch('/api/salas/' + sala.id, {
+                await fetch(BASE_URL + '/api/salas/' + sala.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ recursos: recursosArray.join(', ') })
@@ -184,19 +185,19 @@ async function excluirMaterial(id) {
     
     try {
         // Buscar material para remover das salas
-        const responseBusca = await fetch('/api/materiais/' + id);
+        const responseBusca = await fetch(BASE_URL + '/api/materiais/' + id);
         const material = await responseBusca.json();
         
         // Remover das salas
         await removerMaterialDasSalas(material.nome);
         
-        const response = await fetch('/api/materiais/' + id, {
+        const response = await fetch(BASE_URL + '/api/materiais/' + id, {
             method: 'DELETE'
         });
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToastMaterial('Material excluído!');
+        mostrarToastMaterial('Material exclu??do!');
         carregarMateriais();
     } catch (error) {
         console.error('Erro:', error);
@@ -242,14 +243,14 @@ const materiaisPorPagina = 5;
 function renderizarTabelaMateriais(materiais) {
     const tbody = document.querySelector('tbody');
     if (!tbody) {
-        console.error('tbody não encontrado!');
+        console.error('tbody n??o encontrado!');
         return;
     }
     
     todosMateriais = materiais;
     paginaAtual = 1;
     
-    // Atualizar estatísticas
+    // Atualizar estat??sticas
     const disponiveis = materiais.filter(m => m.status === 'disponivel').length;
     const emUso = materiais.filter(m => m.status === 'em_uso').length;
     const manutencao = materiais.filter(m => m.status === 'manutencao').length;
@@ -279,9 +280,9 @@ function renderizarPaginaMaterial() {
     const totalPaginas = Math.ceil(todosMateriais.length / materiaisPorPagina);
     
     const statusLabels = {
-        'disponivel': { label: 'Disponível', class: 'bg-green-100 text-green-700' },
+        'disponivel': { label: 'Dispon??vel', class: 'bg-green-100 text-green-700' },
         'em_uso': { label: 'Em Uso', class: 'bg-yellow-100 text-yellow-700' },
-        'manutencao': { label: 'Manutenção', class: 'bg-red-100 text-red-700' }
+        'manutencao': { label: 'Manuten????o', class: 'bg-red-100 text-red-700' }
     };
     
     materiaisPagina.forEach(m => {
@@ -307,7 +308,7 @@ function renderizarPaginaMaterial() {
         tbody.appendChild(tr);
     });
     
-    // Atualizar info da paginação
+    // Atualizar info da pagina????o
     const infoEl = document.getElementById('pagination-info');
     if (infoEl) {
         if (todosMateriais.length === 0) {
@@ -318,14 +319,14 @@ function renderizarPaginaMaterial() {
         }
     }
     
-    // Renderizar botões de paginação
+    // Renderizar bot??es de pagina????o
     renderizarBotoesPaginaMaterial(totalPaginas);
 }
 
 function renderizarBotoesPaginaMaterial(totalPaginas) {
     const container = document.getElementById('pagination-buttons');
     if (!container) {
-        console.error('container pagination-buttons não encontrado!');
+        console.error('container pagination-buttons n??o encontrado!');
         return;
     }
     
@@ -333,17 +334,17 @@ function renderizarBotoesPaginaMaterial(totalPaginas) {
     
     if (totalPaginas <= 1) return;
     
-    // Botão anterior
+    // Bot??o anterior
     const btnPrev = document.createElement('button');
     btnPrev.className = 'px-3 py-1 border rounded-lg text-sm hover:bg-gray-100' + (paginaAtual === 1 ? ' opacity-50 cursor-not-allowed' : '');
-    btnPrev.innerHTML = '« Anterior';
+    btnPrev.innerHTML = '?? Anterior';
     btnPrev.onclick = () => { 
         if (paginaAtual > 1) { paginaAtual--; renderizarPaginaMaterial(); } 
     };
     if (paginaAtual === 1) btnPrev.disabled = true;
     container.appendChild(btnPrev);
     
-    // Botões de páginas
+    // Bot??es de p??ginas
     for (let i = 1; i <= totalPaginas; i++) {
         const btn = document.createElement('button');
         btn.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold ' + (i === paginaAtual ? 'bg-[#082853] text-white' : 'hover:bg-gray-100 text-[#082853]');
@@ -352,10 +353,10 @@ function renderizarBotoesPaginaMaterial(totalPaginas) {
         container.appendChild(btn);
     }
     
-    // Botão próximo
+    // Bot??o pr??ximo
     const btnNext = document.createElement('button');
     btnNext.className = 'px-3 py-1 border rounded-lg text-sm hover:bg-gray-100' + (paginaAtual === totalPaginas ? ' opacity-50 cursor-not-allowed' : '');
-    btnNext.innerHTML = 'Próxima »';
+    btnNext.innerHTML = 'Pr??xima ??';
     btnNext.onclick = () => { 
         if (paginaAtual < totalPaginas) { paginaAtual++; renderizarPaginaMaterial(); } 
     };
@@ -403,10 +404,10 @@ async function inicializarMateriais() {
  */
 async function sincronizarMateriaisComSalas() {
     try {
-        const responseSalas = await fetch('/api/salas');
+        const responseSalas = await fetch(BASE_URL + '/api/salas');
         const salas = await responseSalas.json();
         
-        const responseMateriais = await fetch('/api/materiais');
+        const responseMateriais = await fetch(BASE_URL + '/api/materiais');
         const materiais = await responseMateriais.json();
         
         for (const material of materiais) {
@@ -419,7 +420,7 @@ async function sincronizarMateriaisComSalas() {
                     
                     if (recursosArray.some(r => r === nomeNormalizado || r.includes(nomeNormalizado) || nomeNormalizado.includes(r))) {
                         if (material.status !== 'em_uso') {
-                            await fetch('/api/materiais/' + material.id, {
+                            await fetch(BASE_URL + '/api/materiais/' + material.id, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ status: 'em_uso' })
@@ -432,7 +433,7 @@ async function sincronizarMateriaisComSalas() {
             }
             
             if (!encontrado && material.status === 'em_uso') {
-                await fetch('/api/materiais/' + material.id, {
+                await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'disponivel' })
