@@ -205,7 +205,8 @@
             const picture = savedFoto || payload.picture;
             if (picture) {
                 const img = document.getElementById('user-picture');
-                img.src = picture;
+                const picUrl = savedFoto ? picture + '?t=' + Date.now() : picture;
+                img.src = picUrl;
                 img.classList.remove('hidden');
             } else {
                 const fallback = document.getElementById('user-avatar-fallback');

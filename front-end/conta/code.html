@@ -321,10 +321,11 @@ function carregarPerfil() {
     const profFallback = document.getElementById('profile-picture-fallback');
 
     if (picture) {
-        navPic.src = picture;
+        const picUrl = savedFoto ? picture + '?t=' + Date.now() : picture;
+        navPic.src = picUrl;
         navPic.classList.remove('hidden');
         navFallback.classList.add('hidden');
-        profPic.src = picture;
+        profPic.src = picUrl;
         profPic.classList.remove('hidden');
         profFallback.classList.add('hidden');
     } else {
@@ -426,10 +427,11 @@ async function salvarTudo() {
             document.getElementById('profile-name').textContent = nome;
             if (data.fotoUrl) {
                 localStorage.setItem('profile_foto_url', data.fotoUrl);
-                document.getElementById('profile-picture').src = data.fotoUrl;
+                const bustUrl = data.fotoUrl + '?t=' + Date.now();
+                document.getElementById('profile-picture').src = bustUrl;
                 document.getElementById('profile-picture').classList.remove('hidden');
                 document.getElementById('profile-picture-fallback').classList.add('hidden');
-                document.getElementById('nav-user-picture').src = data.fotoUrl;
+                document.getElementById('nav-user-picture').src = bustUrl;
                 document.getElementById('nav-user-picture').classList.remove('hidden');
                 document.getElementById('nav-user-fallback').classList.add('hidden');
             }
