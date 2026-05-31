@@ -126,7 +126,16 @@
         }
 
         function handleSignOut() {
-            const url = `https://${config.domain}/logout?client_id=${config.clientId}&logout_uri=${encodeURIComponent('https://gerenciador-salas.robsonruan.sifu1.web.ufersa.dev.br/')}`;
+            const idToken = sessionStorage.getItem('id_token');
+            let redirectUrl = 'https://ufersa.edu.br/';
+            if (idToken) {
+                const payload = parseJWT(idToken);
+                const email = payload?.email || '';
+                if (email.endsWith('@ufersa.edu.br')) {
+                    redirectUrl = 'https://sifu.web.ufersa.dev.br/';
+                }
+            }
+            const url = `https://${config.domain}/logout?client_id=${config.clientId}&logout_uri=${encodeURIComponent(redirectUrl)}`;
             window.location.href = url;
         }
 
