@@ -157,14 +157,13 @@
 </div>
 <div class="h-8 w-[1px] bg-[#E8EDFF] dark:bg-slate-800"></div>
 <div class="flex items-center gap-3">
-<div class="text-right">
-<p class="text-xs font-bold text-primary">Dr. Ricardo Silva</p>
-<p class="text-[10px] text-slate-500">Bibliotecário Sênior</p>
-</div>
-<div class="w-10 h-10 rounded-full border-2 border-[#E8EDFF] overflow-hidden">
-<img alt="Perfil do Bibliotecário" class="w-full h-full object-cover" data-alt="professional portrait of a university librarian in business casual attire with a modern office background soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlwbI9qsW1wVnX0z77iDxT51VJYAXSdDZxGoKDnQTXPVh8E9iE8oy_JxVv20gVxSqao0qWOqdqdsw0TGOjL2IBkNPf5niIReVvI-YgbIzRLrmI6ILIxyckDjMJaPl5UK7NF54q3po8DH_NGl9hQ7cvjqA-T1ridFLJwRqCcQBCFVk2I5QZTLHfReVlgyLgvLmcQYiU2EivVCZ_zj4XyjvjHkbm7gDM5oCZnG1ZgCc8aqs2Rs88vbYX5F_-E0lndNq0QgrrPT9cYKE"/>
-</div>
-</div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-primary" id="user-name">Funcionário</p>
+                        <p class="text-[10px] text-slate-500" id="user-role">Carregando...</p>
+                    </div>
+                    <img alt="Perfil" id="user-picture" class="w-10 h-10 rounded-full border-2 border-[#E8EDFF] object-cover hidden" src=""/>
+                    <div id="user-avatar-fallback" class="w-10 h-10 rounded-full border-2 border-[#E8EDFF] bg-primary text-white flex items-center justify-center text-sm font-bold">?</div>
+                </div>
 </div>
 </header>
 <!-- Main Content Canvas -->
@@ -334,7 +333,7 @@
 <span class="material-symbols-outlined text-white text-lg">robot_2</span>
 </div>
 <div class="bg-white p-6 rounded-3xl rounded-tl-none shadow-sm border border-slate-100">
-<p class="text-sm text-on-surface leading-relaxed">Olá Dr. Ricardo. Identifiquei uma anomalia de custos no **Laboratório de Mídia** cruzada com a baixa ocupação (apenas 12%). </p>
+<p class="text-sm text-on-surface leading-relaxed">Olá <span id="user-greeting">Funcionário</span>. Identifiquei uma anomalia de custos no **Laboratório de Mídia** cruzada com a baixa ocupação (apenas 12%). </p>
 <p class="text-sm text-on-surface mt-3 leading-relaxed">Já recalculei a projeção fiscal de suprimentos de limpeza na lateral. Deseja que eu gere o relatório PDF detalhado com esta economia de 12.5% para aprovação?</p>
 </div>
 </div>
@@ -422,4 +421,5 @@
 <span class="material-symbols-outlined text-base">close</span>
 </button>
 </div>
+<script src="/js/user-profile.js"></script>
 </body></html>

@@ -103,13 +103,14 @@
 </div>
 <span class="material-symbols-outlined text-outline p-2 hover:bg-[#F1F3FF] rounded-full cursor-pointer transition-colors" data-icon="help">help</span>
 <div class="h-8 w-[1px] bg-[#E8EDFF] mx-2"></div>
-<div class="flex items-center gap-3 pl-2">
-<div class="text-right hidden sm:block">
-<p class="text-xs font-bold text-primary font-headline">Membro da Equipe</p>
-<p class="text-[10px] text-outline">Perfil de Bibliotecário</p>
-</div>
-<img alt="Librarian Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFSticIJIR4cOhUGSk8RRgJHblZOyWoV4jgeBq3fVEmUhn2am_EAiVjWDYj4unDJocAYYFAlIiqRzuYnF_y0XLli8aFozMi9m7iTRig7Hqrf__TJAD4OZYEhcYtWVjDIypRGzu_MGlZUNLtGQYT2UkmNJr6L2946zbMneCfug-MfTraPhP87bRmsOEj0wReEVVVv1226dZa7J_x5jvojS3hVVhdfAEUc3M-1Oj0awLQESApGCU3mJw7BFIoTdRdxVDTvlChkACYmY"/>
-</div>
+                <div class="flex items-center gap-3 pl-2">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs font-bold text-primary font-headline" id="user-name">Funcionário</p>
+                        <p class="text-[10px] text-outline" id="user-role">Carregando...</p>
+                    </div>
+                    <img alt="Perfil" id="user-picture" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container hidden" src=""/>
+                    <div id="user-avatar-fallback" class="w-8 h-8 rounded-full ring-2 ring-primary-container bg-primary text-white flex items-center justify-center text-xs font-bold hidden">?</div>
+                </div>
 </div>
 </nav>
 <!-- SideNavBar -->
@@ -530,4 +531,5 @@ function aplicarFiltroDatas() {
     renderizarEventos(dataInicio, dataFim);
 }
 </script>
+<script src="/js/user-profile.js"></script>
 </body></html>

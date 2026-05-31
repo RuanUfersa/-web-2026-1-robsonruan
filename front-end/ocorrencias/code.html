@@ -174,13 +174,14 @@
 <span class="material-symbols-outlined" data-icon="help">help</span>
 </button>
 <div class="h-8 w-[1px] bg-[#E8EDFF] mx-2"></div>
-<div class="flex items-center gap-3">
-<div class="text-right hidden sm:block">
-<p class="text-sm font-manrope font-bold text-[#082853]">Dra. Mariana Luz</p>
-<p class="text-xs text-slate-500">Bibliotecária-Chefe</p>
-</div>
-<img alt="Perfil" class="w-10 h-10 rounded-full border-2 border-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4kjO4XyIKQxlsQ4aZ4h4MpBR9PQkmNhWxjoynNcE3sd4iKKdeYIu_BePZNSE_n-HRGsPLa_o2LR-S8wyqTb6MZWNNjcWsKhFW1s8kIvLMIzW7M_-NQ8orsUW6rikxAvhrWy_8a2VXBxyw-XemSrNRDjB5YwBmZGqr8uSIpWwvXhgSOi9MkfG_x_s91Drz695J9nECyYJG2a9c2fvU_MXlbM22D_0YrCKSZ2w7Rx6pmKAZ6jWDL7zecW_WA_ivTb4MqKfdcO8i2NA"/>
-</div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-manrope font-bold text-[#082853]" id="user-name">Funcionário</p>
+                        <p class="text-xs text-slate-500" id="user-role">Carregando...</p>
+                    </div>
+                    <img alt="Perfil" id="user-picture" class="w-10 h-10 rounded-full border-2 border-primary-fixed hidden" src=""/>
+                    <div id="user-avatar-fallback" class="w-10 h-10 rounded-full border-2 border-primary-fixed bg-primary text-white flex items-center justify-center text-sm font-bold">?</div>
+                </div>
 </div>
 </header>
 <!-- Main Content -->
@@ -550,4 +551,5 @@ document.addEventListener('DOMContentLoaded', function() {
     carregarOcorrencias();
 });
 </script>
+<script src="/js/user-profile.js"></script>
 </body></html>
