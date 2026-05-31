@@ -140,6 +140,9 @@ functions:
       - httpApi:
           path: /api/materiais
           method: get
+      - httpApi:
+          path: /api/materiais/{id}
+          method: get
     environment:
       INVENTARIO_TABLE: UFERSA_Inventario
 
@@ -149,6 +152,13 @@ functions:
       - httpApi:
           path: /api/materiais/{id}
           method: delete
+
+  atualizarMaterial:
+    handler: src/crud.inventarioHandler
+    events:
+      - httpApi:
+          path: /api/materiais/{id}
+          method: put
 
   gestaoSalas:
     handler: src/crud.staticHandler
