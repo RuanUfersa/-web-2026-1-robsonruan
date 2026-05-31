@@ -116,6 +116,15 @@ functions:
     environment:
       OCORRENCIAS_TABLE: UFERSA_Ocorrencias
 
+  atualizarOcorrencia:
+    handler: src/crud.ocorrenciasHandler
+    events:
+      - httpApi:
+          path: /api/ocorrencias/{id}
+          method: put
+    environment:
+      OCORRENCIAS_TABLE: UFERSA_Ocorrencias
+
   criarMaterial:
     handler: src/crud.inventarioHandler
     events:

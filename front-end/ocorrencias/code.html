@@ -353,7 +353,7 @@ function showToast(message) {
     setTimeout(() => toast.classList.add('hidden'), 3000);
 }
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com/api';
 let ocorrencias = [];
 let salas = [];
 
@@ -424,10 +424,10 @@ function renderizarTabela() {
                 <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${statusLabel}</span>
             </td>
             <td class="px-6 py-4 text-right">
-                <button onclick="editarOcorrencia(${o.id})" class="p-2 text-slate-400 hover:text-primary transition-colors" title="Editar">
+                <button onclick='editarOcorrencia("${o.id}")' class="p-2 text-slate-400 hover:text-primary transition-colors" title="Editar">
                     <span class="material-symbols-outlined text-[20px]">edit</span>
                 </button>
-                <button onclick="excluirOcorrencia(${o.id})" class="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Excluir">
+                <button onclick='excluirOcorrencia("${o.id}")' class="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Excluir">
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                 </button>
             </td>

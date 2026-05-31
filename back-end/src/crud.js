@@ -152,6 +152,15 @@ exports.ocorrenciasHandler = async (event) => {
       return ok(await scanTable(table));
     }
 
+    if (method === 'PUT') {
+      if (!id) return err('ID obrigatorio');
+      const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
+      if (!data.Item) return err('Nao encontrado', 404);
+      const update = { ...data.Item, ...body, id, data_atualizacao: new Date().toISOString() };
+      await doc.send(new PutCommand({ TableName: table, Item: update }));
+      return ok(update);
+    }
+
     if (method === 'DELETE') {
       if (!id) return err('ID obrigatorio');
       await doc.send(new DeleteCommand({ TableName: table, Key: { id } }));
