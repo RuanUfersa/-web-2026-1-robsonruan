@@ -203,32 +203,32 @@
 <div class="flex justify-between items-start mb-4">
 <span class="material-symbols-outlined text-primary p-2 bg-surface-container-low rounded-lg" data-icon="book_online">book_online</span>
 </div>
-<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Reservas Ativas</p>
-<h3 id="reservas-ativas" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Reservas Ativas</p>
+                    <h3 id="reservas-ativas" class="text-3xl font-extrabold text-primary font-headline mt-1"><span class="inline-block w-8 h-4 bg-gray-200 animate-pulse rounded"></span></h3>
 </div>
 <!-- Rooms Available -->
 <div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <span class="material-symbols-outlined text-secondary p-2 bg-secondary-container/20 rounded-lg" data-icon="door_front">door_front</span>
 </div>
-<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Salas Disponíveis</p>
-<h3 id="salas-disponiveis" class="text-3xl font-extrabold text-secondary font-headline mt-1">0 / 0</h3>
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Salas Disponíveis</p>
+                    <h3 id="salas-disponiveis" class="text-3xl font-extrabold text-secondary font-headline mt-1"><span class="inline-block w-12 h-4 bg-gray-200 animate-pulse rounded"></span></h3>
 </div>
 <!-- Pending Issues -->
 <div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-error shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <span class="material-symbols-outlined text-error p-2 bg-error-container/30 rounded-lg" data-icon="error_outline">error_outline</span>
 </div>
-<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Ocorrências Pendentes</p>
-<h3 id="ocorrencias-pendentes" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Ocorrências Pendentes</p>
+                    <h3 id="ocorrencias-pendentes" class="text-3xl font-extrabold text-primary font-headline mt-1"><span class="inline-block w-8 h-4 bg-gray-200 animate-pulse rounded"></span></h3>
 </div>
 <!-- Total Materials -->
 <div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary-container shadow-sm hover:translate-y-[-4px] transition-transform duration-300">
 <div class="flex justify-between items-start mb-4">
 <span class="material-symbols-outlined text-primary-container p-2 bg-surface-container-low rounded-lg" data-icon="inventory">inventory</span>
 </div>
-<p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Materiais Cadastrados</p>
-<h3 id="total-materiais" class="text-3xl font-extrabold text-primary font-headline mt-1">0</h3>
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider font-label">Materiais Cadastrados</p>
+                    <h3 id="total-materiais" class="text-3xl font-extrabold text-primary font-headline mt-1"><span class="inline-block w-8 h-4 bg-gray-200 animate-pulse rounded"></span></h3>
 </div>
 </section>
 <!-- Main Layout Grid -->
@@ -255,11 +255,24 @@
 <section class="lg:col-span-4 bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col border border-surface-container">
 <div class="flex items-center justify-between mb-6">
 <h3 class="text-xl font-extrabold font-headline text-primary">Reservas de Hoje</h3>
-<span id="reservas-hoje-count" class="text-xs font-bold text-secondary uppercase bg-secondary-container/20 px-2 py-1 rounded">0</span>
+                    <span id="reservas-hoje-count" class="text-xs font-bold text-secondary uppercase bg-secondary-container/20 px-2 py-1 rounded"><span class="inline-block w-4 h-3 bg-gray-200 animate-pulse rounded"></span></span>
 </div>
-<div id="reservas-hoje" class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
-<!-- Reservas de hoje serão carregadas aqui via JS -->
-</div>
+            <div id="reservas-hoje" class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low animate-pulse">
+                    <div class="w-12 h-12 rounded-lg bg-gray-200"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low animate-pulse">
+                    <div class="w-12 h-12 rounded-lg bg-gray-200"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                        <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+            </div>
 <a href="/reservas_emprestimos/code.html" class="w-full py-3 text-sm font-bold text-primary hover:bg-surface-container transition-colors rounded-xl mt-6 inline-block text-center">Ver Agenda Completa</a>
 </section>
 </div>
@@ -277,38 +290,49 @@ let todasOcorrencias = [];
 let todosMateriais = [];
 let todosLogs = [];
 
+const API_BASE = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
 const eventosPorPagina = 8;
 let paginaEventos = 1;
 
+async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    return res.json();
+}
+
 async function carregarDados() {
     try {
-        // Carregar logs primeiro单独
-        const logsRes = await fetch('/api/logs');
-        todosLogs = await logsRes.json();
-        console.log('Logs do servidor:', todosLogs);
-        
-        // Carregar outros dados
         const [reservasRes, salasRes, ocorrenciasRes, materiaisRes] = await Promise.all([
-            fetch('/api/reservas'),
-            fetch('/api/salas'),
-            fetch('/api/ocorrencias'),
-            fetch('/api/materiais')
+            fetchJSON(API_BASE + '/api/reservas'),
+            fetchJSON(API_BASE + '/api/salas'),
+            fetchJSON(API_BASE + '/api/ocorrencias'),
+            fetchJSON(API_BASE + '/api/materiais')
         ]);
         
-        todasReservas = await reservasRes.json();
-        todasSalas = await salasRes.json();
-        todasOcorrencias = await ocorrenciasRes.json();
-        todosMateriais = await materiaisRes.json();
+        todasReservas = reservasRes;
+        todasSalas = salasRes;
+        todasOcorrencias = ocorrenciasRes;
+        todosMateriais = materiaisRes;
         
-        // Renderizar reservas de hoje
+        atualizarMetricas();
         renderizarReservasHoje();
-        
-        // Renderizar eventos com paginação
-        paginaEventos = 1;
         renderizarEventos();
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
     }
+}
+
+function atualizarMetricas() {
+    const reservasAtivas = todasReservas.filter(r => r.status === 'ativo' || r.status === 'atencao').length;
+    const salasDisponiveis = todasSalas.filter(s => s.status === 'disponivel').length;
+    const totalSalas = todasSalas.length;
+    const ocorrenciasPendentes = todasOcorrencias.filter(o => o.status === 'em_analise').length;
+    const totalMateriais = todosMateriais.length;
+
+    document.getElementById('reservas-ativas').textContent = reservasAtivas;
+    document.getElementById('salas-disponiveis').textContent = `${salasDisponiveis} / ${totalSalas}`;
+    document.getElementById('ocorrencias-pendentes').textContent = ocorrenciasPendentes;
+    document.getElementById('total-materiais').textContent = totalMateriais;
 }
 
 function renderizarReservasHoje() {
@@ -465,44 +489,14 @@ function mudarPaginaEventos(delta) {
     }
 }
 
-function aplicarFiltroDatas() {
-    const dataInicio = document.getElementById('filtro-data-inicio').value;
-    const dataFim = document.getElementById('filtro-data-fim').value;
-    
-    let reservasFiltradas = todasReservas;
-    
-    if (dataInicio) {
-        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva >= dataInicio);
-    }
-    if (dataFim) {
-        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva <= dataFim);
-    }
-    
-    const reservasAtivas = reservasFiltradas.filter(r => r.status === 'ativo' || r.status === 'atencao').length;
-    
-    const salasDisponiveis = todasSalas.filter(s => s.status === 'disponivel').length;
-    const totalSalas = todasSalas.length;
-    
-    const ocorrenciasPendentes = todasOcorrencias.filter(o => o.status === 'em_analise').length;
-    
-    const totalMateriais = todosMateriais.length;
-    
-    document.getElementById('reservas-ativas').textContent = reservasAtivas;
-    document.getElementById('salas-disponiveis').textContent = `${salasDisponiveis} / ${totalSalas}`;
-    document.getElementById('ocorrencias-pendentes').textContent = ocorrenciasPendentes;
-    document.getElementById('total-materiais').textContent = totalMateriais;
-}
-
 function limparFiltro() {
     document.getElementById('filtro-data-inicio').value = '';
     document.getElementById('filtro-data-fim').value = '';
     aplicarFiltroDatas();
 }
 
-// Inicializar ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     carregarDados();
-    aplicarFiltroDatas();
 });
 
 function aplicarFiltroDatas() {
