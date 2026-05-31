@@ -380,17 +380,23 @@ async function carregarSalas() {
 async function carregarOcorrencias() {
     try {
         const response = await fetch(`${API_URL}/ocorrencias`);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
         ocorrencias = await response.json();
+        if (!Array.isArray(ocorrencias)) throw new Error('Resposta inválida');
         renderizarTabela();
         atualizarEstatisticas();
     } catch (e) {
         console.error('Erro ao carregar ocorrências:', e);
         showToast('Erro ao carregar ocorrências');
+        document.getElementById('ocorrencias-tbody').innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Erro ao carregar dados. Tente novamente.</td></tr>';
+        const pagInfo = document.getElementById('pagination-info');
+        if (pagInfo) pagInfo.textContent = 'Erro ao carregar';
     }
 }
 
 function renderizarTabela() {
     const tbody = document.getElementById('ocorrencias-tbody');
+    const pagInfo = document.getElementById('pagination-info');
     const filtroBusca = document.getElementById('filtroBusca').value.toLowerCase();
     const filtroStatus = document.getElementById('filtroStatus').value;
     
@@ -402,6 +408,8 @@ function renderizarTabela() {
         const matchStatus = !filtroStatus || o.status === filtroStatus;
         return matchBusca && matchStatus;
     });
+    
+    if (pagInfo) pagInfo.textContent = `${filtradas.length} ocorrência(s) encontrada(s)`;
     
     if (filtradas.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Nenhuma ocorrência encontrada</td></tr>';
