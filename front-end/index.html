@@ -5,8 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIFU Biblioteca UFERSA</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: "class" }
+    </script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
+        .dark #auth-section .bg-white,
+        .dark #login-section .bg-white,
+        .dark #loading-section .bg-white { background-color: #1e293b !important; }
+        .dark #auth-section .text-\[#082853\],
+        .dark #auth-section .text-gray-800 { color: #e2e8f0 !important; }
+        .dark #auth-section .text-gray-600 { color: #94a3b8 !important; }
+        .dark #auth-section .bg-\[\#F1F3FF\] { background-color: #334155 !important; }
+        .dark #auth-section .bg-\[\#F1F3FF\]:hover { background-color: #082853 !important; }
+        .dark #auth-section .bg-\[\#d7e2ff\] { background-color: #1e3a5f !important; color: #e2e8f0 !important; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#082853] to-[#14C286] min-h-screen">
@@ -338,5 +350,6 @@
             document.getElementById('chat-toggle-btn').classList.add('hidden');
         }
     </script>
+<script src="js/theme.js"></script>
 </body>
 </html>
