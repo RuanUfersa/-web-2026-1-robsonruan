@@ -294,6 +294,8 @@ const defaultImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCPF_8E
 function renderizarSalas(salas) {
     const container = document.getElementById('salas-grid');
     if (!container) return;
+    const loading = document.getElementById('salas-loading');
+    if (loading) loading.remove();
     
     // Calcular estat??sticas
     const total = salas.length;
