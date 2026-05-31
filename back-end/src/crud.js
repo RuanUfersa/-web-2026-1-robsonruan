@@ -1,6 +1,10 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const crypto = require('crypto');
+
+const s3 = new S3Client({ region: 'us-east-1' });
+const BUCKET_NAME = 'sifu-robsonruan-2026';
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
 const doc = DynamoDBDocumentClient.from(client);
@@ -132,6 +136,17 @@ exports.reservasHandler = async (event) => {
   }
 };
 
+async function uploadFoto(base64) {
+  let raw = base64;
+  if (raw.includes(',')) raw = raw.split(',')[1];
+  const imageBytes = Buffer.from(raw, 'base64');
+  const fileName = `ocorrencia_${uuid()}.png`;
+  await s3.send(new PutObjectCommand({
+    Bucket: BUCKET_NAME, Key: fileName, Body: imageBytes, ContentType: 'image/png'
+  }));
+  return `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
+}
+
 exports.ocorrenciasHandler = async (event) => {
   const method = getMethod(event);
   const body = getBody(event);
@@ -143,6 +158,10 @@ exports.ocorrenciasHandler = async (event) => {
 
     if (method === 'POST') {
       if (!body.aluno_nome || !body.aluno_matricula || !body.descricao) return err('Campos obrigatorios: aluno_nome, aluno_matricula, descricao');
+      if (body.foto_base64) {
+        body.foto_url = await uploadFoto(body.foto_base64);
+        delete body.foto_base64;
+      }
       const item = { id: uuid(), ...body, status: 'em_analise', data_criacao: new Date().toISOString() };
       await doc.send(new PutCommand({ TableName: table, Item: item }));
       return ok(item, 201);
@@ -156,6 +175,10 @@ exports.ocorrenciasHandler = async (event) => {
       if (!id) return err('ID obrigatorio');
       const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
       if (!data.Item) return err('Nao encontrado', 404);
+      if (body.foto_base64) {
+        body.foto_url = await uploadFoto(body.foto_base64);
+        delete body.foto_base64;
+      }
       const update = { ...data.Item, ...body, id, data_atualizacao: new Date().toISOString() };
       await doc.send(new PutCommand({ TableName: table, Item: update }));
       return ok(update);
