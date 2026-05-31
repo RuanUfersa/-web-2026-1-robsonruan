@@ -293,7 +293,7 @@ function showToast(msg, isError = false) {
     setTimeout(() => toast.classList.add('hidden'), 4000);
 }
 
-function carregarPerfil() {
+async function carregarPerfil() {
     const idToken = sessionStorage.getItem('id_token');
     if (!idToken) {
         window.location.href = '/index.html';
@@ -304,12 +304,37 @@ function carregarPerfil() {
         window.location.href = '/index.html';
         return;
     }
-    const nome = payload.name || payload.given_name || payload['cognito:username'] || 'Usuário';
+    const userId = payload['cognito:username'] || payload.sub || payload.email || '';
     const email = payload.email || '';
-    const userId = payload['cognito:username'] || payload.sub || email;
     const savedFoto = localStorage.getItem('profile_foto_url');
-    const picture = savedFoto || payload.picture || '';
+    const savedNome = localStorage.getItem('profile_nome');
 
+    try {
+        const res = await fetch(PROFILE_API + '?id=' + encodeURIComponent(userId));
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.nome) {
+                window._userId = data.id || userId;
+                window._userNome = data.nome;
+                window._userEmail = data.email || email;
+                const foto = data.fotoUrl || savedFoto || payload.picture || '';
+                renderProfile(data.nome, window._userEmail, window._userId, foto, data.fotoUrl || savedFoto);
+                return;
+            }
+        }
+    } catch (e) {
+        // fallback para JWT
+    }
+
+    const nome = savedNome || payload.name || payload.given_name || payload['cognito:username'] || 'Usuário';
+    const picture = savedFoto || payload.picture || '';
+    window._userId = userId;
+    window._userNome = nome;
+    window._userEmail = email;
+    renderProfile(nome, email, userId, picture, savedFoto);
+}
+
+function renderProfile(nome, email, userId, picture, savedFoto) {
     document.getElementById('profile-name').textContent = nome;
     document.getElementById('profile-email').textContent = email;
     document.getElementById('profile-userid').textContent = 'ID: ' + userId;
@@ -336,10 +361,6 @@ function carregarPerfil() {
         profFallback.classList.remove('hidden');
         profPic.classList.add('hidden');
     }
-
-    window._userId = userId;
-    window._userNome = nome;
-    window._userEmail = email;
 }
 
 let _pendingFotoBase64 = null;
@@ -394,6 +415,8 @@ async function salvarNome() {
         const data = await res.json();
         if (res.ok) {
             document.getElementById('profile-name').textContent = nome;
+            localStorage.setItem('profile_nome', nome);
+            window._userNome = nome;
             showToast('Nome atualizado com sucesso!');
         } else {
             showToast(data.error || 'Erro ao salvar nome', true);
@@ -425,6 +448,8 @@ async function salvarTudo() {
         const data = await res.json();
         if (res.ok) {
             document.getElementById('profile-name').textContent = nome;
+            localStorage.setItem('profile_nome', nome);
+            window._userNome = nome;
             if (data.fotoUrl) {
                 localStorage.setItem('profile_foto_url', data.fotoUrl);
                 const bustUrl = data.fotoUrl + '?t=' + Date.now();
