@@ -1,5 +1,5 @@
 /**
- * Fun????es CRUD para Gest??o de Salas
+ * Funções CRUD para Gestão de Salas
  */
 
 const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
@@ -27,14 +27,14 @@ async function abrirModalNovaSala() {
     document.getElementById('salaForm').reset();
     document.getElementById('salaId').value = '';
     
-    // Carregar materiais dispon??veis
+    // Carregar materiais disponíveis
     await carregarMateriaisDisponiveis();
     
     document.getElementById('salaModal').classList.remove('hidden');
 }
 
 /**
- * Carregar materiais dispon??veis no select
+ * Carregar materiais disponíveis no select
  */
 async function carregarMateriaisDisponiveis() {
     try {
@@ -44,7 +44,7 @@ async function carregarMateriaisDisponiveis() {
         const disponiveis = materiais.filter(m => m.status === 'disponivel');
         const select = document.getElementById('salaRecursos');
         
-        select.innerHTML = '<option value="">Selecione os materiais dispon??veis...</option>' + 
+        select.innerHTML = '<option value="">Selecione os materiais disponíveis...</option>' + 
             disponiveis.map(m => `<option value="${m.nome}">${m.codigo} - ${m.nome}</option>`).join('');
         
     } catch (error) {
@@ -63,7 +63,7 @@ async function abrirModalEditarSala(sala) {
     document.getElementById('salaTipo').value = sala.tipo || 'colaborativo';
     document.getElementById('salaStatus').value = sala.status || 'disponivel';
     
-    // Carregar materiais dispon??veis
+    // Carregar materiais disponíveis
     await carregarMateriaisDisponiveis();
     
     // Selecionar os recursos existentes
@@ -217,7 +217,7 @@ async function sincronizarMateriaisComSalas() {
             }
         }
         
-        // Depois, marcar como em_uso os que est??o em salas
+        // Depois, marcar como em_uso os que estão em salas
         for (const sala of salas) {
             if (sala.recursos) {
                 const recursosArray = Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim());
@@ -267,7 +267,7 @@ async function excluirSala(id) {
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToast('Sala exclu??da!');
+        mostrarToast('Sala excluída!');
         carregarSalas();
     } catch (error) {
         console.error('Erro:', error);
@@ -297,14 +297,14 @@ function renderizarSalas(salas) {
     const loading = document.getElementById('salas-loading');
     if (loading) loading.remove();
     
-    // Calcular estat??sticas
+    // Calcular estatísticas
     const total = salas.length;
     const disponiveis = salas.filter(s => s.status === 'disponivel').length;
     const ocupados = salas.filter(s => s.status === 'ocupado').length;
     const manutencao = salas.filter(s => s.status === 'manutencao').length;
     const ocupacao = total > 0 ? Math.round((ocupados / total * 100)) : 0;
     
-    // Atualizar cards de estat??sticas
+    // Atualizar cards de estatísticas
     document.getElementById('salas-disponiveis').innerHTML = disponiveis + ' <span class="text-sm font-normal text-on-surface-variant">/ ' + total + ' Salas</span>';
     document.getElementById('salas-manutencao').innerHTML = manutencao + ' <span class="text-sm font-normal text-on-surface-variant">Salas</span>';
     document.getElementById('ocupacao-media').textContent = ocupacao + '%';
@@ -316,15 +316,15 @@ function renderizarSalas(salas) {
 <span class="material-symbols-outlined text-primary text-3xl group-hover:text-white transition-colors">add</span>
 </div>
 <h3 class="text-lg font-bold text-primary mb-1 transition-colors group-hover:text-primary">Adicionar Nova Sala</h3>
-<p class="text-sm text-on-surface-variant text-center max-w-[200px]">Registre um novo espa??o colaborativo no sistema</p>
+<p class="text-sm text-on-surface-variant text-center max-w-[200px]">Registre um novo espaço colaborativo no sistema</p>
 </div>`;
     
     container.innerHTML = '';
     
     const statusLabels = {
-        'disponivel': { label: 'Dispon??vel', class: 'bg-secondary-container/90 text-on-secondary-container' },
+        'disponivel': { label: 'Disponível', class: 'bg-secondary-container/90 text-on-secondary-container' },
         'ocupado': { label: 'Ocupado', class: 'bg-surface-variant/90 text-on-surface-variant' },
-        'manutencao': { label: 'Manuten????o', class: 'bg-error-container/90 text-on-error-container' }
+        'manutencao': { label: 'Manutenção', class: 'bg-error-container/90 text-on-error-container' }
     };
     
     salas.forEach(sala => {
@@ -401,13 +401,13 @@ async function carregarSalas() {
 }
 
 /**
- * Inicializar gest??o de salas
+ * Inicializar gestão de salas
  */
 async function inicializarGestaoSalas() {
     await sincronizarMateriaisComSalas();
     await carregarSalas();
     
-    // Configurar formul??rio
+    // Configurar formulário
     document.getElementById('salaForm').addEventListener('submit', salvarSala);
     
     // Fechar modal ao clicar fora
@@ -436,7 +436,7 @@ async function inicializarGestaoSalas() {
     }
 }
 
-// Disponibilizar fun????es globalmente
+// Disponibilizar funções globalmente
 window.abrirModalNovaSala = abrirModalNovaSala;
 window.abrirModalEditarSala = abrirModalEditarSala;
 window.fecharModal = fecharModal;

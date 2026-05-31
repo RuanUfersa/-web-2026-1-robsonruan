@@ -1,5 +1,5 @@
 /**
- * Fun????es CRUD para Materiais
+ * Funções CRUD para Materiais
  */
 
 const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
@@ -140,7 +140,7 @@ async function salvarMaterial(event) {
         
         if (!response.ok) throw new Error(result.erro || 'Erro ao salvar');
         
-        // Se status mudou para dispon??vel, mas est?? em uma sala, remover da sala
+        // Se status mudou para disponível, mas está em uma sala, remover da sala
         if (materialAntigo && material.status !== 'disponivel' && material.status !== materialAntigo.status) {
             await removerMaterialDasSalas(material.nome);
         }
@@ -155,7 +155,7 @@ async function salvarMaterial(event) {
 }
 
 /**
- * Remover material das salas ao mudar status para n??o dispon??vel
+ * Remover material das salas ao mudar status para não disponível
  */
 async function removerMaterialDasSalas(nomeMaterial) {
     try {
@@ -197,7 +197,7 @@ async function excluirMaterial(id) {
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToastMaterial('Material exclu??do!');
+        mostrarToastMaterial('Material excluído!');
         carregarMateriais();
     } catch (error) {
         console.error('Erro:', error);
@@ -243,14 +243,14 @@ const materiaisPorPagina = 5;
 function renderizarTabelaMateriais(materiais) {
     const tbody = document.querySelector('tbody');
     if (!tbody) {
-        console.error('tbody n??o encontrado!');
+        console.error('tbody não encontrado!');
         return;
     }
     
     todosMateriais = materiais;
     paginaAtual = 1;
     
-    // Atualizar estat??sticas
+    // Atualizar estatísticas
     const disponiveis = materiais.filter(m => m.status === 'disponivel').length;
     const emUso = materiais.filter(m => m.status === 'em_uso').length;
     const manutencao = materiais.filter(m => m.status === 'manutencao').length;
@@ -280,9 +280,9 @@ function renderizarPaginaMaterial() {
     const totalPaginas = Math.ceil(todosMateriais.length / materiaisPorPagina);
     
     const statusLabels = {
-        'disponivel': { label: 'Dispon??vel', class: 'bg-green-100 text-green-700' },
+        'disponivel': { label: 'Disponível', class: 'bg-green-100 text-green-700' },
         'em_uso': { label: 'Em Uso', class: 'bg-yellow-100 text-yellow-700' },
-        'manutencao': { label: 'Manuten????o', class: 'bg-red-100 text-red-700' }
+        'manutencao': { label: 'Manutenção', class: 'bg-red-100 text-red-700' }
     };
     
     materiaisPagina.forEach(m => {
@@ -308,7 +308,7 @@ function renderizarPaginaMaterial() {
         tbody.appendChild(tr);
     });
     
-    // Atualizar info da pagina????o
+    // Atualizar info da paginação
     const infoEl = document.getElementById('pagination-info');
     if (infoEl) {
         if (todosMateriais.length === 0) {
@@ -319,14 +319,14 @@ function renderizarPaginaMaterial() {
         }
     }
     
-    // Renderizar bot??es de pagina????o
+    // Renderizar botões de paginação
     renderizarBotoesPaginaMaterial(totalPaginas);
 }
 
 function renderizarBotoesPaginaMaterial(totalPaginas) {
     const container = document.getElementById('pagination-buttons');
     if (!container) {
-        console.error('container pagination-buttons n??o encontrado!');
+        console.error('container pagination-buttons não encontrado!');
         return;
     }
     
@@ -334,17 +334,17 @@ function renderizarBotoesPaginaMaterial(totalPaginas) {
     
     if (totalPaginas <= 1) return;
     
-    // Bot??o anterior
+    // Botão anterior
     const btnPrev = document.createElement('button');
     btnPrev.className = 'px-3 py-1 border rounded-lg text-sm hover:bg-gray-100' + (paginaAtual === 1 ? ' opacity-50 cursor-not-allowed' : '');
-    btnPrev.innerHTML = '?? Anterior';
+    btnPrev.innerHTML = '« Anterior';
     btnPrev.onclick = () => { 
         if (paginaAtual > 1) { paginaAtual--; renderizarPaginaMaterial(); } 
     };
     if (paginaAtual === 1) btnPrev.disabled = true;
     container.appendChild(btnPrev);
     
-    // Bot??es de p??ginas
+    // Botões de páginas
     for (let i = 1; i <= totalPaginas; i++) {
         const btn = document.createElement('button');
         btn.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold ' + (i === paginaAtual ? 'bg-[#082853] text-white' : 'hover:bg-gray-100 text-[#082853]');
@@ -353,10 +353,10 @@ function renderizarBotoesPaginaMaterial(totalPaginas) {
         container.appendChild(btn);
     }
     
-    // Bot??o pr??ximo
+    // Botão próximo
     const btnNext = document.createElement('button');
     btnNext.className = 'px-3 py-1 border rounded-lg text-sm hover:bg-gray-100' + (paginaAtual === totalPaginas ? ' opacity-50 cursor-not-allowed' : '');
-    btnNext.innerHTML = 'Pr??xima ??';
+    btnNext.innerHTML = 'Próxima »';
     btnNext.onclick = () => { 
         if (paginaAtual < totalPaginas) { paginaAtual++; renderizarPaginaMaterial(); } 
     };

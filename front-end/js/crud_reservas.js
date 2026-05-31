@@ -1,5 +1,5 @@
 /**
- * Fun????es CRUD para Reservas
+ * Funções CRUD para Reservas
  */
 
 const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
@@ -62,11 +62,11 @@ async function abrirModalNovaReserva() {
     const salas = await listarSalas();
     const salasDisponiveis = salas.filter(s => s.status === 'disponivel');
     const select = document.getElementById('reservaSalaId');
-    select.innerHTML = '<option value="">Selecione uma sala dispon??vel</option>' + 
+    select.innerHTML = '<option value="">Selecione uma sala disponível</option>' + 
         salasDisponiveis.map(s => `<option value="${s.id}">${s.nome} (Cap: ${s.capacidade})</option>`).join('');
     
     if (salasDisponiveis.length === 0) {
-        mostrarToastReserva('Nenhuma sala dispon??vel para reserva!', 'error');
+        mostrarToastReserva('Nenhuma sala disponível para reserva!', 'error');
         return;
     }
     
@@ -165,7 +165,7 @@ async function excluirReserva(id) {
         
         if (!response.ok) throw new Error('Erro ao excluir');
         
-        mostrarToastReserva('Reserva exclu??da!');
+        mostrarToastReserva('Reserva excluída!');
         carregarReservas();
     } catch (error) {
         console.error('Erro:', error);
@@ -235,7 +235,7 @@ function renderizarTabelaReservas(reservas) {
     tbody.innerHTML = '';
     todasReservas = reservas;
     
-    // Atualizar estat??sticas dos pain??is
+    // Atualizar estatísticas dos painéis
     const ativas = reservas.filter(r => r.status === 'ativo').length;
     const atencao = reservas.filter(r => r.status === 'atencao').length;
     
@@ -252,8 +252,8 @@ function renderizarTabelaReservas(reservas) {
     
     const statusLabels = {
         'ativo': { label: 'ATIVO', class: 'bg-secondary-container text-on-secondary-container' },
-        'atencao': { label: 'ATEN????O', class: 'bg-error-container text-on-error-container' },
-        'concluido': { label: 'CONCLU??DO', class: 'bg-surface-container text-on-surface' },
+        'atencao': { label: 'ATENÇÃO', class: 'bg-error-container text-on-error-container' },
+        'concluido': { label: 'CONCLUÍDO', class: 'bg-surface-container text-on-surface' },
         'cancelado': { label: 'CANCELADO', class: 'bg-slate-200 text-slate-600' }
     };
     
@@ -303,7 +303,7 @@ ${status.label}
         tbody.appendChild(tr);
     });
     
-    // Atualizar info da pagina????o
+    // Atualizar info da paginação
     const infoEl = document.getElementById('pagination-info');
     if (infoEl) {
         if (reservas.length === 0) {
@@ -314,14 +314,14 @@ ${status.label}
         }
     }
     
-    // Renderizar bot??es de pagina????o
+    // Renderizar botões de paginação
     renderizarBotoesPagina(totalPaginas);
 }
 
 function renderizarBotoesPagina(totalPaginas) {
     const container = document.getElementById('pagination-buttons');
     if (!container) {
-        console.error('[DEBUG] container pagination-buttons n??o encontrado!');
+        console.error('[DEBUG] container pagination-buttons não encontrado!');
         return;
     }
     
@@ -329,7 +329,7 @@ function renderizarBotoesPagina(totalPaginas) {
     
     if (totalPaginas <= 1) return;
     
-    // Bot??o anterior
+    // Botão anterior
     const btnPrev = document.createElement('button');
     btnPrev.className = 'w-8 h-8 flex items-center justify-center rounded-lg border border-surface-container text-slate-400 hover:bg-surface-container transition-colors' + (paginaAtual === 1 ? ' opacity-50 cursor-not-allowed' : '');
     btnPrev.innerHTML = '<span class="material-symbols-outlined text-[18px]">chevron_left</span>';
@@ -339,7 +339,7 @@ function renderizarBotoesPagina(totalPaginas) {
     if (paginaAtual === 1) btnPrev.disabled = true;
     container.appendChild(btnPrev);
     
-    // Bot??es de p??ginas
+    // Botões de páginas
     for (let i = 1; i <= totalPaginas; i++) {
         const btn = document.createElement('button');
         btn.className = 'w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold ' + (i === paginaAtual ? 'bg-primary text-white' : 'hover:bg-surface-container text-primary');
@@ -348,7 +348,7 @@ function renderizarBotoesPagina(totalPaginas) {
         container.appendChild(btn);
     }
     
-    // Bot??o pr??ximo
+    // Botão próximo
     const btnNext = document.createElement('button');
     btnNext.className = 'w-8 h-8 flex items-center justify-center rounded-lg border border-surface-container text-slate-400 hover:bg-surface-container transition-colors' + (paginaAtual === totalPaginas ? ' opacity-50 cursor-not-allowed' : '');
     btnNext.innerHTML = '<span class="material-symbols-outlined text-[18px]">chevron_right</span>';
