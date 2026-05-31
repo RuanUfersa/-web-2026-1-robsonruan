@@ -1,6 +1,6 @@
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
 
 const s3 = new S3Client({ region: 'us-east-1' });
 const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'us-east-1' }));
@@ -12,7 +12,7 @@ exports.profileHandler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-    'Access-Control-Allow-Methods': 'PUT,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,PUT,OPTIONS',
     'Content-Type': 'application/json'
   };
 
@@ -20,6 +20,53 @@ exports.profileHandler = async (event) => {
     return { statusCode: 200, headers, body: JSON.stringify({ message: 'OK' }) };
   }
 
+  if (event.requestContext?.http?.method === 'GET') {
+    return handleGet(event, headers);
+  }
+
+  return handlePut(event, headers);
+};
+
+async function handleGet(event, headers) {
+  try {
+    const userId = event.queryStringParameters?.id || event.queryStringParameters?.userId || '';
+
+    if (!userId) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Parâmetro id é obrigatório' })
+      };
+    }
+
+    const result = await dynamoDb.send(new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { id: userId }
+    }));
+
+    if (!result.Item) {
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ error: 'Perfil não encontrado' })
+      };
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(result.Item)
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+}
+
+async function handlePut(event, headers) {
   try {
     const body = JSON.parse(event.body || '{}');
     const userId = body.id || body.userId || body.email || 'usuario_sifu';
@@ -27,7 +74,11 @@ exports.profileHandler = async (event) => {
     const email = body.email || 'Nao informado';
     const fotoBase64 = body.foto || body.avatar || '';
 
-    let fotoUrl = '';
+    const item = {
+      id: userId,
+      nome,
+      email
+    };
 
     if (fotoBase64) {
       let raw = fotoBase64;
@@ -42,17 +93,20 @@ exports.profileHandler = async (event) => {
         ContentType: 'image/png'
       }));
 
-      fotoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
+      item.fotoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
+    } else {
+      const existing = await dynamoDb.send(new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { id: userId }
+      }));
+      if (existing.Item?.fotoUrl) {
+        item.fotoUrl = existing.Item.fotoUrl;
+      }
     }
 
     await dynamoDb.send(new PutCommand({
       TableName: TABLE_NAME,
-      Item: {
-        id: userId,
-        nome,
-        email,
-        fotoUrl
-      }
+      Item: item
     }));
 
     return {
@@ -60,7 +114,7 @@ exports.profileHandler = async (event) => {
       headers,
       body: JSON.stringify({
         message: 'Perfil atualizado com sucesso!',
-        fotoUrl
+        fotoUrl: item.fotoUrl || ''
       })
     };
   } catch (error) {
@@ -70,4 +124,4 @@ exports.profileHandler = async (event) => {
       body: JSON.stringify({ error: error.message })
     };
   }
-};
+}

@@ -210,6 +210,9 @@ functions:
       - httpApi:
           path: /profile
           method: put
+      - httpApi:
+          path: /profile
+          method: get
 
 package:
   individually: false
