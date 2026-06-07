@@ -237,8 +237,16 @@
         }
 
         async function checkAuth() {
-            const code = new URLSearchParams(window.location.search).get('code');
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const error = params.get('error');
+            const errorDesc = params.get('error_description');
             
+            if (error) {
+                console.warn('Erro Cognito:', error, errorDesc);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             if (code && !sessionStorage.getItem('access_token')) {
                 await exchangeCodeForTokens(code);
                 window.history.replaceState({}, document.title, window.location.pathname);
