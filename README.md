@@ -141,6 +141,389 @@ O SIFU é uma aplicação web completa para gerenciamento da Biblioteca da **Uni
 
 ---
 
+## Documentação da API
+
+### Base URL
+
+```
+https://api.robsonruan.sifu1.web.ufersa.dev.br
+```
+
+Alternativa (domínio padrão API Gateway):
+```
+https://2791fnzy75.execute-api.us-east-1.amazonaws.com
+```
+
+### Autenticação
+
+A maioria dos endpoints é pública. Apenas o `/chatbot` exige autenticação:
+
+```
+Authorization: Bearer SEU_TOKEN_JWT
+```
+
+> ⚠️ **Segurança**: Tokens JWT expiram em 1 hora e contêm dados do usuário. Nunca compartilhe seu token ou senha. Em produção, o fluxo de autenticação é feito pelo front-end via Cognito Hosted UI. Comandos de autenticação via CLI são apenas para testes em desenvolvimento.
+
+### Padrão de Respostas
+
+**Sucesso (200/201):**
+```json
+{
+  "id": "uuid-gerado",
+  "nome": "Exemplo",
+  ...demais campos
+}
+```
+
+**Erro (400/404/405/500):**
+```json
+{
+  "erro": "Mensagem descritiva do erro"
+}
+```
+
+### Endpoints
+
+#### Salas — `GET /api/salas`
+
+Lista todas as salas cadastradas.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas
+```
+
+**Response (200):**
+```json
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "nome": "Laboratório A",
+    "capacidade": 10,
+    "tipo": "colaborativo",
+    "recursos": ["ar condicionado", "projetor"],
+    "status": "disponivel",
+    "data_criacao": "2026-06-07T12:00:00.000Z"
+  }
+]
+```
+
+**Exemplo curl:**
+```bash
+curl https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas
+```
+
+---
+
+#### Salas — `POST /api/salas`
+
+Cria uma nova sala.
+
+```
+POST https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "nome": "Laboratório B",
+  "capacidade": 20,
+  "tipo": "estudo",
+  "recursos": ["quadro branco", "tv"],
+  "status": "disponivel"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440001",
+  "nome": "Laboratório B",
+  "capacidade": 20,
+  "tipo": "estudo",
+  "recursos": ["quadro branco", "tv"],
+  "status": "disponivel",
+  "data_criacao": "2026-06-07T12:00:00.000Z"
+}
+```
+
+**Campos obrigatórios:** `nome`, `capacidade`, `tipo`
+**Campos opcionais:** `recursos` (string separada por vírgula ou array), `status` (default: "disponivel")
+
+**Exemplo curl:**
+```bash
+curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Laboratório B","capacidade":20,"tipo":"estudo","recursos":["quadro branco","tv"]}'
+```
+
+---
+
+#### Salas — `GET /api/salas/{id}`
+
+Retorna uma sala específica pelo ID.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas/550e8400-e29b-41d4-a716-446655440001
+```
+
+**Response (200):** objeto completo da sala.
+**Response (404):** `{"erro": "Nao encontrado"}`
+
+---
+
+#### Salas — `PUT /api/salas/{id}`
+
+Atualiza parcialmente uma sala. Envie apenas os campos que deseja modificar.
+
+```
+PUT https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas/550e8400-e29b-41d4-a716-446655440001
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "capacidade": 25,
+  "status": "em_manutencao"
+}
+```
+
+**Response (200):** objeto completo com campos atualizados + `data_atualizacao`.
+
+---
+
+#### Salas — `DELETE /api/salas/{id}`
+
+Exclui uma sala.
+
+```
+DELETE https://api.robsonruan.sifu1.web.ufersa.dev.br/api/salas/550e8400-e29b-41d4-a716-446655440001
+```
+
+**Response (200):** `{"mensagem": "Excluido"}`
+
+---
+
+#### Reservas — `GET /api/reservas`
+
+Lista todas as reservas.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/api/reservas
+```
+
+**Response (200):**
+```json
+[
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440010",
+    "nome": "João Silva",
+    "matricula": "2023001",
+    "cargo": "Estudante",
+    "sala_id": "550e8400-e29b-41d4-a716-446655440001",
+    "data": "2026-06-10",
+    "hora_inicio": "09:00",
+    "hora_fim": "11:00",
+    "status": "ativo",
+    "data_criacao": "2026-06-07T12:00:00.000Z"
+  }
+]
+```
+
+---
+
+#### Reservas — `POST /api/reservas`
+
+Cria uma nova reserva.
+
+**Campos obrigatórios:** `nome`, `matricula`, `data`, `hora_inicio`, `hora_fim`
+**Campos opcionais:** `cargo` (default: "Estudante"), `sala_id`, `status` (default: "ativo")
+
+**Exemplo curl:**
+```bash
+curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/api/reservas \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"João Silva","matricula":"2023001","cargo":"Estudante","data":"2026-06-10","hora_inicio":"09:00","hora_fim":"11:00"}'
+```
+
+`PUT /api/reservas/{id}` e `DELETE /api/reservas/{id}` seguem o mesmo padrão dos endpoints de sala.
+
+---
+
+#### Materiais — `GET /api/materiais`
+
+Lista materiais do inventário.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/api/materiais
+```
+
+**Response (200):**
+```json
+[
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440020",
+    "codigo": "EQP001",
+    "nome": "Notebook Dell",
+    "tipo": "equipamento",
+    "sala_id": "550e8400-e29b-41d4-a716-446655440001",
+    "status": "disponivel",
+    "data_criacao": "2026-06-07T12:00:00.000Z"
+  }
+]
+```
+
+---
+
+#### Materiais — `POST /api/materiais`
+
+Cria um novo material.
+
+**Campos obrigatórios:** `codigo`, `nome`, `tipo`
+**Campos opcionais:** `sala_id`, `status` (default: "disponivel"), `descricao`
+
+**Exemplo curl:**
+```bash
+curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/api/materiais \
+  -H "Content-Type: application/json" \
+  -d '{"codigo":"EQP001","nome":"Notebook Dell","tipo":"equipamento"}'
+```
+
+`PUT /api/materiais/{id}` e `DELETE /api/materiais/{id}` seguem o mesmo padrão.
+
+---
+
+#### Ocorrências — `GET /api/ocorrencias`
+
+Lista ocorrências registradas.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/api/ocorrencias
+```
+
+---
+
+#### Ocorrências — `POST /api/ocorrencias`
+
+Registra uma nova ocorrência.
+
+**Campos obrigatórios:** `aluno_nome`, `aluno_matricula`, `descricao`
+**Campo opcional:** `foto_base64` (string base64 — enviada para o S3 automaticamente)
+
+**Exemplo curl:**
+```bash
+curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/api/ocorrencias \
+  -H "Content-Type: application/json" \
+  -d '{"aluno_nome":"João","aluno_matricula":"2023001","descricao":"Ar condicionado com defeito"}'
+```
+
+---
+
+#### Chatbot — `POST /chatbot` 🔒
+
+Envia mensagem para a IA Gemini. **Requer autenticação.**
+
+```
+POST https://api.robsonruan.sifu1.web.ufersa.dev.br/chatbot
+Content-Type: application/json
+Authorization: Bearer SEU_TOKEN_JWT
+```
+
+**Request:**
+```json
+{
+  "chat": "Recomende um livro de JavaScript"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Olá! Recomendo o livro 'JavaScript Eloquente' de Marijn Haverbeke..."
+}
+```
+
+**Response sem token (401):**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**Exemplo curl:**
+```bash
+curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/chatbot \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT" \
+  -d '{"chat":"Recomende um livro"}'
+```
+
+---
+
+#### Profile — `GET /profile?id=`
+
+Retorna o perfil do usuário.
+
+```
+GET https://api.robsonruan.sifu1.web.ufersa.dev.br/profile?id=SEU_USER_ID
+```
+
+**Response (200):**
+```json
+{
+  "id": "google_103765168317649670038",
+  "nome": "Robson Ruan",
+  "email": "robson@ufersa.edu.br",
+  "fotoUrl": "https://sifu-robsonruan-2026.s3.amazonaws.com/profile_...png"
+}
+```
+
+---
+
+#### Profile — `PUT /profile`
+
+Atualiza o perfil do usuário (nome, email, foto).
+
+```
+PUT https://api.robsonruan.sifu1.web.ufersa.dev.br/profile
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "id": "SEU_USER_ID",
+  "nome": "Seu Nome",
+  "email": "seu@email.com",
+  "foto": "data:image/png;base64,iVBORw0KGgo..."
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Perfil atualizado com sucesso!",
+  "fotoUrl": "https://sifu-robsonruan-2026.s3.amazonaws.com/profile_...png"
+}
+```
+
+---
+
+### Resumo de Códigos HTTP
+
+| Código | Significado |
+|--------|-------------|
+| 200 | Sucesso (GET, PUT, DELETE) |
+| 201 | Criado com sucesso (POST) |
+| 400 | Erro de validação (campos obrigatórios faltando) |
+| 401 | Não autorizado (token ausente ou inválido) |
+| 404 | Recurso não encontrado |
+| 405 | Método não permitido |
+| 500 | Erro interno do servidor |
+
+---
+
 ## IA — Chatbot com Google Gemini
 
 ### Modelos Utilizados
@@ -320,6 +703,8 @@ aws lambda update-function-code \
 
 ## Comandos Úteis
 
+> ⚠️ **Segurança**: Os comandos abaixo são apenas para testes em desenvolvimento. Em produção, a autenticação é feita pelo front-end via Cognito Hosted UI. Nunca compartilhe tokens JWT — eles expiram em 1 hora e contêm dados do usuário.
+
 ```bash
 # Testar chatbot via CLI
 aws lambda invoke --function-name ufersa-biblioteca-dev-chatbot \
@@ -327,17 +712,17 @@ aws lambda invoke --function-name ufersa-biblioteca-dev-chatbot \
   --region us-east-1 \
   response.json
 
-# Autenticar usuário Cognito (admin)
+# Autenticar usuário Cognito (admin) — apenas para testes em desenvolvimento
 aws cognito-idp admin-initiate-auth \
   --user-pool-id us-east-1_rbEMILSBU \
   --client-id 6kgkftt1cbk54jveeljh1h1tcs \
   --auth-flow ADMIN_USER_PASSWORD_AUTH \
-  --auth-parameters USERNAME=robson,PASSWORD=Senha123!
+  --auth-parameters USERNAME=SEU_USUARIO,PASSWORD=SUA_SENHA
 
 # Testar API via curl com token
 curl -X POST https://api.robsonruan.sifu1.web.ufersa.dev.br/chatbot \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <id_token>" \
+  -H "Authorization: Bearer SEU_TOKEN_JWT" \
   -d '{"chat":"sua mensagem"}'
 ```
 
