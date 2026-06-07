@@ -8,6 +8,13 @@ provider:
   region: us-east-1
   stage: dev
   role: arn:aws:iam::226278200543:role/LabRole
+  httpApi:
+    authorizers:
+      cognitoAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_rbEMILSBU
+        audience:
+          - 6kgkftt1cbk54jveeljh1h1tcs
 
 functions:
   criarSala:
@@ -222,6 +229,10 @@ functions:
       - httpApi:
           path: /chatbot
           method: post
+          authorizer:
+            name: cognitoAuthorizer
+    environment:
+      CHAT_TABLE: sifu-robsonruan-chat
 
   profile:
     handler: src/profile.profileHandler
@@ -299,6 +310,22 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    ChatTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sifu-robsonruan-chat
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
 outputs:
