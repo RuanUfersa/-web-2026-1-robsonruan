@@ -358,7 +358,7 @@ function renderizarSalas(salas) {
 <div class="absolute top-4 left-4 ${status.class} px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
 <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> ${status.label}
 </div>
-<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-bold text-xs shadow-sm">ID: ${sala.id}</div>
+
 </div>
 <div class="p-6">
 <div class="flex justify-between items-start mb-6">

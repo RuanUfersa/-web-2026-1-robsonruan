@@ -269,8 +269,7 @@
 <table class="w-full text-left border-collapse">
 <thead>
 <tr class="bg-surface-container-low/50">
-<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
-<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data / Hora</th>
 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Aluno</th>
 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Sala</th>
 <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
@@ -280,7 +279,7 @@
 </thead>
 <tbody id="ocorrencias-tbody" class="divide-y divide-surface-container">
 <tr id="ocorrencias-loading">
-<td colspan="7" class="px-6 py-12 text-center">
+<td colspan="6" class="px-6 py-12 text-center">
 <div class="flex flex-col items-center gap-3">
 <div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
 <p class="text-sm text-on-surface-variant font-medium">Carregando ocorrências...</p>
@@ -430,7 +429,7 @@ async function carregarSalas() {
         salas = await response.json();
         const select = document.getElementById('ocorrenciaSalaId');
         select.innerHTML = '<option value="">Selecione uma sala</option>' + 
-            salas.map(s => `<option value="${s.id}">${s.nome || 'Sala ' + s.id}</option>`).join('');
+            salas.map(s => `<option value="${s.id}">${s.nome || 'Sala'}</option>`).join('');
     } catch (e) {
         console.error('Erro ao carregar salas:', e);
     }
@@ -447,7 +446,7 @@ async function carregarOcorrencias() {
     } catch (e) {
         console.error('Erro ao carregar ocorrências:', e);
         showToast('Erro ao carregar ocorrências');
-        document.getElementById('ocorrencias-tbody').innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Erro ao carregar dados. Tente novamente.</td></tr>';
+        document.getElementById('ocorrencias-tbody').innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">Erro ao carregar dados. Tente novamente.</td></tr>';
         const pagInfo = document.getElementById('pagination-info');
         if (pagInfo) pagInfo.textContent = 'Erro ao carregar';
     }
@@ -471,7 +470,7 @@ function renderizarTabela() {
     if (pagInfo) pagInfo.textContent = `${filtradas.length} ocorrência(s) encontrada(s)`;
     
     if (filtradas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Nenhuma ocorrência encontrada</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">Nenhuma ocorrência encontrada</td></tr>';
         return;
     }
     
@@ -485,7 +484,6 @@ function renderizarTabela() {
         
         return `
         <tr class="hover:bg-surface-container-low transition-colors">
-            <td class="px-6 py-4 text-sm font-medium text-primary">#${o.id}</td>
             <td class="px-6 py-4 text-sm text-slate-600">${data}</td>
             <td class="px-6 py-4">
                 <div>
@@ -624,6 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script src="/js/user-profile.js"></script>
+<script src="../js/help-widget.js"></script>
 <script src="../js/chat-widget.js"></script>
 <script src="../js/theme.js"></script>
 </body></html>

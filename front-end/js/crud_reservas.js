@@ -278,7 +278,7 @@ function renderizarTabelaReservas(reservas) {
 <td class="px-6 py-5">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-[18px] text-slate-400">meeting_room</span>
-<span class="text-sm font-semibold text-primary">${r.sala_nome || 'Sala ID: ' + r.sala_id}</span>
+<span class="text-sm font-semibold text-primary">${r.sala_nome || 'Sala'}</span>
 </div>
 </td>
 <td class="px-6 py-5">

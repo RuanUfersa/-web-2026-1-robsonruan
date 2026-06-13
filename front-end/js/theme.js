@@ -120,6 +120,7 @@
       '#sifu-theme-panel { transform-origin: bottom right; }',
       '#sifu-theme-panel[data-open="true"] { display: block; }',
       '#sifu-theme-panel[data-open="false"] { display: none; }',
+      '#sifu-theme-btn { border-radius: 10px 0 0 10px !important; }',
       '#sifu-theme-btn { transition: transform 0.3s ease; }',
       '#sifu-theme-btn:hover { transform: rotate(60deg); }',
       '@media (max-width: 768px) { #sifu-theme-panel { right: 16px !important; left: auto !important; min-width: 260px; } }'
@@ -135,7 +136,7 @@
     btn.setAttribute('aria-label', 'Configura\u00e7\u00f5es de acessibilidade')
     btn.title = 'Configura\u00e7\u00f5es de acessibilidade'
     btn.innerHTML = '<span class="material-symbols-outlined text-[24px]">settings_accessibility</span>'
-    btn.className = 'fixed bottom-6 right-6 z-[9999] w-12 h-12 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border-2 border-white/20'
+    btn.className = 'fixed right-0 top-1/2 -translate-y-1/2 z-[9999] w-10 h-12 rounded-l-xl bg-primary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border-2 border-white/20 border-r-0'
     btn.onclick = function () {
       const panel = document.getElementById('sifu-theme-panel')
       const open = panel.getAttribute('data-open') === 'true'
@@ -146,7 +147,7 @@
     const panel = document.createElement('div')
     panel.id = 'sifu-theme-panel'
     panel.setAttribute('data-open', 'false')
-    panel.className = 'fixed bottom-24 right-6 z-[9999] w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-[#E8EDFF] dark:border-slate-800 overflow-hidden transition-all duration-200'
+    panel.className = 'fixed right-14 top-1/2 -translate-y-1/2 z-[9999] w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-[#E8EDFF] dark:border-slate-800 overflow-hidden transition-all duration-200'
     panel.innerHTML = [
       '<div class="px-5 py-4 border-b border-[#E8EDFF] dark:border-slate-800 flex items-center justify-between">',
         '<span class="font-manrope font-bold text-sm text-[#082853] dark:text-white">Acessibilidade</span>',
