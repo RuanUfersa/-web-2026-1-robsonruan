@@ -149,6 +149,35 @@ async function salvarSala(event) {
     const id = idField.value;
     const idNum = id || null;
     
+    // Validar disponibilidade dos materiais selecionados antes de salvar
+    if (recursosSelecionados.length > 0) {
+        try {
+            const respMat = await fetch(BASE_URL + '/api/materiais');
+            const materiais = await respMat.json();
+            const naoDisponiveis = [];
+            const aindaDisponiveis = [];
+            for (const nome of recursosSelecionados) {
+                const nomeNorm = nome.replace(/["\\]/g, '').trim();
+                const material = materiais.find(m => {
+                    const mn = m.nome.replace(/["\\]/g, '').trim();
+                    return mn === nomeNorm;
+                });
+                if (material && material.status === 'disponivel') {
+                    aindaDisponiveis.push(nome);
+                } else {
+                    naoDisponiveis.push(nome);
+                }
+            }
+            if (naoDisponiveis.length > 0) {
+                mostrarToast('Materiais não disponíveis foram removidos: ' + naoDisponiveis.join(', '), 'error');
+                recursosSelecionados = aindaDisponiveis;
+                atualizarRecursosUI();
+            }
+        } catch (e) {
+            console.error('Erro ao validar materiais:', e);
+        }
+    }
+    
     const recursosString = recursosSelecionados.join(', ');
     
     const sala = {
@@ -219,6 +248,9 @@ async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
             });
             
             if (material) {
+                // Evitar race condition: só definir como em_uso se ainda estiver disponivel
+                if (novoStatus === 'em_uso' && material.status !== 'disponivel') continue;
+                
                 await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
