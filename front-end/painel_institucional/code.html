@@ -342,6 +342,9 @@ function renderizarReservasHoje() {
     
     if (!container) return;
     
+    const salaMap = {};
+    todasSalas.forEach(s => { salaMap[s.id] = s.nome; });
+    
     const hoje = new Date().toISOString().split('T')[0];
     const reservasHoje = todasReservas.filter(r => {
         const dataReserva = r.data_reserva || r.data;
@@ -361,7 +364,7 @@ function renderizarReservasHoje() {
         const mes = dataObj.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase();
         const horaInicio = r.hora_inicio;
         const horaFim = r.hora_fim || 'Pendente';
-        const nomeSala = r.sala_nome || 'Sala #' + r.sala_id;
+        const nomeSala = r.sala_nome || salaMap[r.sala_id] || 'Sala #' + r.sala_id;
         const nomeUsuario = r.usuario_nome || r.nome || '-';
         const borderColor = horaFim === 'Pendente' ? 'border-secondary' : 'border-primary';
         

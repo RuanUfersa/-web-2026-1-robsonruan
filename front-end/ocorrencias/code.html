@@ -439,8 +439,14 @@ async function carregarOcorrencias() {
     try {
         const response = await fetch(`${API_URL}/ocorrencias`);
         if (!response.ok) throw new Error('HTTP ' + response.status);
-        ocorrencias = await response.json();
-        if (!Array.isArray(ocorrencias)) throw new Error('Resposta inválida');
+        const dados = await response.json();
+        if (!Array.isArray(dados)) throw new Error('Resposta inválida');
+        const salaMap = {};
+        salas.forEach(s => { salaMap[s.id] = s.nome; });
+        ocorrencias = dados.map(o => ({
+            ...o,
+            sala_nome: o.sala_nome || salaMap[o.sala_id] || '-'
+        }));
         renderizarTabela();
         atualizarEstatisticas();
     } catch (e) {

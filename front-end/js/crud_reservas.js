@@ -225,6 +225,7 @@ async function filtrarReservas() {
  * Renderizar tabela de reservas
  */
 let todasReservas = [];
+let salasCache = [];
 let paginaAtual = 1;
 const reservasPorPagina = 5;
 
@@ -364,8 +365,17 @@ function renderizarBotoesPagina(totalPaginas) {
  */
 async function carregarReservas() {
     const reservas = await listarReservas();
-    if (reservas) {
-        renderizarTabelaReservas(reservas);
+    if (salasCache.length === 0) {
+        salasCache = await listarSalas();
+    }
+    const salaMap = {};
+    salasCache.forEach(s => { salaMap[s.id] = s.nome; });
+    const enriquecidas = (reservas || []).map(r => ({
+        ...r,
+        sala_nome: r.sala_nome || salaMap[r.sala_id] || 'Sala'
+    }));
+    if (enriquecidas) {
+        renderizarTabelaReservas(enriquecidas);
     }
 }
 

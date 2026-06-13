@@ -1,5 +1,5 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, PutCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const https = require('https');
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
@@ -12,10 +12,65 @@ const GEMINI_MODELS = [
   'gemini-1.5-pro'
 ];
 
-function callGeminiWithModel(prompt, model) {
+const SYSTEM_PROMPT = `Você é o assistente virtual do SIFU da UFERSA. Criador: Robson Ruan. Fonte de conhecimento: dados do banco abaixo.
+Regras da biblioteca (informe só se perguntado): devolução 7 dias, multa R$ 2,00/dia.
+IMPORTANTE: responda APENAS a última pergunta. NÃO misture assuntos. NÃO liste regras a menos que seja solicitado.`;
+
+const TABLE_KEYWORDS = {
+  'UFERSA_Salas': ['sala', 'salas', 'laborat\u00f3rio', 'laboratorio', 'ambiente', 'sala de estudo'],
+  'UFERSA_Inventario': ['material', 'materiais', 'invent\u00e1rio', 'inventario', 'item', 'itens', 'equipamento'],
+  'UFERSA_Reservas': ['reserva', 'reservas', 'agendamento', 'emprestimo', 'empr\u00e9stimo'],
+  'UFERSA_Ocorrencias': ['ocorr\u00eancia', 'ocorrencia', 'ocorr\u00eancias', 'ocorrencias', 'problema', 'report']
+};
+
+async function detectTable(message) {
+  const lower = message.toLowerCase();
+  for (const [table, keywords] of Object.entries(TABLE_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) return table;
+    }
+  }
+  return null;
+}
+
+async function getTableData(tableName) {
+  const data = await doc.send(new ScanCommand({ TableName: tableName }));
+  return data.Items || [];
+}
+
+async function queryHistory(userId, limit = 10) {
+  const params = {
+    TableName: process.env.CHAT_TABLE || 'sifu-robsonruan-chat',
+    KeyConditionExpression: 'userId = :uid',
+    ExpressionAttributeValues: { ':uid': userId },
+    ScanIndexForward: false,
+    Limit: limit
+  };
+  const result = await doc.send(new QueryCommand(params));
+  return result.Items || [];
+}
+
+function buildConversationContext(history, userMessage) {
+  const sorted = history.reverse();
+  const contents = [];
+  for (const item of sorted) {
+    contents.push({
+      role: item.role === 'bot' ? 'model' : 'user',
+      parts: [{ text: item.message }]
+    });
+  }
+  contents.push({
+    role: 'user',
+    parts: [{ text: userMessage }]
+  });
+  return contents;
+}
+
+function callGeminiWithModel(contents, systemInstruction, model) {
   const apiKey = process.env.GEMINI_API_KEY;
   const data = JSON.stringify({
-    contents: [{ parts: [{ text: prompt }] }]
+    system_instruction: { parts: [{ text: systemInstruction }] },
+    contents
   });
 
   return new Promise((resolve, reject) => {
@@ -57,11 +112,11 @@ function callGeminiWithModel(prompt, model) {
   });
 }
 
-async function callGemini(prompt) {
+async function callGemini(contents, systemInstruction) {
   let lastError = '';
   for (const model of GEMINI_MODELS) {
     try {
-      return await callGeminiWithModel(prompt, model);
+      return await callGeminiWithModel(contents, systemInstruction, model);
     } catch (err) {
       lastError = err.message;
       console.warn(`Model ${model} indisponivel: ${err.message}`);
@@ -93,7 +148,16 @@ exports.chatbotHandler = async (event) => {
     const claims = event.requestContext?.authorizer?.jwt?.claims || {};
     const userId = claims.sub || 'usuario_anonimo';
 
-    const iaReply = await callGemini(userMessage);
+    const tableName = await detectTable(userMessage);
+    let dataContext = '';
+    if (tableName) {
+      const items = await getTableData(tableName);
+      dataContext = `\n\nDados atuais da tabela ${tableName} (responda com base nesses dados):\n${JSON.stringify(items, null, 2)}`;
+    }
+
+    const history = await queryHistory(userId);
+    const contents = buildConversationContext(history, userMessage);
+    const iaReply = await callGemini(contents, SYSTEM_PROMPT + dataContext);
 
     const table = process.env.CHAT_TABLE || 'sifu-robsonruan-chat';
     const timestamp = new Date().toISOString();
