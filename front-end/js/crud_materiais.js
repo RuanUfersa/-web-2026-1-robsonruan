@@ -104,14 +104,23 @@ async function salvarMaterial(event) {
     const id = idField.value;
     const idNum = id || null;
     
+    const material = {
+        codigo: document.getElementById('materialCodigo').value,
+        nome: document.getElementById('materialNome').value,
+        tipo: document.getElementById('materialTipo').value,
+        descricao: document.getElementById('materialDescricao').value,
+        status: document.getElementById('materialStatus').value
+    };
+    
     var salaId = document.getElementById('materialSalaId').value;
     
     if (salaId) {
         material.status = 'em_uso';
-    } else if (material.status === 'em_uso') {
-        material.status = 'disponivel';
     }
     material.sala_id = salaId;
+    
+    // Guardar status anterior para decidir sincronização reversa
+    const statusAnterior = idNum ? await buscarStatusMaterial(idNum) : null;
     
     try {
         let response;
@@ -133,12 +142,28 @@ async function salvarMaterial(event) {
         
         if (!response.ok) throw new Error(result.erro || 'Erro ao salvar');
         
+        // Sincronização reversa: se material ficou disponível, remover da sala
+        if (idNum && material.status === 'disponivel' && statusAnterior === 'em_uso') {
+            await removerMaterialDasSalas(material.nome);
+        }
+        
         mostrarToastMaterial(idNum ? 'Material atualizado!' : 'Material criado!');
         fecharModalMaterial();
         carregarMateriais();
     } catch (error) {
         console.error('Erro:', error);
         mostrarToastMaterial('Erro ao salvar material: ' + error.message, 'error');
+    }
+}
+
+async function buscarStatusMaterial(id) {
+    try {
+        const res = await fetch(BASE_URL + '/api/materiais/' + id);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.status;
+    } catch {
+        return null;
     }
 }
 
@@ -414,7 +439,7 @@ async function sincronizarMateriaisComSalas() {
                     const nomeNormalizado = material.nome.replace(/["\\]/g, '').trim();
                     
                     if (recursosArray.some(r => r === nomeNormalizado || r.includes(nomeNormalizado) || nomeNormalizado.includes(r))) {
-                        if (material.status !== 'em_uso') {
+                        if (material.status === 'disponivel') {
                             await fetch(BASE_URL + '/api/materiais/' + material.id, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },

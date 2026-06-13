@@ -268,7 +268,7 @@ async function sincronizarMateriaisComSalas() {
                               nomeMaterialJson.includes(nomeNormalizado);
                     });
                     
-                    if (material) {
+                    if (material && material.status === 'disponivel') {
                         await fetch(BASE_URL + '/api/materiais/' + material.id, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
