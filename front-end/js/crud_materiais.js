@@ -388,7 +388,23 @@ async function carregarMateriais() {
             var salas = await res.json();
             var salaMap = {};
             salas.forEach(function (s) { salaMap[s.id] = s.nome; });
-            materiais.forEach(function (m) { m.sala_nome = salaMap[m.sala_id] || ''; });
+            materiais.forEach(function (m) {
+                m.sala_nome = salaMap[m.sala_id] || '';
+                if (!m.sala_nome) {
+                    for (var i = 0; i < salas.length; i++) {
+                        var sala = salas[i];
+                        if (sala.recursos) {
+                            var recursosArray = Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(function(r) { return r.trim(); });
+                            var nomeNorm = m.nome.replace(/["\\]/g, '').trim();
+                            if (recursosArray.some(function(r) { return r.replace(/["\\]/g, '').trim() === nomeNorm; })) {
+                                m.sala_nome = sala.nome;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!m.sala_nome) m.sala_nome = 'Não Vinculado';
+            });
         } catch (e) {}
         renderizarTabelaMateriais(materiais);
     }
