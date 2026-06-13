@@ -27,6 +27,7 @@ function mostrarToastMaterial(mensagem, tipo = 'success') {
 async function listarMateriais(filtros = {}) {
     try {
         const url = new URL(API_URL, window.location.origin);
+        url.searchParams.append('_', Date.now());
         Object.keys(filtros).forEach(k => url.searchParams.append(k, filtros[k]));
         const response = await fetch(url);
         if (!response.ok) throw new Error('Erro ao buscar materiais');
@@ -42,7 +43,7 @@ async function listarMateriais(filtros = {}) {
  */
 async function listarSalas() {
     try {
-        const response = await fetch(API_SALAS);
+        const response = await fetch(API_SALAS + '?_=' + Date.now());
         if (!response.ok) throw new Error('Erro ao buscar salas');
         return await response.json();
     } catch (error) {
@@ -384,7 +385,7 @@ async function carregarMateriais() {
     var materiais = await listarMateriais();
     if (materiais) {
         try {
-            var res = await fetch(API_SALAS);
+            var res = await fetch(API_SALAS + '?_=' + Date.now());
             var salas = await res.json();
             var salaMap = {};
             salas.forEach(function (s) { salaMap[s.id] = s.nome; });
@@ -440,10 +441,10 @@ async function inicializarMateriais() {
  */
 async function sincronizarMateriaisComSalas() {
     try {
-        const responseSalas = await fetch(BASE_URL + '/api/salas');
+        const responseSalas = await fetch(BASE_URL + '/api/salas?_=' + Date.now());
         const salas = await responseSalas.json();
         
-        const responseMateriais = await fetch(BASE_URL + '/api/materiais');
+        const responseMateriais = await fetch(BASE_URL + '/api/materiais?_=' + Date.now());
         const materiais = await responseMateriais.json();
         
         for (const material of materiais) {
@@ -456,11 +457,15 @@ async function sincronizarMateriaisComSalas() {
                     
                     if (recursosArray.some(r => r === nomeNormalizado || r.includes(nomeNormalizado) || nomeNormalizado.includes(r))) {
                         if (material.status === 'disponivel') {
-                            await fetch(BASE_URL + '/api/materiais/' + material.id, {
+                            const putResp = await fetch(BASE_URL + '/api/materiais/' + material.id, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ status: 'em_uso' })
                             });
+                            if (!putResp.ok) {
+                                const putErr = await putResp.json();
+                                console.error('Falha ao vincular material na sincronizacao', material.nome, putErr);
+                            }
                         }
                         encontrado = true;
                         break;
@@ -469,11 +474,15 @@ async function sincronizarMateriaisComSalas() {
             }
             
             if (!encontrado && material.status === 'em_uso') {
-                await fetch(BASE_URL + '/api/materiais/' + material.id, {
+                const putResp = await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'disponivel' })
                 });
+                if (!putResp.ok) {
+                    const putErr = await putResp.json();
+                    console.error('Falha ao liberar material na sincronizacao', material.nome, putErr);
+                }
             }
         }
     } catch (error) {

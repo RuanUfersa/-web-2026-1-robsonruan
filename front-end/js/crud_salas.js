@@ -42,7 +42,7 @@ async function abrirModalNovaSala() {
  */
 async function carregarMateriais() {
     try {
-        const response = await fetch(BASE_URL + '/api/materiais');
+        const response = await fetch(BASE_URL + '/api/materiais?_=' + Date.now());
         todosMateriais = await response.json();
     } catch (error) {
         console.error('Erro ao carregar materiais:', error);
@@ -129,7 +129,7 @@ function fecharModal() {
  */
 async function listarSalas() {
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL + '?_=' + Date.now());
         if (!response.ok) throw new Error('Erro ao buscar salas');
         return await response.json();
     } catch (error) {
@@ -234,7 +234,7 @@ async function salvarSala(event) {
  */
 async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
     try {
-        const response = await fetch(BASE_URL + '/api/materiais');
+        const response = await fetch(BASE_URL + '/api/materiais?_=' + Date.now());
         const materiais = await response.json();
         
         for (const nomeMaterial of nomesMateriais) {
@@ -251,11 +251,15 @@ async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
                 // Evitar race condition: só definir como em_uso se ainda estiver disponivel
                 if (novoStatus === 'em_uso' && material.status !== 'disponivel') continue;
                 
-                await fetch(BASE_URL + '/api/materiais/' + material.id, {
+                const putResp = await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: novoStatus })
                 });
+                if (!putResp.ok) {
+                    const putErr = await putResp.json();
+                    console.error('Falha ao atualizar status do material', material.nome, putErr);
+                }
             }
         }
     } catch (error) {
@@ -268,20 +272,24 @@ async function atualizarStatusMateriais(nomesMateriais, novoStatus) {
  */
 async function sincronizarMateriaisComSalas() {
     try {
-        const responseMateriais = await fetch(BASE_URL + '/api/materiais');
+        const responseMateriais = await fetch(BASE_URL + '/api/materiais?_=' + Date.now());
         const materiais = await responseMateriais.json();
         
-        const responseSalas = await fetch(BASE_URL + '/api/salas');
+        const responseSalas = await fetch(BASE_URL + '/api/salas?_=' + Date.now());
         const salas = await responseSalas.json();
         
         // Primeiro, liberar todos os materiais
         for (const material of materiais) {
             if (material.status === 'em_uso') {
-                await fetch(BASE_URL + '/api/materiais/' + material.id, {
+                const putResp = await fetch(BASE_URL + '/api/materiais/' + material.id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'disponivel' })
                 });
+                if (!putResp.ok) {
+                    const putErr = await putResp.json();
+                    console.error('Falha ao liberar material', material.nome, putErr);
+                }
             }
         }
         
@@ -301,11 +309,15 @@ async function sincronizarMateriaisComSalas() {
                     });
                     
                     if (material && material.status === 'disponivel') {
-                        await fetch(BASE_URL + '/api/materiais/' + material.id, {
+                        const putResp = await fetch(BASE_URL + '/api/materiais/' + material.id, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: 'em_uso' })
                         });
+                        if (!putResp.ok) {
+                            const putErr = await putResp.json();
+                            console.error('Falha ao vincular material', material.nome, putErr);
+                        }
                     }
                 }
             }
