@@ -70,7 +70,7 @@ function atualizarRecursosUI() {
         }).join('');
     }
     
-    const select = document.getElementById('adicionarRecurso');
+    const select = document.getElementById('selectAddRecurso');
     if (!select) return;
     
     const nomesMateriais = new Set(recursosSelecionados);
@@ -82,7 +82,7 @@ function atualizarRecursosUI() {
 }
 
 function adicionarRecurso() {
-    const select = document.getElementById('adicionarRecurso');
+    const select = document.getElementById('selectAddRecurso');
     if (!select) return;
     const nome = select.value;
     if (!nome) return;
