@@ -104,23 +104,16 @@ async function salvarMaterial(event) {
     const id = idField.value;
     const idNum = id || null;
     
-    const material = {
-        codigo: document.getElementById('materialCodigo').value,
-        nome: document.getElementById('materialNome').value,
-        sala_id: document.getElementById('materialSalaId').value,
-        tipo: document.getElementById('materialTipo').value,
-        descricao: document.getElementById('materialDescricao').value,
-        status: document.getElementById('materialStatus').value
-    };
+    var salaId = document.getElementById('materialSalaId').value;
+    
+    if (salaId) {
+        material.status = 'em_uso';
+    } else if (material.status === 'em_uso') {
+        material.status = 'disponivel';
+    }
+    material.sala_id = salaId;
     
     try {
-        // Buscar material antigo para comparar status
-        let materialAntigo = null;
-        if (idNum) {
-            const responseAntigo = await fetch(BASE_URL + '/api/materiais/' + idNum);
-            materialAntigo = await responseAntigo.json();
-        }
-        
         let response;
         if (idNum) {
             response = await fetch(BASE_URL + '/api/materiais/' + idNum, {
@@ -139,11 +132,6 @@ async function salvarMaterial(event) {
         const result = await response.json();
         
         if (!response.ok) throw new Error(result.erro || 'Erro ao salvar');
-        
-        // Se status mudou para disponível, mas está em uma sala, remover da sala
-        if (materialAntigo && material.status !== 'disponivel' && material.status !== materialAntigo.status) {
-            await removerMaterialDasSalas(material.nome);
-        }
         
         mostrarToastMaterial(idNum ? 'Material atualizado!' : 'Material criado!');
         fecharModalMaterial();
@@ -368,8 +356,15 @@ function renderizarBotoesPaginaMaterial(totalPaginas) {
  * Carregar materiais
  */
 async function carregarMateriais() {
-    const materiais = await listarMateriais();
+    var materiais = await listarMateriais();
     if (materiais) {
+        try {
+            var res = await fetch(API_SALAS);
+            var salas = await res.json();
+            var salaMap = {};
+            salas.forEach(function (s) { salaMap[s.id] = s.nome; });
+            materiais.forEach(function (m) { m.sala_nome = salaMap[m.sala_id] || ''; });
+        } catch (e) {}
         renderizarTabelaMateriais(materiais);
     }
 }
