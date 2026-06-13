@@ -279,11 +279,16 @@
 </div>
 </div>
 <div>
-<label class="block text-sm font-bold text-slate-600 mb-1">Recursos (selecione do inventário)</label>
-<select id="salaRecursos" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm" multiple size="4">
-<option value="">Selecione os materiais disponíveis...</option>
+<label class="block text-sm font-bold text-slate-600 mb-1">Recursos da Sala</label>
+<div id="salaRecursosList" class="space-y-2 mb-3">
+<p class="text-xs text-slate-400 italic">Nenhum recurso vinculado</p>
+</div>
+<div class="flex gap-2">
+<select id="adicionarRecurso" class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm">
+<option value="">Selecione um material...</option>
 </select>
-<p class="text-xs text-slate-500 mt-1">Segure Ctrl/Cmd para selecionar múltiplos</p>
+<button type="button" onclick="adicionarRecurso()" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:opacity-90 text-sm whitespace-nowrap">+ Adicionar</button>
+</div>
 </div>
 <div>
 <label class="block text-sm font-bold text-slate-600 mb-1">Status</label>

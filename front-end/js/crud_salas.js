@@ -5,6 +5,9 @@
 const BASE_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
 const API_URL = BASE_URL + '/api/salas';
 
+let recursosSelecionados = [];
+let todosMateriais = [];
+
 /**
  * Exibe toast de feedback
  */
@@ -27,29 +30,70 @@ async function abrirModalNovaSala() {
     document.getElementById('salaForm').reset();
     document.getElementById('salaId').value = '';
     
-    // Carregar materiais disponíveis
-    await carregarMateriaisDisponiveis();
+    await carregarMateriais();
+    recursosSelecionados = [];
+    atualizarRecursosUI();
     
     document.getElementById('salaModal').classList.remove('hidden');
 }
 
 /**
- * Carregar materiais disponíveis no select
+ * Carregar todos os materiais da API
  */
-async function carregarMateriaisDisponiveis() {
+async function carregarMateriais() {
     try {
         const response = await fetch(BASE_URL + '/api/materiais');
-        const materiais = await response.json();
-        
-        const disponiveis = materiais.filter(m => m.status === 'disponivel');
-        const select = document.getElementById('salaRecursos');
-        
-        select.innerHTML = '<option value="">Selecione os materiais disponíveis...</option>' + 
-            disponiveis.map(m => `<option value="${m.nome}">${m.codigo} - ${m.nome}</option>`).join('');
-        
+        todosMateriais = await response.json();
     } catch (error) {
         console.error('Erro ao carregar materiais:', error);
+        todosMateriais = [];
     }
+}
+
+/**
+ * Atualizar a UI de recursos: lista + dropdown de adicionar
+ */
+function atualizarRecursosUI() {
+    const listEl = document.getElementById('salaRecursosList');
+    if (!listEl) return;
+    
+    if (recursosSelecionados.length === 0) {
+        listEl.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum recurso vinculado</p>';
+    } else {
+        listEl.innerHTML = recursosSelecionados.map(nome => {
+            const escaped = nome.replace(/'/g, "\\'");
+            return `
+            <div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-lg">
+                <span class="text-sm font-medium text-primary">${nome}</span>
+                <button type="button" onclick='removerRecurso("${escaped}")' class="text-error hover:text-red-700 text-xs font-bold">Remover</button>
+            </div>`;
+        }).join('');
+    }
+    
+    const select = document.getElementById('adicionarRecurso');
+    if (!select) return;
+    
+    const nomesMateriais = new Set(recursosSelecionados);
+    const disponiveis = todosMateriais.filter(m => 
+        m.status === 'disponivel' && !nomesMateriais.has(m.nome)
+    );
+    select.innerHTML = '<option value="">Selecione um material...</option>' + 
+        disponiveis.map(m => `<option value="${m.nome}">${m.codigo} - ${m.nome}</option>`).join('');
+}
+
+function adicionarRecurso() {
+    const select = document.getElementById('adicionarRecurso');
+    if (!select) return;
+    const nome = select.value;
+    if (!nome) return;
+    recursosSelecionados.push(nome);
+    select.value = '';
+    atualizarRecursosUI();
+}
+
+function removerRecurso(nome) {
+    recursosSelecionados = recursosSelecionados.filter(r => r !== nome);
+    atualizarRecursosUI();
 }
 
 /**
@@ -63,17 +107,12 @@ async function abrirModalEditarSala(sala) {
     document.getElementById('salaTipo').value = sala.tipo || 'colaborativo';
     document.getElementById('salaStatus').value = sala.status || 'disponivel';
     
-    // Carregar materiais disponíveis
-    await carregarMateriaisDisponiveis();
+    await carregarMateriais();
     
-    // Selecionar os recursos existentes
-    if (sala.recursos) {
-        const recursosArray = Array.isArray(sala.recursos) ? sala.recursos : sala.recursos.split(',').map(r => r.trim());
-        const select = document.getElementById('salaRecursos');
-        Array.from(select.options).forEach(option => {
-            option.selected = recursosArray.includes(option.value);
-        });
-    }
+    recursosSelecionados = sala.recursos
+        ? (Array.isArray(sala.recursos) ? [...sala.recursos] : sala.recursos.split(',').map(r => r.trim()))
+        : [];
+    atualizarRecursosUI();
     
     document.getElementById('salaModal').classList.remove('hidden');
 }
@@ -110,9 +149,6 @@ async function salvarSala(event) {
     const id = idField.value;
     const idNum = id || null;
     
-    // Obter recursos selecionados
-    const selectRecursos = document.getElementById('salaRecursos');
-    const recursosSelecionados = Array.from(selectRecursos.selectedOptions).map(opt => opt.value).filter(v => v);
     const recursosString = recursosSelecionados.join(', ');
     
     const sala = {
@@ -443,3 +479,5 @@ window.fecharModal = fecharModal;
 window.excluirSala = excluirSala;
 window.carregarSalas = carregarSalas;
 window.inicializarGestaoSalas = inicializarGestaoSalas;
+window.adicionarRecurso = adicionarRecurso;
+window.removerRecurso = removerRecurso;
