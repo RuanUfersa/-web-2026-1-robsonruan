@@ -142,6 +142,17 @@ async function salvarReserva(event) {
         return;
     }
     
+    function minDesdeMeiaNoite(h) { var p = h.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); }
+    var duracaoMin = minDesdeMeiaNoite(reserva.hora_fim) - minDesdeMeiaNoite(reserva.hora_inicio);
+    if (duracaoMin < 30) {
+        mostrarToastReserva('Reserva deve ter no mínimo 30 minutos', 'error');
+        return;
+    }
+    if (duracaoMin > 240) {
+        mostrarToastReserva('Reserva deve ter no máximo 4 horas', 'error');
+        return;
+    }
+    
     if (!idNum) {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
