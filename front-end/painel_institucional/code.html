@@ -296,31 +296,67 @@ const eventosPorPagina = 8;
 let paginaEventos = 1;
 
 async function fetchJSON(url) {
-    const res = await fetch(url);
+    const res = await fetch(url + '?_=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
     return res.json();
 }
 
 async function carregarDados() {
-    try {
-        const [reservasRes, salasRes, ocorrenciasRes, materiaisRes] = await Promise.all([
-            fetchJSON(API_BASE + '/api/reservas'),
-            fetchJSON(API_BASE + '/api/salas'),
-            fetchJSON(API_BASE + '/api/ocorrencias'),
-            fetchJSON(API_BASE + '/api/materiais')
-        ]);
-        
-        todasReservas = reservasRes;
-        todasSalas = salasRes;
-        todasOcorrencias = ocorrenciasRes;
-        todosMateriais = materiaisRes;
-        
-        atualizarMetricas();
-        renderizarReservasHoje();
-        renderizarEventos();
-    } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-    }
+    const resultados = await Promise.allSettled([
+        fetchJSON(API_BASE + '/api/reservas'),
+        fetchJSON(API_BASE + '/api/salas'),
+        fetchJSON(API_BASE + '/api/ocorrencias'),
+        fetchJSON(API_BASE + '/api/materiais')
+    ]);
+    
+    todasReservas = resultados[0].status === 'fulfilled' ? resultados[0].value : [];
+    todasSalas = resultados[1].status === 'fulfilled' ? resultados[1].value : [];
+    todasOcorrencias = resultados[2].status === 'fulfilled' ? resultados[2].value : [];
+    todosMateriais = resultados[3].status === 'fulfilled' ? resultados[3].value : [];
+    
+    const salaMap = {};
+    todasSalas.forEach(s => { salaMap[s.id] = s.nome; });
+    
+    todosLogs = [
+        ...todasReservas.filter(r => r.data_criacao).map(r => ({
+            data_hora: r.data_criacao,
+            modulo: 'Reservas',
+            acao: 'CRIAR',
+            detalhes: `Nova reserva: ${r.nome} - ${salaMap[r.sala_id] || 'Sala'}`,
+            usuario_nome: r.nome,
+            usuario_matricula: r.matricula || '-'
+        })),
+        ...todasOcorrencias.filter(o => o.data_criacao).map(o => ({
+            data_hora: o.data_criacao,
+            modulo: 'Ocorrências',
+            acao: 'CRIAR',
+            detalhes: o.descricao,
+            usuario_nome: o.aluno_nome || o.usuario_nome || '-',
+            usuario_matricula: o.aluno_matricula || o.usuario_matricula || '-'
+        })),
+        ...todasSalas.filter(s => s.data_criacao).map(s => ({
+            data_hora: s.data_criacao,
+            modulo: 'Salas',
+            acao: 'CRIAR',
+            detalhes: `Sala cadastrada: ${s.nome} (Cap: ${s.capacidade})`,
+            usuario_nome: 'Sistema',
+            usuario_matricula: '-'
+        })),
+        ...todosMateriais.filter(m => m.data_criacao).map(m => ({
+            data_hora: m.data_criacao,
+            modulo: 'Materiais',
+            acao: 'CRIAR',
+            detalhes: `Material cadastrado: ${m.codigo} - ${m.nome}`,
+            usuario_nome: 'Sistema',
+            usuario_matricula: '-'
+        }))
+    ];
+    
+    todosLogs.sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+    
+    atualizarMetricas();
+    renderizarReservasHoje();
+    renderizarEventos();
 }
 
 function atualizarMetricas() {
@@ -510,10 +546,10 @@ function aplicarFiltroDatas() {
     let reservasFiltradas = todasReservas;
     
     if (dataInicio) {
-        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva >= dataInicio);
+        reservasFiltradas = reservasFiltradas.filter(r => (r.data || r.data_reserva) >= dataInicio);
     }
     if (dataFim) {
-        reservasFiltradas = reservasFiltradas.filter(r => r.data_reserva <= dataFim);
+        reservasFiltradas = reservasFiltradas.filter(r => (r.data || r.data_reserva) <= dataFim);
     }
     
     const reservasAtivas = reservasFiltradas.filter(r => r.status === 'ativo' || r.status === 'atencao').length;
