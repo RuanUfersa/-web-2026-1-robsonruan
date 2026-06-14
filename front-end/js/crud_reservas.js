@@ -269,7 +269,7 @@ async function filtrarReservas() {
         filtradas = filtradas.filter(r => r.usuario_cargo === cargo);
     }
     if (data) {
-        filtradas = filtradas.filter(r => r.data_reserva === data);
+        filtradas = filtradas.filter(r => r.data === data);
     }
     
     renderizarTabelaReservas(filtradas);

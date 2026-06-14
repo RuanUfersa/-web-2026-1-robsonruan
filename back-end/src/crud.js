@@ -30,6 +30,40 @@ const scanTable = async (table) => {
   return data.Items || [];
 };
 
+const minDesdeMeiaNoite = (h) => {
+  if (!h || !h.includes(':')) return 0;
+  const p = h.split(':');
+  return parseInt(p[0]) * 60 + parseInt(p[1]);
+};
+
+const validarHorarioReserva = (data, hora_inicio, hora_fim, editando = false) => {
+  if (!hora_inicio || !hora_fim) return 'Defina o horário de início e término';
+  if (hora_inicio >= hora_fim) return 'Horário de início deve ser anterior ao horário de término';
+  const duracao = minDesdeMeiaNoite(hora_fim) - minDesdeMeiaNoite(hora_inicio);
+  if (duracao < 30) return 'Reserva deve ter no mínimo 30 minutos';
+  if (duracao > 240) return 'Reserva deve ter no máximo 4 horas';
+  if (!editando) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataReserva = new Date(data + 'T00:00:00');
+    if (dataReserva < hoje) return 'Data da reserva não pode ser no passado';
+  }
+  return null;
+};
+
+const verificarConflitoReserva = async (sala_id, data, hora_inicio, hora_fim, excluirId = null) => {
+  if (!sala_id) return false;
+  const existentes = await scanTable('UFERSA_Reservas');
+  return existentes.some(r =>
+    r.id !== excluirId &&
+    r.sala_id === sala_id &&
+    r.data === data &&
+    r.status !== 'cancelado' &&
+    r.hora_inicio < hora_fim &&
+    hora_inicio < r.hora_fim
+  );
+};
+
 exports.salasHandler = async (event) => {
   const method = getMethod(event);
   const body = getBody(event);
@@ -95,6 +129,15 @@ exports.reservasHandler = async (event) => {
 
     if (method === 'POST') {
       if (!body.nome || !body.matricula || !body.data || !body.hora_inicio || !body.hora_fim) return err('Campos obrigatorios: nome, matricula, data, hora_inicio, hora_fim');
+
+      const erroHorario = validarHorarioReserva(body.data, body.hora_inicio, body.hora_fim);
+      if (erroHorario) return err(erroHorario);
+
+      if (body.sala_id) {
+        const conflito = await verificarConflitoReserva(body.sala_id, body.data, body.hora_inicio, body.hora_fim);
+        if (conflito) return err('Já existe uma reserva para esta sala neste horário');
+      }
+
       const item = {
         id: uuid(), nome: body.nome, matricula: body.matricula, cargo: body.cargo || 'Estudante',
         sala_id: body.sala_id || null, data: body.data, hora_inicio: body.hora_inicio,
@@ -118,6 +161,24 @@ exports.reservasHandler = async (event) => {
       if (!id) return err('ID obrigatorio');
       const data = await doc.send(new GetCommand({ TableName: table, Key: { id } }));
       if (!data.Item) return err('Nao encontrado', 404);
+
+      if (body.hora_inicio || body.hora_fim || body.data) {
+        const hInicio = body.hora_inicio || data.Item.hora_inicio;
+        const hFim = body.hora_fim || data.Item.hora_fim;
+        const dataReserva = body.data || data.Item.data;
+        const erroHorario = validarHorarioReserva(dataReserva, hInicio, hFim, true);
+        if (erroHorario) return err(erroHorario);
+      }
+
+      const salaId = body.sala_id || data.Item.sala_id;
+      const dataReserva = body.data || data.Item.data;
+      const hInicio = body.hora_inicio || data.Item.hora_inicio;
+      const hFim = body.hora_fim || data.Item.hora_fim;
+      if (salaId) {
+        const conflito = await verificarConflitoReserva(salaId, dataReserva, hInicio, hFim, id);
+        if (conflito) return err('Já existe uma reserva para esta sala neste horário');
+      }
+
       const update = { ...data.Item, ...body, id, data_atualizacao: new Date().toISOString() };
       await doc.send(new PutCommand({ TableName: table, Item: update }));
       return ok(update);
