@@ -27,6 +27,7 @@ function mostrarToastReserva(mensagem, tipo = 'success') {
 async function listarReservas(filtros = {}) {
     try {
         const url = new URL(API_URL, window.location.origin);
+        url.searchParams.append('_', Date.now());
         Object.keys(filtros).forEach(k => url.searchParams.append(k, filtros[k]));
         const response = await fetch(url);
         if (!response.ok) throw new Error('Erro ao buscar reservas');
@@ -42,7 +43,7 @@ async function listarReservas(filtros = {}) {
  */
 async function listarSalas() {
     try {
-        const response = await fetch(API_SALAS);
+        const response = await fetch(API_SALAS + '?_=' + Date.now());
         if (!response.ok) throw new Error('Erro ao buscar salas');
         return await response.json();
     } catch (error) {
@@ -89,8 +90,11 @@ async function abrirModalEditarReserva(reserva) {
     
     const salas = await listarSalas();
     const select = document.getElementById('reservaSalaId');
-    select.innerHTML = '<option value="">Selecione uma sala</option>' + 
-        salas.map(s => `<option value="${s.id}" ${s.id == reserva.sala_id ? 'selected' : ''}>${s.nome}</option>`).join('');
+    select.innerHTML = '<option value="">Selecione uma sala</option>' +
+        salas
+            .filter(s => s.status !== 'manutencao' || s.id === reserva.sala_id)
+            .map(s => `<option value="${s.id}" ${s.id == reserva.sala_id ? 'selected' : ''}>${s.nome}${s.status !== 'disponivel' && s.id !== reserva.sala_id ? ' (' + s.status + ')' : ''}</option>`)
+            .join('');
     
     document.getElementById('reservaModal').classList.remove('hidden');
 }
@@ -122,6 +126,45 @@ async function salvarReserva(event) {
         hora_fim: document.getElementById('reservaFim').value,
         status: document.getElementById('reservaStatus').value
     };
+    
+    if (!reserva.sala_id) {
+        mostrarToastReserva('Selecione uma sala', 'error');
+        return;
+    }
+    
+    if (!reserva.hora_inicio || !reserva.hora_fim) {
+        mostrarToastReserva('Defina o horário de início e término', 'error');
+        return;
+    }
+    
+    if (reserva.hora_inicio >= reserva.hora_fim) {
+        mostrarToastReserva('Horário de início deve ser anterior ao horário de término', 'error');
+        return;
+    }
+    
+    if (!idNum) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataReserva = new Date(reserva.data + 'T00:00:00');
+        if (dataReserva < hoje) {
+            mostrarToastReserva('Data da reserva não pode ser no passado', 'error');
+            return;
+        }
+    }
+    
+    const reservasExistentes = await listarReservas();
+    const conflito = reservasExistentes.some(r =>
+        r.id !== idNum &&
+        r.sala_id === reserva.sala_id &&
+        r.data === reserva.data &&
+        r.status !== 'cancelado' &&
+        r.hora_inicio < reserva.hora_fim &&
+        reserva.hora_inicio < r.hora_fim
+    );
+    if (conflito) {
+        mostrarToastReserva('Já existe uma reserva para esta sala neste horário', 'error');
+        return;
+    }
     
     try {
         let response;
