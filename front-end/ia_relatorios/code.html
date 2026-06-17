@@ -222,7 +222,7 @@ async function carregarDados() {
       fetch(API_BASE + '/ocorrencias').then(r => r.json())
     ]);
     renderizarOcupacao(salas, reservas);
-    renderizarOcorrencias(ocorrencias);
+    renderizarOcorrencias(ocorrencias, salas);
   } catch (err) {
     document.getElementById('ocupacao-container').innerHTML = '<div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 text-center"><p class="text-on-surface-variant text-sm">Erro ao carregar dados das APIs.</p></div>';
     document.getElementById('ocorrencias-container').innerHTML = '<div class="p-4 text-center"><p class="text-on-surface-variant text-sm">Erro ao carregar dados.</p></div>';
@@ -298,11 +298,13 @@ function renderizarOcupacao(salas, reservas) {
     + '</div>';
 }
 
-function renderizarOcorrencias(ocorrencias) {
+function renderizarOcorrencias(ocorrencias, salas) {
   if (!ocorrencias.length) {
     document.getElementById('ocorrencias-container').innerHTML = '<div class="p-4 text-center"><p class="text-on-surface-variant text-sm">Nenhuma ocorr&ecirc;ncia registrada.</p></div>';
     return;
   }
+  var salaMap = {};
+  if (salas) { salas.forEach(function(s) { salaMap[s.id] = s.nome || s.sala_nome || s.id; }); }
   const total = ocorrencias.length;
   const statusCount = { em_analise: 0, resolvido: 0, cancelado: 0 };
   const alunoCount = {};
@@ -311,7 +313,7 @@ function renderizarOcorrencias(ocorrencias) {
     statusCount[o.status] = (statusCount[o.status] || 0) + 1;
     const nome = o.aluno_nome || 'Desconhecido';
     alunoCount[nome] = (alunoCount[nome] || 0) + 1;
-    const sala = o.sala_id || 'N/A';
+    const sala = salaMap[o.sala_id] || o.sala_id || 'N/A';
     salaCount[sala] = (salaCount[sala] || 0) + 1;
   });
   const statusPct = {
@@ -351,7 +353,7 @@ function renderizarOcorrencias(ocorrencias) {
     + topSalas.map(([sala, count]) =>
       '<div class="flex items-center justify-between p-3 bg-white rounded-xl border border-transparent">'
       + '<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary"><span class="material-symbols-outlined text-lg">meeting_room</span></div>'
-      + '<div><p class="text-xs font-bold text-primary">Sala #' + sala + '</p></div></div>'
+      + '<div><p class="text-xs font-bold text-primary">' + sala + '</p></div></div>'
       + '<div class="text-right"><p class="text-xs font-bold text-primary">' + count + 'x</p><p class="text-[9px] text-on-surface-variant">ocorr&ecirc;ncias</p></div></div>'
     ).join('')
     + '</div>';
