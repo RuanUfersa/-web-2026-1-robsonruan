@@ -440,44 +440,53 @@ function handleFileUpload(event) {
 }
 
 function toggleAudio() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
     addMessage('Reconhecimento de voz nao suportado neste navegador. Use Chrome/Edge.', false);
     return;
   }
-  if (isRecording) { if (recognition) recognition.stop(); return; }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
+  if (isRecording) { if (recognition) { recognition.stop(); recognition = null; } return; }
+  recognition = new SR();
   recognition.lang = 'pt-BR';
   recognition.interimResults = true;
-  recognition.continuous = true;
+  recognition.continuous = false;
   const input = document.getElementById('chat-input');
   const audioIcon = document.getElementById('audio-icon');
   const audioLabel = document.getElementById('audio-label');
+  const audioBtn = document.getElementById('audio-btn');
+  const statusEl = document.getElementById('chat-status');
   isRecording = true;
-  audioIcon.textContent = 'stop';
-  audioLabel.textContent = 'Parar';
-  document.getElementById('audio-btn').classList.add('border-error', 'text-error');
-  document.getElementById('chat-status').textContent = 'Gravando audio... Fale sua solicitacao.';
+  audioIcon.textContent = 'mic_off';
+  audioLabel.textContent = 'Gravando';
+  audioBtn.classList.add('border-error', 'text-error', 'recording');
+  statusEl.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span> Gravando audio... Fale sua solicitacao.</span>';
   recognition.onresult = function(e) {
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) input.value += e.results[i][0].transcript + ' ';
     }
   };
   recognition.onend = function() {
-    isRecording = false;
-    audioIcon.textContent = 'mic';
-    audioLabel.textContent = 'Audio';
-    document.getElementById('audio-btn').classList.remove('border-error', 'text-error');
-    document.getElementById('chat-status').textContent = 'Analisando dados da biblioteca em tempo real...';
+    isRecording = false; recognition = null;
+    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
+    audioBtn.classList.remove('border-error', 'text-error', 'recording');
+    statusEl.textContent = 'Analisando dados da biblioteca em tempo real...';
   };
   recognition.onerror = function(e) {
-    isRecording = false;
-    audioIcon.textContent = 'mic';
-    audioLabel.textContent = 'Audio';
-    document.getElementById('audio-btn').classList.remove('border-error', 'text-error');
-    document.getElementById('chat-status').textContent = 'Erro ao capturar audio: ' + e.error;
+    isRecording = false; recognition = null;
+    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
+    audioBtn.classList.remove('border-error', 'text-error', 'recording');
+    if (e.error === 'not-allowed') {
+      statusEl.textContent = 'Permissao do microfone negada. Permita nas config. do navegador.';
+    } else {
+      statusEl.textContent = 'Erro ao capturar audio: ' + e.error;
+    }
   };
-  recognition.start();
+  try { recognition.start(); } catch (e) {
+    isRecording = false; recognition = null;
+    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
+    audioBtn.classList.remove('border-error', 'text-error', 'recording');
+    statusEl.textContent = 'Erro ao iniciar gravacao: ' + e.message;
+  }
 }
 
 function gerarPDFResposta(btn) {
