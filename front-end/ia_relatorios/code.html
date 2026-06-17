@@ -206,6 +206,13 @@ const API_BASE = API_URL + '/api';
 const CHAT_API = API_URL + '/chatbot';
 let attachedFileData = null;
 
+const _idToken = sessionStorage.getItem('id_token');
+if (!_idToken) { window.location.href = '/index.html'; }
+try {
+  const _payload = JSON.parse(atob(_idToken.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+  if (_payload.exp * 1000 <= Date.now()) { window.location.href = '/index.html'; }
+} catch (e) { window.location.href = '/index.html'; }
+
 async function carregarDados() {
   try {
     const [salas, reservas, ocorrencias] = await Promise.all([
@@ -363,17 +370,19 @@ async function enviarMensagem(texto) {
   document.getElementById('chat-status').textContent = 'Processando sua solicita&ccedil;&atilde;o...';
   try {
     const idToken = sessionStorage.getItem('id_token');
+    if (!idToken) { window.location.href = '/index.html'; return; }
     const res = await fetch(CHAT_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': idToken ? 'Bearer ' + idToken : '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
       body: JSON.stringify({ chat: mensagem })
     });
+    if (res.status === 401) { window.location.href = '/index.html'; return; }
     const data = await res.json();
     const reply = data.message || data.response || 'Resposta recebida!';
     addMessage(reply, false, true);
     document.getElementById('chat-status').textContent = 'Analisando dados da biblioteca em tempo real...';
   } catch (err) {
-    addMessage('Erro de conex&atilde;o com a API. Verifique sua autentica&ccedil;&atilde;o.', false);
+    addMessage('Erro de conex&atilde;o com a API.', false);
     document.getElementById('chat-status').textContent = 'Erro na conex&atilde;o';
   }
 }
