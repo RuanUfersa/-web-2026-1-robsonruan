@@ -25,8 +25,6 @@
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
     .chat-bubble { animation: fade-in-up 0.4s ease-out both; }
     #file-preview { max-height: 120px; overflow-y: auto; }
-    #recording-badge { display: none; }
-    #recording-badge.active { display: inline-flex; }
 </style>
 </head>
 <body class="bg-surface text-on-surface font-body selection:bg-secondary-container">
@@ -152,7 +150,6 @@
 <div class="flex items-center gap-1.5 mt-1">
 <span class="w-2 h-2 bg-secondary rounded-full animate-pulse" id="status-dot"></span>
 <span class="text-xs text-white/70" id="chat-status">Analisando dados da biblioteca em tempo real...</span>
-<span id="recording-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-400/30"><span class="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span> Gravando</span>
 </div>
 </div>
 </div>
@@ -188,10 +185,6 @@
 <span class="hidden sm:inline">CSV/PDF</span>
 <input id="file-upload" type="file" accept=".csv,.pdf" class="hidden" onchange="handleFileUpload(event)"/>
 </label>
-<button id="audio-btn" onclick="toggleAudio()" class="px-4 py-2 rounded-xl border border-outline-variant text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors btn-press flex items-center gap-2">
-<span class="material-symbols-outlined text-lg" id="audio-icon">mic</span>
-<span class="hidden sm:inline" id="audio-label">&Aacute;udio</span>
-</button>
 <div class="flex-1"></div>
 <button onclick="enviarMensagem()" class="px-6 py-2 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-md btn-press flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">send</span>
@@ -211,8 +204,6 @@
 const API_URL = 'https://2791fnzy75.execute-api.us-east-1.amazonaws.com';
 const API_BASE = API_URL + '/api';
 const CHAT_API = API_URL + '/chatbot';
-let recognition = null;
-let isRecording = false;
 let attachedFileData = null;
 
 async function carregarDados() {
@@ -440,112 +431,6 @@ function handleFileUpload(event) {
     reader.readAsArrayBuffer(file);
   }
   event.target.value = '';
-}
-
-function toggleAudio() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const audioBtn = document.getElementById('audio-btn');
-  const audioIcon = document.getElementById('audio-icon');
-  const audioLabel = document.getElementById('audio-label');
-  const statusEl = document.getElementById('chat-status');
-  const dot = document.getElementById('status-dot');
-  const badge = document.getElementById('recording-badge');
-  const input = document.getElementById('chat-input');
-
-  if (isRecording) {
-    if (recognition) { recognition.stop(); recognition = null; }
-    isRecording = false;
-    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
-    audioBtn.classList.remove('border-error', 'text-error', 'recording');
-    if (badge) badge.classList.remove('active');
-    if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
-    statusEl.textContent = 'Analisando dados da biblioteca em tempo real...';
-    var texto = input.value.trim();
-    if (texto) { input.value = ''; enviarMensagem(texto); }
-    return;
-  }
-  if (!SR) {
-    addMessage('Reconhecimento de voz nao disponivel neste navegador. Use Chrome ou Edge.', false);
-    return;
-  }
-
-  recognition = new SR();
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = true;
-  recognition.continuous = true;
-  recognition.maxAlternatives = 1;
-
-  isRecording = true;
-  audioIcon.textContent = 'mic_off'; audioLabel.textContent = 'Enviar';
-  audioBtn.classList.add('border-error', 'text-error', 'recording');
-  if (badge) badge.classList.add('active');
-  if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
-  statusEl.textContent = 'Fale ao microfone. Clique no microfone para enviar.';
-  input.value = '';
-  input.placeholder = 'Fale alguma coisa...';
-
-  recognition.onaudiostart = function() {
-    if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
-    statusEl.textContent = 'Microfone ativo! Fale normalmente.';
-  };
-  recognition.onspeechstart = function() {
-    if (dot) dot.className = 'w-2 h-2 bg-green-400 rounded-full animate-pulse';
-    statusEl.textContent = 'Falando...';
-  };
-  recognition.onresult = function(e) {
-    var full = '';
-    for (var i = 0; i < e.results.length; i++) {
-      if (e.results[i].isFinal) {
-        full += e.results[i][0].transcript + ' ';
-      }
-    }
-    if (full) {
-      input.value = full;
-      if (dot) dot.className = 'w-2 h-2 bg-green-400 rounded-full animate-pulse';
-      statusEl.textContent = 'Texto captado! Clique no microfone para enviar.';
-    } else {
-      var last = e.results[e.results.length - 1];
-      if (last && !last.isFinal) {
-        statusEl.textContent = 'Ouvindo: ' + last[0].transcript;
-      }
-    }
-  };
-  recognition.onerror = function(e) {
-    if (e.error === 'no-speech') {
-      if (!input.value.trim()) {
-        statusEl.textContent = 'Nada detectado. Fale ou clique no microfone para cancelar.';
-      }
-      return;
-    }
-    if (e.error === 'aborted') return;
-    isRecording = false; recognition = null;
-    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
-    audioBtn.classList.remove('border-error', 'text-error', 'recording');
-    if (badge) badge.classList.remove('active');
-    if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
-    input.placeholder = 'Solicite uma analise, envie um arquivo ou pergunte algo...';
-    if (e.error === 'not-allowed') addMessage('Microfone bloqueado. Permita o acesso nas config. do navegador.', false);
-    else addMessage('Erro no microfone: ' + e.error, false);
-    statusEl.textContent = 'Erro: ' + e.error;
-  };
-  recognition.onend = function() {
-    if (!isRecording) return;
-    statusEl.textContent = 'Microfone pausado. Continue falando ou clique para enviar.';
-    if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
-    try { recognition.start(); } catch (e) {}
-  };
-  try {
-    recognition.start();
-  } catch (e) {
-    isRecording = false; recognition = null;
-    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
-    audioBtn.classList.remove('border-error', 'text-error', 'recording');
-    if (badge) badge.classList.remove('active');
-    if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
-    input.placeholder = 'Solicite uma analise, envie um arquivo ou pergunte algo...';
-    addMessage('Erro ao iniciar gravacao: ' + e.message, false);
-    statusEl.textContent = 'Erro: ' + e.message;
-  }
 }
 
 function gerarPDFResposta(btn) {
