@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 <script id="tailwind-config">
@@ -442,23 +443,135 @@ function handleFileUpload(event) {
   event.target.value = '';
 }
 
-function gerarPDFResposta(btn) {
+function formatarTextoParaPDF(texto) {
+  return texto
+    .replace(/## (.+)/g, '<h2 style="font-size:14px;color:#082853;margin:16px 0 8px;font-weight:700;">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#082853;">$1</strong>')
+    .replace(/\n{2,}/g, '</p><p style="font-size:11px;line-height:1.7;margin:6px 0;color:#1e293b;">')
+    .replace(/\n/g, '<br>');
+}
+
+function capturarElementoComoImg(selector) {
+  return new Promise(function(resolve) {
+    var el = document.querySelector(selector);
+    if (!el) { resolve(''); return; }
+    html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(function(canvas) {
+      resolve(canvas.toDataURL('image/png'));
+    }).catch(function() { resolve(''); });
+  });
+}
+
+async function gerarPDFResposta(btn) {
   const card = btn.closest('.bg-white');
   const text = card.querySelector('p').innerText;
-  const element = document.createElement('div');
-  element.innerHTML = '<h1 style="font-size:18px;color:#082853;">Assistente de Analise - Relatorio</h1><hr style="margin:10px 0;border-color:#e5e7eb;"><p style="font-size:12px;line-height:1.6;">' + text.replace(/\n/g, '<br>') + '</p><hr style="margin:10px 0;border-color:#e5e7eb;"><p style="font-size:10px;color:#6b7280;">Gerado pelo SIFU - Biblioteca UFERSA</p>';
   btn.disabled = true;
   btn.innerHTML = '<span class="material-symbols-outlined text-lg">hourglass_top</span> Gerando...';
-  html2pdf().set({ margin: 10, filename: 'analise-assistente.pdf', html2canvas: { scale: 2 }, jsPDF: { format: 'a4', orientation: 'portrait' } }).from(element).save().then(function() {
+
+  var agora = new Date().toLocaleString('pt-BR');
+  var imgDashboard = await capturarElementoComoImg('#ocupacao-container');
+  var imgOcorrencias = await capturarElementoComoImg('#ocorrencias-container');
+
+  var element = document.createElement('div');
+  element.style.cssText = 'padding:30px;font-family:Arial,Helvetica,sans-serif;max-width:800px;margin:0 auto;';
+  element.innerHTML =
+    '<div style="border-bottom:3px solid #082853;padding-bottom:20px;margin-bottom:20px;">'
+    + '<table style="width:100%;border-collapse:collapse;"><tr>'
+    + '<td style="width:60px;"><div style="width:50px;height:50px;background:#082853;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:bold;">S</div></td>'
+    + '<td><h1 style="font-size:22px;color:#082853;margin:0;font-weight:800;">SIFU \u2014 Biblioteca UFERSA</h1>'
+    + '<p style="font-size:11px;color:#64748b;margin:4px 0 0;">Relat\u00f3rio Executivo \u2014 Assistente de An\u00e1lise</p></td>'
+    + '<td style="text-align:right;vertical-align:top;"><p style="font-size:9px;color:#94a3b8;margin:0;">Gerado em<br><strong style="color:#082853;">' + agora + '</strong></p></td>'
+    + '</tr></table></div>'
+    + '<div style="background:#f8fafc;border-left:4px solid #082853;padding:16px 20px;margin:16px 0;border-radius:0 8px 8px 0;">'
+    + '<p style="font-size:11px;line-height:1.7;margin:0;color:#1e293b;">' + formatarTextoParaPDF(text) + '</p></div>'
+    + (imgDashboard
+      ? '<div style="margin:20px 0;"><h3 style="font-size:13px;color:#082853;margin:0 0 10px;font-weight:700;">\ud83d\udcca Mapas de Ocupa\u00e7\u00e3o</h3>'
+      + '<img src="' + imgDashboard + '" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;"></div>'
+      : '')
+    + (imgOcorrencias
+      ? '<div style="margin:20px 0;"><h3 style="font-size:13px;color:#082853;margin:0 0 10px;font-weight:700;">\u26a0\ufe0f An\u00e1lise de Ocorr\u00eancias</h3>'
+      + '<img src="' + imgOcorrencias + '" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;"></div>'
+      : '')
+    + '<div style="border-top:1px solid #e2e8f0;margin-top:30px;padding-top:12px;text-align:center;">'
+    + '<p style="font-size:8px;color:#94a3b8;margin:0;">SIFU \u2014 Sistema Integrado da Biblioteca UFERSA &bull; Documento gerado automaticamente &bull; Confidencial</p></div>';
+
+  html2pdf().set({
+    margin: 8,
+    filename: 'relatorio-executivo-sifu.pdf',
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: 'avoid-all' }
+  }).from(element).save().then(function() {
     btn.disabled = false;
     btn.innerHTML = '<span class="material-symbols-outlined text-lg">picture_as_pdf</span> Gerar PDF desta analise';
   });
 }
 
-function gerarSumarioPDF() {
-  const element = document.createElement('div');
-  element.innerHTML = '<h1 style="font-size:20px;color:#082853;">Sumario Executivo - SIFU</h1><p style="font-size:10px;color:#6b7280;">Gerado em ' + new Date().toLocaleString('pt-BR') + '</p><hr style="margin:10px 0;border-color:#e5e7eb;"><p style="font-size:12px;">Relatorio gerado automaticamente pelo Assistente de Analise.</p>';
-  html2pdf().set({ margin: 10, filename: 'sumario-executivo-sifu.pdf', html2canvas: { scale: 2 }, jsPDF: { format: 'a4', orientation: 'portrait' } }).from(element).save();
+async function gerarSumarioPDF() {
+  var btn = document.querySelector('[onclick="gerarSumarioPDF()"]');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined text-lg">hourglass_top</span> Gerando...'; }
+
+  var agora = new Date().toLocaleString('pt-BR');
+  var dataHoje = new Date().toLocaleDateString('pt-BR');
+  var imgDashboard = await capturarElementoComoImg('#ocupacao-container');
+  var imgOcorrencias = await capturarElementoComoImg('#ocorrencias-container');
+
+  var element = document.createElement('div');
+  element.style.cssText = 'padding:30px;font-family:Arial,Helvetica,sans-serif;max-width:800px;margin:0 auto;';
+
+  element.innerHTML =
+    '<div style="text-align:center;padding:40px 0 30px;border-bottom:3px solid #082853;margin-bottom:24px;">'
+    + '<div style="width:70px;height:70px;background:#082853;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:bold;margin-bottom:12px;">S</div>'
+    + '<h1 style="font-size:26px;color:#082853;margin:0;font-weight:800;">Sum\u00e1rio Executivo</h1>'
+    + '<p style="font-size:14px;color:#64748b;margin:6px 0 0;">SIFU \u2014 Sistema Integrado de Bibliotecas UFERSA</p>'
+    + '<p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">Relat\u00f3rio gerado em ' + agora + '</p>'
+    + '</div>'
+
+    + '<table style="width:100%;border-collapse:collapse;margin-bottom:24px;">'
+    + '<tr><td style="background:#f1f5f9;padding:12px 16px;border-radius:8px 0 0 8px;font-size:11px;color:#64748b;width:120px;">Classifica\u00e7\u00e3o</td>'
+    + '<td style="background:#f8fafc;padding:12px 16px;border-radius:0 8px 8px 0;font-size:11px;color:#082853;font-weight:600;">USO INTERNO \u2014 CONFIDENCIAL</td></tr>'
+    + '<tr><td style="background:#f1f5f9;padding:12px 16px;font-size:11px;color:#64748b;">Data</td>'
+    + '<td style="background:#f8fafc;padding:12px 16px;font-size:11px;color:#082853;font-weight:600;">' + dataHoje + '</td></tr>'
+    + '<tr><td style="background:#f1f5f9;padding:12px 16px;border-radius:0 0 0 8px;font-size:11px;color:#64748b;">Sistema</td>'
+    + '<td style="background:#f8fafc;padding:12px 16px;border-radius:0 0 8px 0;font-size:11px;color:#082853;font-weight:600;">Hub de IA e Relat\u00f3rios \u2014 Assistente de An\u00e1lise</td></tr>'
+    + '</table>'
+
+    + '<div style="margin-bottom:24px;">'
+    + '<h2 style="font-size:14px;color:#082853;margin:0 0 12px;font-weight:700;border-bottom:2px solid #e2e8f0;padding-bottom:8px;">\ud83d\udcca Cen\u00e1rio Atual da Biblioteca</h2>'
+    + '<p style="font-size:11px;line-height:1.7;color:#1e293b;">Este relat\u00f3rio apresenta o panorama operacional da Biblioteca UFERSA com base nos dados coletados em tempo real. As m\u00e9tricas a seguir refletem o estado atual das salas, ocupa\u00e7\u00e3o e ocorr\u00eancias registradas no sistema SIFU.</p>'
+    + '</div>'
+
+    + (imgDashboard
+      ? '<div style="margin:0 0 24px;page-break-inside:avoid;">'
+      + '<h3 style="font-size:13px;color:#082853;margin:0 0 10px;font-weight:700;">Mapas de Ocupa\u00e7\u00e3o</h3>'
+      + '<img src="' + imgDashboard + '" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;"></div>'
+      : '')
+
+    + (imgOcorrencias
+      ? '<div style="margin:0 0 24px;page-break-inside:avoid;">'
+      + '<h3 style="font-size:13px;color:#082853;margin:0 0 10px;font-weight:700;">An\u00e1lise de Ocorr\u00eancias</h3>'
+      + '<img src="' + imgOcorrencias + '" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;"></div>'
+      : '')
+
+    + '<div style="margin-bottom:24px;page-break-inside:avoid;">'
+    + '<h2 style="font-size:14px;color:#082853;margin:0 0 12px;font-weight:700;border-bottom:2px solid #e2e8f0;padding-bottom:8px;">\ud83e\udd16 An\u00e1lises do Assistente</h2>'
+    + '<p style="font-size:11px;line-height:1.7;color:#1e293b;">As an\u00e1lises detalhadas geradas pelo Assistente de An\u00e1lise (IA) est\u00e3o dispon\u00edveis no sistema. Utilize o bot\u00e3o "Gerar PDF desta an\u00e1lise" em cada resposta do chat para exportar an\u00e1lises individuais com formata\u00e7\u00e3o executiva completa.</p>'
+    + '</div>'
+
+    + '<div style="border-top:2px solid #082853;padding-top:16px;margin-top:30px;text-align:center;">'
+    + '<p style="font-size:10px;color:#082853;font-weight:600;margin:0 0 4px;">SIFU \u2014 Sistema Integrado da Biblioteca UFERSA</p>'
+    + '<p style="font-size:8px;color:#94a3b8;margin:0;">Universidade Federal Rural do Semi-\u00c1rido &bull; Pr\u00f3-Reitoria de Assuntos Estudantis</p>'
+    + '<p style="font-size:8px;color:#94a3b8;margin:4px 0 0;">Documento gerado automaticamente pelo Assistente de An\u00e1lise em ' + agora + ' &bull; Confidencial &bull; Uso Interno</p>'
+    + '</div>';
+
+  html2pdf().set({
+    margin: 8,
+    filename: 'sumario-executivo-sifu.pdf',
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: 'avoid-all' }
+  }).from(element).save().then(function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined text-lg">download_for_offline</span> Gerar Sum\u00e1rio Executivo'; }
+  });
 }
 
 function limparChat() {
