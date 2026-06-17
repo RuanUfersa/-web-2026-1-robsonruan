@@ -450,77 +450,89 @@ function toggleAudio() {
   const statusEl = document.getElementById('chat-status');
   const dot = document.getElementById('status-dot');
   const badge = document.getElementById('recording-badge');
+  const input = document.getElementById('chat-input');
 
   if (isRecording) {
     if (recognition) { recognition.stop(); recognition = null; }
     isRecording = false;
     audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
     audioBtn.classList.remove('border-error', 'text-error', 'recording');
-    badge.classList.remove('active');
-    dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
+    if (badge) badge.classList.remove('active');
+    if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
     statusEl.textContent = 'Analisando dados da biblioteca em tempo real...';
+    var texto = input.value.trim();
+    if (texto) { input.value = ''; enviarMensagem(texto); }
     return;
   }
   if (!SR) {
     addMessage('Reconhecimento de voz nao disponivel neste navegador. Use Chrome ou Edge.', false);
     return;
   }
+
   recognition = new SR();
   recognition.lang = 'pt-BR';
   recognition.interimResults = true;
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.maxAlternatives = 1;
 
   isRecording = true;
-  audioIcon.textContent = 'mic_off'; audioLabel.textContent = 'Parar';
+  audioIcon.textContent = 'mic_off'; audioLabel.textContent = 'Enviar';
   audioBtn.classList.add('border-error', 'text-error', 'recording');
   if (badge) badge.classList.add('active');
   if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
-  statusEl.textContent = 'Fale ao microfone...';
+  statusEl.textContent = 'Fale ao microfone. Clique no microfone para enviar.';
+  input.value = '';
+  input.placeholder = 'Fale alguma coisa...';
 
   recognition.onaudiostart = function() {
     if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
-    statusEl.textContent = 'Microfone ativo! Fale alguma coisa...';
+    statusEl.textContent = 'Microfone ativo! Fale normalmente.';
   };
   recognition.onspeechstart = function() {
     if (dot) dot.className = 'w-2 h-2 bg-green-400 rounded-full animate-pulse';
     statusEl.textContent = 'Falando...';
   };
   recognition.onresult = function(e) {
-    var finalTranscript = '';
-    for (var i = e.resultIndex; i < e.results.length; i++) {
+    var full = '';
+    for (var i = 0; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
-        finalTranscript += e.results[i][0].transcript + ' ';
-      } else {
-        statusEl.textContent = 'Ouvindo: ' + e.results[i][0].transcript;
+        full += e.results[i][0].transcript + ' ';
       }
     }
-    if (finalTranscript) {
-      document.getElementById('chat-input').value += finalTranscript;
-      statusEl.textContent = 'Texto capturado!';
+    if (full) {
+      input.value = full;
+      if (dot) dot.className = 'w-2 h-2 bg-green-400 rounded-full animate-pulse';
+      statusEl.textContent = 'Texto captado! Clique no microfone para enviar.';
+    } else {
+      var last = e.results[e.results.length - 1];
+      if (last && !last.isFinal) {
+        statusEl.textContent = 'Ouvindo: ' + last[0].transcript;
+      }
     }
-    if (dot) dot.className = 'w-2 h-2 bg-green-400 rounded-full animate-pulse';
-  };
-  recognition.onend = function() {
-    var input = document.getElementById('chat-input');
-    var text = input.value.trim();
-    isRecording = false; recognition = null;
-    audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
-    audioBtn.classList.remove('border-error', 'text-error', 'recording');
-    if (badge) badge.classList.remove('active');
-    if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
-    statusEl.textContent = 'Analisando dados da biblioteca em tempo real...';
-    if (text) { input.value = ''; enviarMensagem(text); }
   };
   recognition.onerror = function(e) {
+    if (e.error === 'no-speech') {
+      if (!input.value.trim()) {
+        statusEl.textContent = 'Nada detectado. Fale ou clique no microfone para cancelar.';
+      }
+      return;
+    }
+    if (e.error === 'aborted') return;
     isRecording = false; recognition = null;
     audioIcon.textContent = 'mic'; audioLabel.textContent = 'Audio';
     audioBtn.classList.remove('border-error', 'text-error', 'recording');
     if (badge) badge.classList.remove('active');
     if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
-    if (e.error === 'not-allowed') addMessage('Microfone bloqueado. Permita o acesso nas configuracoes do navegador.', false);
-    else addMessage('Erro no microfone: ' + e.error + '. Tente novamente.', false);
+    input.placeholder = 'Solicite uma analise, envie um arquivo ou pergunte algo...';
+    if (e.error === 'not-allowed') addMessage('Microfone bloqueado. Permita o acesso nas config. do navegador.', false);
+    else addMessage('Erro no microfone: ' + e.error, false);
     statusEl.textContent = 'Erro: ' + e.error;
+  };
+  recognition.onend = function() {
+    if (!isRecording) return;
+    statusEl.textContent = 'Microfone pausado. Continue falando ou clique para enviar.';
+    if (dot) dot.className = 'w-2 h-2 bg-red-400 rounded-full animate-pulse';
+    try { recognition.start(); } catch (e) {}
   };
   try {
     recognition.start();
@@ -530,6 +542,7 @@ function toggleAudio() {
     audioBtn.classList.remove('border-error', 'text-error', 'recording');
     if (badge) badge.classList.remove('active');
     if (dot) dot.className = 'w-2 h-2 bg-secondary rounded-full animate-pulse';
+    input.placeholder = 'Solicite uma analise, envie um arquivo ou pergunte algo...';
     addMessage('Erro ao iniciar gravacao: ' + e.message, false);
     statusEl.textContent = 'Erro: ' + e.message;
   }
