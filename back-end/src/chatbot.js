@@ -6,10 +6,10 @@ const client = new DynamoDBClient({ region: 'us-east-1' });
 const doc = DynamoDBDocumentClient.from(client);
 
 const GEMINI_MODELS = [
-  'gemini-2.0-flash-lite',
-  'gemini-flash-latest',
-  'gemini-2.0-flash',
-  'gemini-1.5-pro'
+  'gemini-2.5-flash-lite',
+  'gemini-2.0-flash-lite-001',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash'
 ];
 
 const SYSTEM_PROMPT = `Você é o assistente virtual do SIFU da UFERSA. Criador: Robson Ruan. Fonte de conhecimento: dados do banco abaixo.
