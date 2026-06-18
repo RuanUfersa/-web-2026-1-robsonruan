@@ -313,7 +313,7 @@ function renderizarOcorrencias(ocorrencias, salas) {
     statusCount[o.status] = (statusCount[o.status] || 0) + 1;
     const nome = o.aluno_nome || 'Desconhecido';
     alunoCount[nome] = (alunoCount[nome] || 0) + 1;
-    const sala = salaMap[o.sala_id] || o.sala_id || 'N/A';
+    const sala = salaMap[o.sala_id] || 'Sala removida';
     salaCount[sala] = (salaCount[sala] || 0) + 1;
   });
   const statusPct = {
